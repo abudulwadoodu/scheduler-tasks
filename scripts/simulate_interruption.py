@@ -25,17 +25,8 @@ def simulate_interruption():
     print(f"Found {len(items)} items for '{schedule.name}'.")
 
     # 4. Update via session.query().update() for safety
-    half_index = len(items) // 2
-    ids_to_done = [item.id for item in items[:half_index]]
-    ids_to_pending = [item.id for item in items[half_index:]]
-
-    if ids_to_done:
-        session.query(Item).filter(Item.id.in_(ids_to_done)).update({"status": "DONE", "last_run_time": now}, synchronize_session=False)
-        print(f"Marked {len(ids_to_done)} items as DONE.")
-
-    if ids_to_pending:
-        session.query(Item).filter(Item.id.in_(ids_to_pending)).update({"status": "PENDING"}, synchronize_session=False)
-        print(f"Marked {len(ids_to_pending)} items as PENDING.")
+    session.query(Item).filter(Item.schedule_id == schedule.id).update({"status": "PENDING"}, synchronize_session=False)
+    print(f"Marked all {len(items)} items as PENDING.")
 
     try:
         session.commit()
