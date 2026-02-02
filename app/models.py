@@ -13,6 +13,9 @@ class Schedule(Base):
     max_retries = Column(Integer, default=3)
     next_run_time = Column(DateTime(timezone=True))
     last_run_time = Column(DateTime(timezone=True))
+    rrule = Column(String, nullable=True)
+    start_time = Column(DateTime(timezone=True), nullable=True)
+    timezone = Column(String, default='UTC')
 
     items = relationship("Item", back_populates="schedule")
 
