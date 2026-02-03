@@ -6,8 +6,8 @@ A robust task scheduler with advanced resuming logic, dynamic script mapping, an
 
 - **Interval & RRULE Scheduling**: Support for simple interval-based tasks and complex recurrence rules (Minutely, Weekly, Monthly).
 - **Resume Logic**: Checkpointed execution using task status to resume interrupted jobs from the last successful item.
-- **Dynamic Script Mapping**: Automatic association of retailers (Amazon, Flipkart, etc.) and item types to their respective extraction scripts.
-- **Multi-Source Support**: Built-in handling for diverse sources and specific script versions per item type.
+- **Case-Insensitive Script Mapping**: Semi-automated association of items to extraction scripts based on manually entered `source_id` and `item_type`, with case-insensitive source lookup.
+- **Manual Source Management**: Full user control over the `sources` table; scripts are only registered for pre-existing sources.
 
 ## Project Structure
 
