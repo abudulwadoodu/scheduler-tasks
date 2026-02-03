@@ -1,0 +1,4 @@
+.env
+gorenv/
+_pycache__/
+logs/
