@@ -3,7 +3,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.db import SessionLocal
-from app.models import Schedule, Item
+from app.models import Schedule, Item, Source
 from datetime import datetime, timedelta, timezone
 
 session = SessionLocal()
@@ -149,6 +149,20 @@ schedules = [
 session.add_all(schedules)
 session.commit()
 
+# -------- Sources --------
+
+sources = [
+    Source(source_name="Amazon", source_type="Retailer", active=True, created_at=now),
+    Source(source_name="Flipkart", source_type="Retailer", active=True, created_at=now),
+    Source(source_name="Ebay", source_type="Retailer", active=True, created_at=now),
+    Source(source_name="Generic", source_type="Various", active=True, created_at=now),
+    Source(source_name="WALMART", source_type="Retailer", active=True, created_at=now),
+    Source(source_name="Bigbasket", source_type="Retailer", active=True, created_at=now),
+]
+
+session.add_all(sources)
+session.commit()
+
 # -------- Items --------
 
 items = [
@@ -181,6 +195,20 @@ items = [
     Item(item_code="CMPLX_MON", name="Mon 4:15/4:25", url="https://example.com/mon", schedule_id=schedules[10].id, status="PENDING", active=True),
     Item(item_code="CMPLX_TUE", name="Bi-weekly Tue", url="https://example.com/tue", schedule_id=schedules[11].id, status="PENDING", active=True),
     Item(item_code="CMPLX_WED", name="Monthly 3rd Wed", url="https://example.com/wed", schedule_id=schedules[12].id, status="PENDING", active=True),
+    
+    # New Mapping Test Items
+    Item(item_code="AMZ001", name="Amazon Product", url="https://www.amazon.in/dp/B07PFFMPDB", schedule_id=schedules[0].id, status="PENDING", active=True, item_type="type_1"),
+    Item(item_code="FK001", name="Flipkart Product", url="https://www.flipkart.com/p/itme123", schedule_id=schedules[0].id, status="PENDING", active=True, item_type="type_1"),
+    
+    # New Mapping Test Items (IDs are assigned after Sources are created in populate_mappings, 
+    # but here we simulate what the user would do manually)
+    # Amazon (ID 1), Flipkart (ID 2), Ebay (ID 3), Walmart (ID 5)
+    Item(item_code="AMZ001", name="Amazon Product", url="https://www.amazon.in/dp/B07PFFMPDB", schedule_id=schedules[0].id, status="PENDING", active=True, source_id=1, item_type="type_1"),
+    Item(item_code="FK001", name="Flipkart Product", url="https://www.flipkart.com/p/itme123", schedule_id=schedules[0].id, status="PENDING", active=True, source_id=2, item_type="type_1"),
+    Item(item_code="EBAY001", name="eBay Collectible", url="https://www.ebay.com/itm/123456", schedule_id=schedules[0].id, status="PENDING", active=True, source_id=3, item_type="type_1"),
+    Item(item_code="WMT001", name="Walmart Grocery", url="https://www.walmart.com/ip/111", schedule_id=schedules[0].id, status="PENDING", active=True, source_id=5, item_type="type_1"),
+    Item(item_code="WMT002", name="Walmart Electronics", url="https://www.walmart.com/ip/222", schedule_id=schedules[0].id, status="PENDING", active=True, source_id=5, item_type="type_2"),
+    Item(item_code="BB001", name="Bigbasket Grocery", url="https://www.bigbasket.com/pd/123", schedule_id=schedules[0].id, status="PENDING", active=True, source_id=6, item_type="type_1"),
 ]
 
 session.add_all(items)
