@@ -16,6 +16,12 @@ def process_due_schedules():
     for sched in schedules:
         print(f"Running schedule: {sched.name}")
 
+        # Update next_run_time immediately when an interval begins
+        sched.last_run_time = now
+        sched.next_run_time = calculate_next_run(sched, now)
+        session.commit()
+        print(f"  Advancing schedule {sched.name}. Next run: {sched.next_run_time}")
+
         # Check for pending items
         pending_count = session.query(Item)\
             .filter(Item.schedule_id == sched.id)\
@@ -57,8 +63,8 @@ def process_due_schedules():
                 all_items_processed = False
                 # Optionally break or continue based on policy
 
-        # Only advance the schedule if ALL items are successfully processed (or if we decide to skip errors)
-        # Using a fresh query to ensure no new pending items appeared
+        # Remaining pending check is no longer used for next_run_time update
+        # but could be useful for logging or other logic if needed.
         remaining_pending = session.query(Item)\
             .filter(Item.schedule_id == sched.id)\
             .filter(Item.active == True)\
@@ -66,10 +72,7 @@ def process_due_schedules():
             .count()
 
         if remaining_pending == 0:
-            sched.last_run_time = now
-            sched.next_run_time = calculate_next_run(sched, now)
-            session.commit()
-            print(f"  Completed schedule {sched.name}. Next run: {sched.next_run_time}")
+            print(f"  All items processed for schedule {sched.name}.")
             
     session.close()
 
