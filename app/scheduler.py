@@ -1,12 +1,19 @@
 from app.db import SessionLocal
-from app.models import Schedule, Item
+from app.models import Schedule, Item, JobSummary
 from app.services import calculate_next_run
+from sqlalchemy import func
 from datetime import datetime, timezone
 from apscheduler.schedulers.background import BackgroundScheduler
 
 def process_due_schedules():
     session = SessionLocal()
     now = datetime.now(timezone.utc)
+    
+    # Derive next job_id from JobSummary
+    last_job_id = session.query(func.max(JobSummary.job_id)).scalar() or 0
+    job_id = last_job_id + 1
+    
+    print(f"Starting scheduler batch: {job_id}")
 
     schedules = session.query(Schedule)\
         .filter(Schedule.active == True)\
@@ -55,6 +62,24 @@ def process_due_schedules():
                 item.last_run_time = datetime.now(timezone.utc)
                 item.status = "DONE"
                 
+                # Update Job Summary
+                summary = session.query(JobSummary).filter_by(
+                    job_id=job_id,
+                    schedule_id=sched.id,
+                    source_id=item.source_id
+                ).first()
+
+                if not summary:
+                    summary = JobSummary(
+                        job_id=job_id,
+                        schedule_id=sched.id,
+                        source_id=item.source_id,
+                        item_count=1
+                    )
+                    session.add(summary)
+                else:
+                    summary.item_count += 1
+
                 # Checkpoint: Commit immediately so we don't lose progress on crash
                 session.commit()
             except Exception as e:
