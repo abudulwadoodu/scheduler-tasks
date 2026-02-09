@@ -1,6 +1,11 @@
-
+import sys
+import os
 import unittest
 from datetime import datetime, timezone
+
+# Add the project root to sys.path to import app modules
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from app.models import Schedule
 from app.services import calculate_next_run
 from dateutil.rrule import rrulestr

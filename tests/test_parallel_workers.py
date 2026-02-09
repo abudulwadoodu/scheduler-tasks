@@ -12,7 +12,7 @@ from app.models import Base, Schedule, Item, Source, JobSummary
 from app.procedures import pick_items_to_run, mark_item_done
 
 # Mock database for testing
-TEST_DB_URL = "sqlite:///test_parallel.db"
+TEST_DB_URL = "sqlite:///:memory:"
 engine = create_engine(TEST_DB_URL, connect_args={"check_same_thread": False})
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -46,7 +46,7 @@ def worker_task(worker_id, results):
         
         for item in items:
             # Simulate processing
-            mark_item_done(session, item['id'], item['job_id'], item['schedule_id'], item['source_id'])
+            mark_item_done(session, item['id'], item['job_id'])
     except Exception as e:
         print(f"Worker {worker_id} error: {e}")
     finally:
@@ -82,14 +82,18 @@ def test_parallel_pick():
     # Verify JobSummary
     session = TestingSessionLocal()
     summaries = session.query(JobSummary).all()
-    total_count = sum(s.item_count for s in summaries)
+    # In this test, each worker call to pick_items_to_run creates a JobSummary
+    total_count = sum(s.num_of_items for s in summaries)
     assert total_count == 20, f"JobSummary total count should be 20, got {total_count}"
+    
+    # Verify ItemHistory
+    from app.models import ItemHistory
+    total_history = session.query(ItemHistory).filter_by(status='DONE').count()
+    assert total_history == 20, f"ItemHistory total DONE count should be 20, got {total_history}"
     
     print("Verification successful: Concurrent workers picked unique items and updated JobSummary correctly.")
     session.close()
 
 if __name__ == "__main__":
     test_parallel_pick()
-    if os.path.exists("test_parallel.db"):
-        engine.dispose()
-        os.remove("test_parallel.db")
+    engine.dispose()

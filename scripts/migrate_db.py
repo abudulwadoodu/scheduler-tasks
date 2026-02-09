@@ -92,6 +92,41 @@ def migrate_db():
         except sqlite3.OperationalError as e:
             print(f"Skipped {col_name}: {e}")
 
+    # Create job_summary and item_history tables
+    try:
+        print("Recreating 'job_summary' table...")
+        cursor.execute("DROP TABLE IF EXISTS job_summary")
+        cursor.execute("""
+            CREATE TABLE job_summary (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                job_id BIGINT,
+                start_time DATETIME,
+                num_of_items INTEGER DEFAULT 0
+            )
+        """)
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_job_summary_job_id ON job_summary (job_id)")
+        
+        print("Creating 'item_history' table...")
+        cursor.execute("DROP TABLE IF EXISTS item_history")
+        cursor.execute("""
+            CREATE TABLE item_history (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                job_id BIGINT,
+                schedule_id INTEGER,
+                item_id INTEGER,
+                item_price REAL,
+                status TEXT,
+                created_at DATETIME,
+                FOREIGN KEY (schedule_id) REFERENCES schedule (id),
+                FOREIGN KEY (item_id) REFERENCES items (id)
+            )
+        """)
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_item_history_job_id ON item_history (job_id)")
+        
+        print("Success.")
+    except sqlite3.OperationalError as e:
+        print(f"Error updating schema: {e}")
+
     conn.commit()
     conn.close()
     print("Migration complete.")

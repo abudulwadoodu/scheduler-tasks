@@ -17,93 +17,100 @@ def pick_items_to_run(session, batch_size=10):
         Schedule.next_run_time <= now
     ).all()
     
+    if not due_schedules:
+        return []
+
+    due_schedule_ids = [s.id for s in due_schedules]
+    
     for sched in due_schedules:
-        # Check if we should reset items to PENDING for a new cycle
-        count_not_done = session.query(Item).filter(
-            Item.schedule_id == sched.id,
-            Item.active == True,
-            Item.status.in_(['PENDING', 'RUNNING'])
-        ).count()
-        
-        if count_not_done == 0:
-            session.query(Item).filter(
-                Item.schedule_id == sched.id,
-                Item.active == True
-            ).update({"status": "PENDING"})
-        
         # Advance schedule (only if last_run_time hasn't been updated to 'now' yet)
         if sched.last_run_time != now:
             sched.last_run_time = now
             sched.next_run_time = calculate_next_run(sched, now)
     
-    session.commit()
+    session.flush() # Flush changes to schedules to the session
 
     # 2. Derive next job_id
     last_job_id = session.query(func.max(JobSummary.job_id)).scalar() or 0
     job_id = last_job_id + 1
     
     # 3. Select and Mark items as RUNNING atomically.
-    # Requirement: status != 'RUNNING', active = true
-    # We prioritize PENDING items if they exist, but requirement says status != 'RUNNING'.
-    # To avoid re-running DONE items in the same interval, we typically pick PENDING.
-    # But we just reset them to PENDING above, so picking PENDING is correct.
-    
-    query = text("""
+    placeholders = ", ".join(f":id_{i}" for i in range(len(due_schedule_ids)))
+    query_text = f"""
     UPDATE items 
     SET status = 'RUNNING',
         last_run_time = :now
     WHERE id IN (
         SELECT i.id 
         FROM items i
-        JOIN schedule s ON i.schedule_id = s.id
         WHERE i.active = 1 
-          AND i.status = 'PENDING'
+          AND i.schedule_id IN ({placeholders})
+          AND i.status NOT IN ('RUNNING', 'DISABLED')
         ORDER BY i.last_run_time ASC NULLS FIRST
         LIMIT :batch_size
     )
-    RETURNING id, schedule_id, source_id, item_code, name, url;
-    """)
+    RETURNING id, schedule_id, source_id, item_code, name, url, rate;
+    """
+    query = text(query_text)
     
-    result = session.execute(query, {"now": now, "batch_size": batch_size}).fetchall()
+    params = {"now": now, "batch_size": batch_size}
+    for i, sid in enumerate(due_schedule_ids):
+        params[f"id_{i}"] = sid
+        
+    result = session.execute(query, params).fetchall()
     
-    items_to_run = []
-    for row in result:
-        items_to_run.append({
-            "job_id": job_id,
-            "id": row.id,
-            "schedule_id": row.schedule_id,
-            "source_id": row.source_id,
-            "item_code": row.item_code,
-            "name": row.name,
-            "url": row.url
-        })
+    # 4. Initialize JobSummary and ItemHistory
+    if result:
+        from app.models import ItemHistory
+        
+        job_summary = JobSummary(
+            job_id=job_id,
+            start_time=now,
+            num_of_items=len(result)
+        )
+        session.add(job_summary)
+        
+        items_to_run = []
+        for row in result:
+            history = ItemHistory(
+                job_id=job_id,
+                schedule_id=row.schedule_id,
+                item_id=row.id,
+                item_price=row.rate,
+                status='RUNNING'
+            )
+            session.add(history)
+            
+            items_to_run.append({
+                "job_id": job_id,
+                "id": row.id,
+                "schedule_id": row.schedule_id,
+                "source_id": row.source_id,
+                "item_code": row.item_code,
+                "name": row.name,
+                "url": row.url,
+                "rate": row.rate
+            })
 
-    session.commit()
+        session.commit()
+    else:
+        items_to_run = []
+        
     return items_to_run
 
-def mark_item_done(session, item_id, job_id, schedule_id, source_id):
+def mark_item_done(session, item_id, job_id, status='DONE'):
     """
-    Simulates 'Stored Procedure 2': Marks item as DONE and updates JobSummary.
+    Simulates 'Stored Procedure 2': Marks item with final status and updates ItemHistory.
     """
+    from app.models import ItemHistory
+    
     # 1. Update item status
-    session.query(Item).filter(Item.id == item_id).update({"status": "DONE"})
+    session.query(Item).filter(Item.id == item_id).update({"status": status})
     
-    # 2. Update JobSummary (Incremental Aggregation)
-    summary = session.query(JobSummary).filter_by(
+    # 2. Update ItemHistory
+    session.query(ItemHistory).filter_by(
         job_id=job_id,
-        schedule_id=schedule_id,
-        source_id=source_id
-    ).first()
-    
-    if not summary:
-        summary = JobSummary(
-            job_id=job_id,
-            schedule_id=schedule_id,
-            source_id=source_id,
-            item_count=1
-        )
-        session.add(summary)
-    else:
-        summary.item_count += 1
+        item_id=item_id
+    ).update({"status": status})
         
     session.commit()

@@ -11,7 +11,7 @@ from app.models import Base, Schedule, Item
 from app.scheduler import process_due_schedules
 
 # Mock database for testing
-TEST_DB_URL = "sqlite:///test_scheduler.db"
+TEST_DB_URL = "sqlite:///:memory:"
 engine = create_engine(TEST_DB_URL)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -81,11 +81,6 @@ def test_immediate_update():
         if 'session' in locals():
             session.close()
         engine.dispose()
-        if os.path.exists("test_scheduler.db"):
-            try:
-                os.remove("test_scheduler.db")
-            except Exception as e:
-                print(f"Final cleanup error: {e}")
 
 if __name__ == "__main__":
     test_immediate_update()

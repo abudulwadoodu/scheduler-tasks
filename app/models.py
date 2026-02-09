@@ -79,10 +79,18 @@ class JobSummary(Base):
     __tablename__ = "job_summary"
     id = Column(Integer, primary_key=True)
     job_id = Column(BigInteger, index=True)
+    start_time = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    num_of_items = Column(Integer, default=0)
+
+class ItemHistory(Base):
+    __tablename__ = "item_history"
+    id = Column(Integer, primary_key=True)
+    job_id = Column(BigInteger, index=True)
     schedule_id = Column(Integer, ForeignKey("schedule.id"))
-    source_id = Column(Integer, ForeignKey("sources.source_id"), nullable=True)
-    item_count = Column(Integer, default=0)
+    item_id = Column(Integer, ForeignKey("items.id"))
+    item_price = Column(Float, nullable=True)
+    status = Column(String)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
     schedule = relationship("Schedule")
-    source = relationship("Source")
+    item = relationship("Item")

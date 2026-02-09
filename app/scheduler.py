@@ -24,15 +24,20 @@ def process_due_schedules():
                 mark_item_done(
                     session, 
                     item_data['id'], 
-                    item_data['job_id'], 
-                    item_data['schedule_id'], 
-                    item_data['source_id']
+                    item_data['job_id'],
+                    status='DONE'
                 )
                 print(f"  Item {item_data['name']} marked DONE.")
                 
             except Exception as e:
                 print(f"  Error processing item {item_data['name']}: {e}")
-                session.rollback()
+                mark_item_done(
+                    session, 
+                    item_data['id'], 
+                    item_data['job_id'],
+                    status='FAILED'
+                )
+                print(f"  Item {item_data['name']} marked FAILED.")
                 
     except Exception as e:
         print(f"Scheduler error: {e}")
