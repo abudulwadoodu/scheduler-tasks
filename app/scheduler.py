@@ -11,6 +11,7 @@ def process_due_schedules():
             print("No due items to process.")
             return
 
+        print(f"Items to run response: {items_to_run}")
         print(f"Processing batch of {len(items_to_run)} items.")
 
         for item_data in items_to_run:
@@ -23,7 +24,7 @@ def process_due_schedules():
                 # Mark item as DONE
                 mark_item_done(
                     session, 
-                    item_data['id'], 
+                    item_data['item_id'], 
                     item_data['job_id'],
                     status='DONE'
                 )
@@ -33,7 +34,7 @@ def process_due_schedules():
                 print(f"  Error processing item {item_data['name']}: {e}")
                 mark_item_done(
                     session, 
-                    item_data['id'], 
+                    item_data['item_id'], 
                     item_data['job_id'],
                     status='FAILED'
                 )

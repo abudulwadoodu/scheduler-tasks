@@ -1,5 +1,5 @@
 from sqlalchemy import text, func
-from app.models import Item, Schedule, Source, JobSummary
+from app.models import Item, Schedule, Source, JobSummary, Script
 from datetime import datetime, timezone
 
 def pick_items_to_run(session, batch_size=10):
@@ -49,7 +49,7 @@ def pick_items_to_run(session, batch_size=10):
         ORDER BY i.last_run_time ASC NULLS FIRST
         LIMIT :batch_size
     )
-    RETURNING id, schedule_id, source_id, item_code, name, url, rate;
+    RETURNING id;
     """
     query = text(query_text)
     
@@ -58,20 +58,28 @@ def pick_items_to_run(session, batch_size=10):
         params[f"id_{i}"] = sid
         
     result = session.execute(query, params).fetchall()
+    updated_ids = [row.id for row in result]
     
     # 4. Initialize JobSummary and ItemHistory
-    if result:
+    if updated_ids:
         from app.models import ItemHistory
         
         job_summary = JobSummary(
             job_id=job_id,
             start_time=now,
-            num_of_items=len(result)
+            num_of_items=len(updated_ids)
         )
         session.add(job_summary)
         
+        # Fetch detailed info with join for script_path
+        items_data = session.query(
+            Item.id, Item.schedule_id, Item.source_id, Item.url, Item.rate, 
+            Item.expression, Item.description, Item.comments, Script.path.label("script_path"),
+            Item.name
+        ).outerjoin(Script, Item.script_id == Script.id).filter(Item.id.in_(updated_ids)).all()
+        
         items_to_run = []
-        for row in result:
+        for row in items_data:
             history = ItemHistory(
                 job_id=job_id,
                 schedule_id=row.schedule_id,
@@ -83,11 +91,12 @@ def pick_items_to_run(session, batch_size=10):
             
             items_to_run.append({
                 "job_id": job_id,
-                "id": row.id,
-                "schedule_id": row.schedule_id,
-                "source_id": row.source_id,
-                "item_code": row.item_code,
+                "item_id": row.id,
                 "name": row.name,
+                "script_path": row.script_path,
+                "expression": row.expression,
+                "description": row.description,
+                "comments": row.comments,
                 "url": row.url,
                 "rate": row.rate
             })
