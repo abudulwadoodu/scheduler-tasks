@@ -4,13 +4,11 @@ import pandas as pd
 import time
 import uuid
 from urllib.parse import urlparse
-
 import yaml
 
 from utils.config import load_config
 
 config = load_config()
-
 
 EXTRACTOR_REPLICAS = config["pipeline"]["extractor"]["replicas"]
 STREAM_PREFIX = config["pipeline"]["extractor"]["stream_prefix"]
@@ -23,6 +21,50 @@ URL_STREAMS = [
 DOMAIN_STREAM_MAP_KEY = "domain_to_stream"
 RR_COUNTER_KEY = "stream_rr_counter"
 
+CONSUMER_GROUP = "extractors"
+
+from app.db import SessionLocal
+from app.procedures import pick_items_to_run
+
+
+def dispatch_items_to_redis(items):
+    """
+    Push DB-selected items into Redis Streams
+    using existing routing and load-balancing logic.
+    """
+    for item in items:
+        stream = route_stream_for_url(item["url"])
+
+        r.xadd(stream, {
+            "url": item["url"],
+            "domain": extract_domain(item["url"]),
+            "job_id": item["job_id"],
+            "item_id": item["id"],
+            "source_id": item["source_id"],
+            "attempt": 0,
+        })
+
+    return
+
+def process_due_schedules():
+    session = SessionLocal()
+    try:
+        items_to_run = pick_items_to_run(session, batch_size=10)
+        
+        if not items_to_run:
+            print("No due items to process.")
+            return
+
+        print(f"Processing batch of {len(items_to_run)} items.")
+
+        dispatch_items_to_redis(items_to_run)
+                
+    except Exception as e:
+        print(f"Scheduler error: {e}")
+    finally:
+        session.close()
+            
+
 def extract_domain(url: str) -> str:
     return urlparse(url).netloc.lower()
 
@@ -30,15 +72,35 @@ def pick_stream():
     idx = r.incr(RR_COUNTER_KEY)
     return URL_STREAMS[(idx - 1) % len(URL_STREAMS)]
 
+
+def pick_least_loaded_stream():
+    loads = {}
+
+    for stream in URL_STREAMS:
+        try:
+            groups = r.xinfo_groups(stream)
+            group = next(g for g in groups if g["name"] == CONSUMER_GROUP)
+
+            pending = group["pending"]
+            lag = group.get("lag", 0)
+
+            loads[stream] = pending + lag
+
+        except Exception:
+            loads[stream] = 0
+
+    return min(loads, key=loads.get)
+
 def route_stream_for_url(url: str) -> str:
     domain = extract_domain(url)
 
     stream = r.hget(DOMAIN_STREAM_MAP_KEY, domain)
     if not stream:
-        stream = pick_stream()
+        stream = pick_least_loaded_stream()
         r.hset(DOMAIN_STREAM_MAP_KEY, domain, stream)
 
     return stream
+
 
 r = redis.Redis(
     host=config["redis"]["host"],
@@ -47,68 +109,94 @@ r = redis.Redis(
 )
 
 
-info = r.info()
-print("[extractor redis info]: version =", info.get("redis_version"))
-print("[extractor redis info]: run_id  =", info.get("run_id"))
+# def create_job(urls):
+#     job_id = str(uuid.uuid4())
+#     #created_at = int(time.time())
+#     created_at = datetime.fromtimestamp(time.time()).strftime("%Y-%m-%d %H:%M:%S")
 
+#     r.hset(f"job:{job_id}", mapping={
+#         "id": job_id,
+#         "total": len(urls),
 
+#         # extraction counters
+#         "extracted_done": 0,
+#         "extracted_success": 0,
+#         "extracted_failed": 0,
 
-def create_job(urls):
-    job_id = str(uuid.uuid4())
-    #created_at = int(time.time())
-    created_at = datetime.fromtimestamp(time.time()).strftime("%Y-%m-%d %H:%M:%S")
+#         # retry tracking
+#         "retry_pending": 0,
+#         "retry_done": 0,
 
-    r.hset(f"job:{job_id}", mapping={
-        "id": job_id,
-        "total": len(urls),
+#         # validator tracking
+#         "validated_done": 0,
+#         "validated_success": 0,
+#         "validated_failed": 0,
 
-        # extraction counters
-        "extracted_done": 0,
-        "extracted_success": 0,
-        "extracted_failed": 0,
-
-        # retry tracking
-        "retry_pending": 0,
-        "retry_done": 0,
-
-        # validator tracking
-        "validated_done": 0,
-        "validated_success": 0,
-        "validated_failed": 0,
-
-        "db_done": 0,
-        "llm_done": 0,
-
-        # job state
-        "status": "pending",
-        "created_at": created_at,
-        "started_at": "",
-        "completed_at": "",
-    })
+#         "db_done": 0,
+#         "llm_done": 0,
+        
+#         "status": "pending",
+#         "created_at": created_at,
+#         "started_at": "",
+#         "completed_at": "",
+#     })
 
    
-    for url in urls:
-        # pushing URLs to a Redis list for reference
-        r.rpush(f"job:{job_id}:urls", url)
+#     for url in urls:
+#         # pushing URLs to a Redis list for reference
+#         r.rpush(f"job:{job_id}:urls", url)
 
-        stream = route_stream_for_url(url)
+#         stream = route_stream_for_url(url)
 
-        r.xadd(stream, {
-            "url": url,
-            "domain": extract_domain(url),
-            "job_id": job_id,
-            "attempt": 0,
-            "scheduled_attempt": "no"
-        })
-
-
-    print(f"[reader] Created Job {job_id} with {len(urls)} URLs")
-    return job_id
+#         r.xadd(stream, {
+#             "url": url,
+#             "domain": extract_domain(url),
+#             "job_id": job_id,
+#             "attempt": 0,
+#             "scheduled_attempt": "no"
+#         })
 
 
-# --- MAIN EXECUTION ---
-df = pd.read_excel("sample_urls.xlsx")
-urls = df["URL"].dropna().tolist()
+#     print(f"[reader] Created Job {job_id} with {len(urls)} URLs")
+#     return job_id
 
-job_id = create_job(urls)
-print(f"Job ID: {job_id} queued successfully.")
+
+# # --- MAIN EXECUTION ---
+# df = pd.read_excel("samples.xlsx")
+# df = df.rename(columns={"Source\n": "Source"})
+# urls = df["URL"].dropna().tolist()
+
+
+# df["domain_count"] = df.groupby("Source")["Source"].transform("count")
+
+# df_sorted = df.sort_values("domain_count", ascending=False)
+
+# #print(df_sorted.dtypes)
+
+# #print(df_sorted["URL"].tolist())
+
+# job_id = create_job(df_sorted["URL"].dropna().tolist())
+# print(f"Job ID: {job_id} queued successfully.")
+
+
+
+
+
+from apscheduler.schedulers.background import BackgroundScheduler
+import time
+
+
+def start_scheduler():
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(process_due_schedules, 'interval', seconds=30)
+    scheduler.start()
+    print("Scheduler started...")
+
+    try:
+        while True:
+            pass
+    except KeyboardInterrupt:
+        scheduler.shutdown()
+
+if __name__ == "__main__":
+    start_scheduler()
