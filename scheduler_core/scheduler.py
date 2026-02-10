@@ -1,6 +1,7 @@
-from app.db import SessionLocal
-from app.procedures import pick_items_to_run, mark_item_done
+from scheduler_core.db import SessionLocal
+from scheduler_core.procedures import pick_items_to_run, mark_item_done
 from apscheduler.schedulers.background import BackgroundScheduler
+from scheduler_core.config import Config
 
 
 
@@ -21,7 +22,7 @@ def process_due_schedules():
                 
                 mark_item_done(
                     session, 
-                    item_data['id'], 
+                    item_data['item_id'], 
                     item_data['job_id'],
                     status='DONE'
                 )
@@ -31,7 +32,7 @@ def process_due_schedules():
                 print(f"  Error processing item {item_data['name']}: {e}")
                 mark_item_done(
                     session, 
-                    item_data['id'], 
+                    item_data['item_id'], 
                     item_data['job_id'],
                     status='FAILED'
                 )
@@ -46,7 +47,7 @@ def process_due_schedules():
 
 def start_scheduler():
     scheduler = BackgroundScheduler()
-    scheduler.add_job(process_due_schedules, 'interval', seconds=30)
+    scheduler.add_job(process_due_schedules, 'interval', seconds=Config.INTERVAL_SECONDS)
     scheduler.start()
     print("Scheduler started...")
 

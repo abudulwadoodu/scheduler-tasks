@@ -1,10 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from dotenv import load_dotenv
-import os
+from scheduler_core.config import Config
 
-load_dotenv()
-
-
-engine = create_engine(os.getenv("DB_URL"))
+engine = create_engine(Config.DB_URL)
 SessionLocal = sessionmaker(bind=engine)

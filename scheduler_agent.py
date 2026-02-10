@@ -23,9 +23,9 @@ RR_COUNTER_KEY = "stream_rr_counter"
 
 CONSUMER_GROUP = "extractors"
 
-from app.db import SessionLocal
-from app.procedures import pick_items_to_run
-
+from scheduler_core.db import SessionLocal
+from scheduler_core.procedures import pick_items_to_run
+from scheduler_core.config import Config
 
 def dispatch_items_to_redis(items):
     """
@@ -39,8 +39,13 @@ def dispatch_items_to_redis(items):
             "url": item["url"],
             "domain": extract_domain(item["url"]),
             "job_id": item["job_id"],
-            "item_id": item["id"],
+            "item_id": item["item_id"],
             "source_id": item["source_id"],
+            "item_code": item["item_code"],
+            "name": item["name"],
+            "expression": item["expression"] or "",
+            "description": item["description"] or "",
+            "script_path": item["script_path"] or "",
             "attempt": 0,
         })
 
@@ -49,12 +54,13 @@ def dispatch_items_to_redis(items):
 def process_due_schedules():
     session = SessionLocal()
     try:
-        items_to_run = pick_items_to_run(session, batch_size=10)
+        items_to_run = pick_items_to_run(session, batch_size=Config.BATCH_SIZE)
         
         if not items_to_run:
             print("No due items to process.")
             return
 
+        print(f"Items to run response: {items_to_run}")
         print(f"Processing batch of {len(items_to_run)} items.")
 
         dispatch_items_to_redis(items_to_run)
@@ -188,7 +194,7 @@ import time
 
 def start_scheduler():
     scheduler = BackgroundScheduler()
-    scheduler.add_job(process_due_schedules, 'interval', seconds=30)
+    scheduler.add_job(process_due_schedules, 'interval', seconds=Config.INTERVAL_SECONDS)
     scheduler.start()
     print("Scheduler started...")
 

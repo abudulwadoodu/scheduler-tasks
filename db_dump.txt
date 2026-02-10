@@ -1,0 +1,45 @@
+--- Sources ---
+ID: 1, Name: Amazon
+ID: 2, Name: Flipkart
+ID: 3, Name: Ebay
+ID: 4, Name: Generic
+ID: 5, Name: Walmart
+
+--- Scripts ---
+ID: 1, SourceID: 1, Type: type_1, Path: extractor_modules\amazon_type_1.py
+ID: 2, SourceID: 2, Type: type_1, Path: extractor_modules\flipkart_type_1.py
+ID: 3, SourceID: 3, Type: type_1, Path: extractor_modules\ebay_type_1.py
+ID: 4, SourceID: 4, Type: default, Path: extractor_modules\generic_default.py
+ID: 5, SourceID: 5, Type: type_1, Path: extractor_modules\walmart_type_1.py
+ID: 6, SourceID: 5, Type: type_2, Path: extractor_modules\walmart_type_2.py
+ID: 7, SourceID: 4, Type: default, Path: extractor_modules/generic_default.py
+
+--- Items ---
+ID: 1, Name: HttpBin, SourceID: None, ScriptID: None, ItemType: None, URL: https://httpbin.org/get
+ID: 2, Name: HttpBin, SourceID: None, ScriptID: None, ItemType: None, URL: https://httpbin.org/get
+ID: 3, Name: HttpBin, SourceID: None, ScriptID: None, ItemType: None, URL: https://httpbin.org/get
+ID: 4, Name: HttpBin, SourceID: None, ScriptID: None, ItemType: None, URL: https://httpbin.org/get
+ID: 5, Name: HttpBin, SourceID: None, ScriptID: None, ItemType: None, URL: https://httpbin.org/get
+ID: 6, Name: HttpBin, SourceID: None, ScriptID: None, ItemType: None, URL: https://httpbin.org/get
+ID: 7, Name: HttpBin, SourceID: None, ScriptID: None, ItemType: None, URL: https://httpbin.org/get
+ID: 8, Name: HttpBin, SourceID: None, ScriptID: None, ItemType: None, URL: https://httpbin.org/get
+ID: 9, Name: HttpBin, SourceID: None, ScriptID: None, ItemType: None, URL: https://httpbin.org/get
+ID: 10, Name: RRULE Test, SourceID: None, ScriptID: None, ItemType: None, URL: https://example.com/rrule
+ID: 11, Name: Weekly Check, SourceID: None, ScriptID: None, ItemType: None, URL: https://example.com/weekly
+ID: 12, Name: Monthly Report, SourceID: None, ScriptID: None, ItemType: None, URL: https://example.com/monthly
+ID: 13, Name: GitHub API, SourceID: None, ScriptID: None, ItemType: None, URL: https://api.github.com
+ID: 14, Name: StackOverflow, SourceID: None, ScriptID: None, ItemType: None, URL: https://stackoverflow.com
+ID: 15, Name: Python Org, SourceID: None, ScriptID: None, ItemType: None, URL: https://www.python.org
+ID: 16, Name: Wikipedia, SourceID: None, ScriptID: None, ItemType: None, URL: https://www.wikipedia.org
+ID: 17, Name: Microsoft, SourceID: None, ScriptID: None, ItemType: None, URL: https://www.microsoft.com
+ID: 18, Name: OpenAI, SourceID: None, ScriptID: None, ItemType: None, URL: https://www.openai.com
+ID: 19, Name: Mon 4:15/4:25, SourceID: None, ScriptID: None, ItemType: None, URL: https://example.com/mon
+ID: 20, Name: Bi-weekly Tue, SourceID: None, ScriptID: None, ItemType: None, URL: https://example.com/tue
+ID: 21, Name: Monthly 3rd Wed, SourceID: None, ScriptID: None, ItemType: None, URL: https://example.com/wed
+ID: 22, Name: Amazon Product, SourceID: None, ScriptID: None, ItemType: type_1, URL: https://www.amazon.in/dp/B07PFFMPDB
+ID: 23, Name: Flipkart Product, SourceID: None, ScriptID: None, ItemType: type_1, URL: https://www.flipkart.com/p/itme123
+ID: 24, Name: Amazon Product, SourceID: 1, ScriptID: 1, ItemType: type_1, URL: https://www.amazon.in/dp/B07PFFMPDB
+ID: 25, Name: Flipkart Product, SourceID: 2, ScriptID: 2, ItemType: type_1, URL: https://www.flipkart.com/p/itme123
+ID: 26, Name: eBay Collectible, SourceID: 3, ScriptID: 3, ItemType: type_1, URL: https://www.ebay.com/itm/123456
+ID: 27, Name: Walmart Grocery, SourceID: 5, ScriptID: 5, ItemType: type_1, URL: https://www.walmart.com/ip/111
+ID: 28, Name: Walmart Electronics, SourceID: 5, ScriptID: 6, ItemType: type_2, URL: https://www.walmart.com/ip/222

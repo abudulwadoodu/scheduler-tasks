@@ -1,5 +1,5 @@
 from sqlalchemy import text, func
-from app.models import Item, Schedule, Source, JobSummary
+from scheduler_core.models import Item, Schedule, Source, JobSummary, Script
 from datetime import datetime, timezone
 
 def pick_items_to_run(session, batch_size=10):
@@ -11,7 +11,7 @@ def pick_items_to_run(session, batch_size=10):
     
     # 1. Advance next_run_time for due schedules
     # (Matches requirement: Update next_run_time immediately when interval begins)
-    from app.services import calculate_next_run
+    from scheduler_core.services import calculate_next_run
     due_schedules = session.query(Schedule).filter(
         Schedule.active == True,
         Schedule.next_run_time <= now
@@ -51,7 +51,7 @@ def pick_items_to_run(session, batch_size=10):
         ORDER BY i.last_run_time ASC NULLS FIRST
         LIMIT :batch_size
     )
-    RETURNING id, schedule_id, source_id, item_code, name, url, rate;
+    RETURNING id;
     """
     query = text(query_text)
     
@@ -60,22 +60,28 @@ def pick_items_to_run(session, batch_size=10):
         params[f"id_{i}"] = sid
         
     result = session.execute(query, params).fetchall()
-
-    print("RESULTS:", result)
+    updated_ids = [row.id for row in result]
     
     # 4. Initialize JobSummary and ItemHistory
-    if result:
-        from app.models import ItemHistory
+    if updated_ids:
+        from scheduler_core.models import ItemHistory
         
         job_summary = JobSummary(
             job_id=job_id,
             start_time=now,
-            num_of_items=len(result)
+            num_of_items=len(updated_ids)
         )
         session.add(job_summary)
         
+        # Fetch detailed info with join for script_path
+        items_data = session.query(
+            Item.id, Item.schedule_id, Item.source_id, Item.url, Item.rate, 
+            Item.expression, Item.description, Item.comments, Script.path.label("script_path"),
+            Item.name, Item.item_code
+        ).outerjoin(Script, Item.script_id == Script.id).filter(Item.id.in_(updated_ids)).all()
+        
         items_to_run = []
-        for row in result:
+        for row in items_data:
             history = ItemHistory(
                 job_id=job_id,
                 schedule_id=row.schedule_id,
@@ -87,13 +93,17 @@ def pick_items_to_run(session, batch_size=10):
             
             items_to_run.append({
                 "job_id": job_id,
-                "id": row.id,
-                "schedule_id": row.schedule_id,
-                "source_id": row.source_id,
-                "item_code": row.item_code,
+                "item_id": row.id,
                 "name": row.name,
+                "script_path": row.script_path,
+                "expression": row.expression,
+                "description": row.description,
+                "comments": row.comments,
                 "url": row.url,
-                "rate": row.rate
+                "rate": row.rate,
+                "item_code": row.item_code,
+                "source_id": row.source_id,
+                "schedule_id": row.schedule_id
             })
 
         session.commit()
@@ -106,7 +116,7 @@ def mark_item_done(session, item_id, job_id, status='DONE'):
     """
     Simulates 'Stored Procedure 2': Marks item with final status and updates ItemHistory.
     """
-    from app.models import ItemHistory
+    from scheduler_core.models import ItemHistory
     
     # 1. Update item status
     session.query(Item).filter(Item.id == item_id).update({"status": status})
