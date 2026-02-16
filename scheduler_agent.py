@@ -34,20 +34,25 @@ def dispatch_items_to_redis(items):
     """
     for item in items:
         stream = route_stream_for_url(item["url"])
-
-        r.xadd(stream, {
-            "url": item["url"],
-            "domain": extract_domain(item["url"]),
-            "job_id": item["job_id"],
-            "item_id": item["item_id"],
-            "source_id": item["source_id"],
-            "item_code": item["item_code"],
-            "name": item["name"],
-            "expression": item["expression"] or "",
-            "description": item["description"] or "",
-            "script_path": item["script_path"] or "",
-            "attempt": 0,
-        })
+        print(f"Dispatching to {stream}: {item['url']}")
+        
+        try:
+            r.xadd(stream, {
+                "url": str(item["url"]),
+                "domain": str(extract_domain(item["url"])),
+                "job_id": str(item["job_id"]),
+                "item_id": str(item["item_id"]),
+                "source_id": str(item["source_id"] or ""),
+                "item_code": str(item["item_code"] or ""),
+                "name": str(item["name"] or ""),
+                "expression": str(item["expression"] or ""),
+                "description": str(item["description"] or ""),
+                "script_path": str(item["script_path"] or ""),
+                "attempt": "0",
+            })
+        except Exception as e:
+            print(f"Error dispatching item {item['item_id']} to {stream}: {e}")
+            raise e
 
     return
 
