@@ -34,24 +34,25 @@ def pick_items_to_run(session, batch_size=10):
     last_job_id = session.query(func.max(JobSummary.job_id)).scalar() or 0
     job_id = last_job_id + 1
     
-    # 3. Select and Mark items as RUNNING atomically.
+    # 3. Select and Mark items as RUNNING atomically. (T-SQL for SQL Server)
     placeholders = ", ".join(f":id_{i}" for i in range(len(due_schedule_ids)))
     query_text = f"""
-    UPDATE items 
+    WITH CTE AS (
+        SELECT TOP (:batch_size) id, status, last_run_time
+        FROM items
+        WHERE active = 1 
+          AND schedule_id IN ({placeholders})
+          AND status NOT IN ('RUNNING', 'DISABLED')
+          AND url IS NOT NULL
+          AND TRIM(url) != ''
+        ORDER BY 
+            CASE WHEN last_run_time IS NULL THEN 0 ELSE 1 END, 
+            last_run_time ASC
+    )
+    UPDATE CTE 
     SET status = 'RUNNING',
         last_run_time = :now
-    WHERE id IN (
-        SELECT i.id 
-        FROM items i
-        WHERE i.active = 1 
-          AND i.schedule_id IN ({placeholders})
-          AND i.status NOT IN ('RUNNING', 'DISABLED')
-          AND i.url IS NOT NULL
-          AND TRIM(i.url) != ''
-        ORDER BY i.last_run_time ASC NULLS FIRST
-        LIMIT :batch_size
-    )
-    RETURNING id;
+    OUTPUT inserted.id;
     """
     query = text(query_text)
     
