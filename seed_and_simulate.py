@@ -16,34 +16,34 @@ def seed_and_simulate():
     products = [
         {
             "item_id": 1, 
-            "content": "Pulsar 150.",
-            "label": "Bajaj - Two Wheeler"
+            "content": "abcPulsar 150.",
+            "label": "abcBajaj - Two Wheeler"
         },
         {
             "item_id": 2,
-            "content": "Activa.",
-            "label": "Honda - Two Wheeler"
+            "content": "abcActiva.",
+            "label": "abcHonda - Two Wheeler"
         },
         {
             "item_id": 3, 
-            "content": "i10.",
-            "label": "Hyundai - Four Wheeler"
+            "content": "abci10.",
+            "label": "abcHyundai - Four Wheeler"
         },
         {
             "item_id": 4,
-            "content": "Jeep Compass.",
-            "label": "Jeep - Four Wheeler"
+            "content": "abcJeep Compass.",
+            "label": "abcJeep - Four Wheeler"
         },
         {
             "item_id": 5,
-            "content": "Baleno",
-            "label": "Maruti - Four Wheeler"
+            "content": "abcBaleno",
+            "label": "abcMaruti - Four Wheeler"
         }
     ]
 
     for p in products:
         print(f"Adding: {p['label']} (ID: {p['item_id']})")
-        vdb.add_document(p['item_id'], p['content'])
+        vdb.add_document(p['item_id'], p['label'])
 
     print("\n--- [Simulation] Filtered Similarity Search ---")
 

@@ -77,7 +77,7 @@ def scrape_product_data(row, max_retries: int = 2) -> dict:
     for attempt in range(1, max_retries + 1):
         try:
             with sync_playwright() as p:
-                browser = p.chromium.launch(headless=False, args=["--disable-blink-features=AutomationControlled"])
+                browser = p.chromium.launch(headless=True, args=["--disable-blink-features=AutomationControlled"])
                 context = browser.new_context()
                 page = context.new_page()
                 page.goto(url, timeout=200000, wait_until="domcontentloaded")

@@ -4,11 +4,10 @@ def verify_filters():
     vdb = VectorDB()
     
     scenarios = [
-        ("Query: 'Show me bikes' - Filter: Two Wheeler", {"item_type": "Two Wheeler"}),
-        ("Query: 'Show me cars' - Filter: Four Wheeler", {"item_type": "Four Wheeler"}),
-        ("Query: 'Looking for caffeine' - Filter: Grocery", {"item_type": "Grocery"}),
-        ("Query: 'Comfortable office chair' - Filter: Home", {"item_type": "Home"}),
-        ("Query: 'Warm winter wear' - Filter: Clothing", {"item_type": "Clothing"})
+        ("Baleno qwe", {}),
+        ("qwe Maruti", {}),
+        ("Balenoqwe", {}),
+        ("qweMaruti", {}),
     ]
 
     for desc, filters in scenarios:
