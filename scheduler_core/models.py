@@ -1,6 +1,22 @@
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, Float, Text, BigInteger
 from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy.types import UserDefinedType
 from datetime import datetime, timezone
+
+
+class VECTOR(UserDefinedType):
+    """
+    Custom SQLAlchemy type for SQL Server 2025 VECTOR(n) columns.
+    SQLAlchemy has no built-in support for this type, so we define it here
+    so that create_all() emits the correct DDL: VECTOR(dimensions).
+    """
+    def __init__(self, dimensions: int = 384):
+        self.dimensions = dimensions
+
+    def get_col_spec(self, **kw):
+        return f"VECTOR({self.dimensions})"
+
+    cache_ok = True
 
 Base = declarative_base()
 
@@ -49,6 +65,7 @@ class Item(Base):
 
     source = relationship("Source", back_populates="items")
     script = relationship("Script", back_populates="items")
+    embeddings = relationship("ItemEmbedding", back_populates="item", cascade="all, delete-orphan")
 
 class Source(Base):
     __tablename__ = "sources"
@@ -95,3 +112,22 @@ class ItemHistory(Base):
 
     schedule = relationship("Schedule")
     item = relationship("Item")
+
+
+class ItemEmbedding(Base):
+    """
+    Stores vector embeddings for items, enabling semantic similarity search
+    via SQL Server 2025's native VECTOR type and VECTOR_DISTANCE function.
+
+    Moved here from migration_vector_search.sql so that init_db.py can create
+    this table alongside all other tables in a single step.
+    """
+    __tablename__ = "item_embeddings"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    item_id = Column(Integer, ForeignKey("items.id", ondelete="CASCADE"), nullable=False)
+    chunk_index = Column(Integer, nullable=True)
+    content = Column(Text, nullable=True)
+    embedding = Column(VECTOR(384), nullable=False)  # dimensions match all-MiniLM-L6-v2
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+
+    item = relationship("Item", back_populates="embeddings")
