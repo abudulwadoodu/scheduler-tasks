@@ -113,13 +113,10 @@ class VectorDB:
         filter_clauses = []
         params = [query_vector_json]
 
-        if filters:
-            if "source_id" in filters:
-                filter_clauses.append("i.source_id = ?")
-                params.append(filters["source_id"])
-            if "item_type" in filters:
-                filter_clauses.append("i.item_type = ?")
-                params.append(filters["item_type"])
+        if filters and "search_term" in filters:
+            search_val = f"%{filters['search_term']}%"
+            filter_clauses.append("(i.url LIKE ? OR s.source_name LIKE ? OR CAST(ie.created_at AS NVARCHAR(MAX)) LIKE ? OR sc.type LIKE ?)")
+            params.extend([search_val, search_val, search_val, search_val])
 
         filter_sql = " AND ".join(filter_clauses)
         if filter_sql:
@@ -133,11 +130,15 @@ class VectorDB:
             ie.item_id,
             ie.content,
             i.name as item_name,
+            i.url as url,
             s.source_name as source_name,
+            ie.created_at as timestamp,
+            sc.type as webpage_type,
             VECTOR_DISTANCE('cosine', ie.embedding, CAST(CAST(? AS NVARCHAR(MAX)) AS VECTOR(384))) AS distance
         FROM dbo.item_embeddings ie
         JOIN dbo.items i ON ie.item_id = i.id
         LEFT JOIN dbo.sources s ON i.source_id = s.source_id
+        LEFT JOIN dbo.scripts sc ON i.source_id = sc.source_id
         {filter_sql}
         ORDER BY distance ASC
         OFFSET 0 ROWS FETCH NEXT ? ROWS ONLY
@@ -149,6 +150,7 @@ class VectorDB:
         results = []
         with self._get_connection() as conn:
             cursor = conn.cursor()
+            print(f"[Debug] SQL Query: {sql_query}")
             cursor.execute(sql_query, final_params)
             columns = [column[0] for column in cursor.description]
             for row in cursor.fetchall():
@@ -169,13 +171,10 @@ class VectorDB:
         filter_clauses = []
         params = []
 
-        if filters:
-            if "source_id" in filters:
-                filter_clauses.append("i.source_id = ?")
-                params.append(filters["source_id"])
-            if "item_type" in filters:
-                filter_clauses.append("i.item_type = ?")
-                params.append(filters["item_type"])
+        if filters and "search_term" in filters:
+            search_val = f"%{filters['search_term']}%"
+            filter_clauses.append("(i.url LIKE ? OR s.source_name LIKE ? OR CAST(ie.created_at AS NVARCHAR(MAX)) LIKE ? OR sc.type LIKE ?)")
+            params.extend([search_val, search_val, search_val, search_val])
 
         filter_sql = " AND ".join(filter_clauses)
         if filter_sql:
@@ -187,16 +186,21 @@ class VectorDB:
             ie.item_id,
             ie.content,
             i.name as item_name,
-            s.source_name as source_name
+            i.url as url,
+            s.source_name as source_name,
+            ie.created_at as timestamp,
+            sc.type as webpage_type
         FROM dbo.item_embeddings ie
         JOIN dbo.items i ON ie.item_id = i.id
         LEFT JOIN dbo.sources s ON i.source_id = s.source_id
+        LEFT JOIN dbo.scripts sc ON i.source_id = sc.source_id
         {filter_sql}
         """
 
         results = []
         with self._get_connection() as conn:
             cursor = conn.cursor()
+            print(f"[Debug] SQL Query: {sql_query}")
             cursor.execute(sql_query, params)
             columns = [column[0] for column in cursor.description]
             for row in cursor.fetchall():
