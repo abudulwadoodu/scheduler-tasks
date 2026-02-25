@@ -3,6 +3,7 @@ import yaml
 import json
 from pathlib import Path
 from typing import List, Optional, Dict, Any
+from datetime import datetime, timezone
 from embeddings.embedder import Embedder
 
 class VectorDB:
@@ -66,10 +67,13 @@ class VectorDB:
                 for idx, (chunk, embedding) in enumerate(zip(chunks, embeddings)):
                     embedding_json = json.dumps(embedding, separators=(',', ':'))
                     query = """
-                    INSERT INTO dbo.item_embeddings (item_id, chunk_index, content, embedding)
-                    VALUES (?, ?, ?, CAST(CAST(? AS NVARCHAR(MAX)) AS VECTOR(384)))
+                    INSERT INTO dbo.item_embeddings (item_id, chunk_index, content, embedding, created_at)
+                    VALUES (?, ?, ?, CAST(CAST(? AS NVARCHAR(MAX)) AS VECTOR(384)), ?)
                     """
-                    cursor.execute(query, (item_id, idx, chunk, embedding_json))
+                    cursor.execute(
+                        query,
+                        (item_id, idx, chunk, embedding_json, datetime.now(timezone.utc)),
+                    )
 
             try:
                 _do_insert()

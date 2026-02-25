@@ -44,6 +44,7 @@ class Item(Base):
     name = Column(String)
     url = Column(String)
     schedule_id = Column(Integer, ForeignKey("schedule.id"))
+    target_unit_id = Column(Integer, ForeignKey("units.unit_id"), nullable=True)
     last_run_time = Column(DateTime(timezone=True))
     status = Column(String)
     active = Column(Boolean, default=True)
@@ -72,7 +73,7 @@ class Source(Base):
     source_id = Column(Integer, primary_key=True)
     source_name = Column(String)
     source_type = Column(String)
-    base_url = Column(String)
+    base_url = Column(String(512), unique=True)
     login_required = Column(Boolean, default=False)
     active = Column(Boolean, default=True)
     last_crawled_at = Column(DateTime(timezone=True), nullable=True)
@@ -131,3 +132,14 @@ class ItemEmbedding(Base):
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
     item = relationship("Item", back_populates="embeddings")
+
+
+class Unit(Base):
+    __tablename__ = "units"
+
+    unit_id = Column(Integer, primary_key=True, autoincrement=True)
+    unit_code = Column(String(20), nullable=False, unique=True)
+    unit_name = Column(String(100), nullable=False)
+    unit_type = Column(String(50), nullable=True)
+
+    items = relationship("Item", backref="unit")
