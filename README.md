@@ -30,10 +30,10 @@ python data_import/import_items.py path/to/your_file.xlsx
 ```
 *Note: The Excel sheet should contain columns: `Code`, `Description`, `URL`, `Rate`, and `Comments`.*
 
-### Step 2: Register Extractor Scripts
-Automatically link your Python extractor scripts (located in `extractors/`) to their corresponding sources in the database.
+### Step 2: Populate Extractor Scripts
+Automatically link your Python extractor scripts (located in `scheduler_core/extractor_modules/`) to their corresponding sources in the database.
 ```bash
-python data_import/register_scripts.py
+python -m scheduler_core.populate_scripts
 ```
 
 ### Step 3: Generate Vector Embeddings
