@@ -11,3 +11,12 @@ venv/
 htmlcov/
 .DS_Store
 
+# Logs and data
+*.log
+output.txt
+results.json
+temp_output.csv
+html_archive/
+
+# Excel results (optional, but often ignored)
+# output_prices.xlsx
