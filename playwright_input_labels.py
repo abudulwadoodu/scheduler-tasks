@@ -1,8 +1,14 @@
 import json
+import os
 import re
-from typing import Any, Dict, List, Optional, Set
+from datetime import datetime
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 from playwright.sync_api import ElementHandle, sync_playwright
+
+from PIL import Image
+from PIL import ImageDraw
 
 
 _WHITESPACE_RE = re.compile(r"\s+")
@@ -22,6 +28,359 @@ def _clean_candidate(value: Optional[str]) -> str:
     if len(text) > 100:
         return ""
     return text
+
+
+@dataclass(frozen=True)
+class Rect:
+    left: float
+    top: float
+    right: float
+    bottom: float
+
+    @property
+    def cx(self) -> float:
+        return (self.left + self.right) / 2
+
+    @property
+    def cy(self) -> float:
+        return (self.top + self.bottom) / 2
+
+
+def _rect_from_dict(d: Optional[Dict[str, Any]]) -> Optional[Rect]:
+    if not d:
+        return None
+    try:
+        return Rect(float(d["left"]), float(d["top"]), float(d["right"]), float(d["bottom"]))
+    except Exception:
+        return None
+
+
+def _distance_score(input_rect: Rect, text_rect: Rect) -> float:
+    # Prefer same row and to-the-right. Score = dx + 2*dy (as requested)
+    dy = abs(text_rect.cy - input_rect.cy)
+    if text_rect.left >= input_rect.right - 2:
+        dx = max(0.0, text_rect.left - input_rect.right)
+    else:
+        dx = max(0.0, input_rect.left - text_rect.right) * 3.0
+    score = dx + (dy * 2.0)
+    if dy < 20:
+        score *= 0.5
+    if text_rect.left >= input_rect.right - 2:
+        score *= 0.85
+    return score
+
+
+def _looks_like_noise(text: str) -> bool:
+    t = text.lower()
+    if re.search(r"\b\S+@\S+\.[a-z]{2,}\b", text):
+        return True
+    if re.fullmatch(r"[0-9\s+().-]{8,}", text):
+        return True
+    if any(k in t for k in ["click here", "lead time", "free nationwide", "price promise"]):
+        return True
+    return False
+
+
+def run_stamp(dt: Optional[datetime] = None) -> str:
+    d = dt or datetime.now()
+    return d.strftime("%Y%m%d_%H%M%S")
+
+
+def screenshot_page(page, path: str) -> Tuple[int, int]:
+    """
+    Capture full-page screenshot (top-of-page) and return (width,height) in pixels.
+    """
+    page.evaluate("() => window.scrollTo(0, 0)")
+    page.wait_for_timeout(250)
+    page.screenshot(path=path, full_page=True)
+    with Image.open(path) as im:
+        return im.size[0], im.size[1]
+
+
+def ocr_text_boxes(image_path: str) -> List[Dict[str, Any]]:
+    """
+    OCR the screenshot and return list of {text, rect} in screenshot pixel coords.
+    Requires EasyOCR (installed via pip).
+    """
+    import easyocr  # local import to avoid import cost when unused
+
+    reader = easyocr.Reader(["en"], gpu=False, verbose=False)
+    results = reader.readtext(image_path)
+    out: List[Dict[str, Any]] = []
+    for bbox, text, conf in results:
+        txt = _clean_candidate(text)
+        if not txt:
+            continue
+        if len(txt) > 50:
+            continue
+        if conf is not None and float(conf) < 0.35:
+            continue
+        if _looks_like_noise(txt):
+            continue
+        xs = [p[0] for p in bbox]
+        ys = [p[1] for p in bbox]
+        rect = {
+            "left": float(min(xs)),
+            "top": float(min(ys)),
+            "right": float(max(xs)),
+            "bottom": float(max(ys)),
+        }
+        out.append({"text": txt, "rect": rect})
+    return out
+
+
+def get_price_element(page) -> Optional[Dict[str, Any]]:
+    """
+    Best-effort locate a visible price element and return its rect + text.
+    """
+    return page.evaluate(
+        """() => {
+          const clean = (t) => (t || '').replace(/\\s+/g,' ').trim();
+          const visible = (el) => {
+            if (!el || el.nodeType !== 1) return false;
+            const s = getComputedStyle(el);
+            if (s.display === 'none' || s.visibility === 'hidden') return false;
+            const r = el.getBoundingClientRect();
+            return r.width > 0 && r.height > 0;
+          };
+
+          const selectors = [
+            '.price',
+            '[class*=\"price\"]',
+            '#price',
+            '[id*=\"price\"]',
+            '[data-price]',
+          ];
+          const candidates = [];
+          for (const sel of selectors) {
+            for (const el of Array.from(document.querySelectorAll(sel))) {
+              if (!visible(el)) continue;
+              const t = clean(el.innerText || el.textContent || '');
+              if (!t) continue;
+              // must contain a currency-ish marker or digits
+              if (!(/[£$€]/.test(t) || /\\b\\d+[\\d,.]*\\b/.test(t))) continue;
+              const r = el.getBoundingClientRect();
+              candidates.push({ el, t, r });
+            }
+          }
+          if (!candidates.length) return null;
+          // pick the smallest (often the actual price value), bias towards top area
+          candidates.sort((a,b) => {
+            const aArea = a.r.width * a.r.height;
+            const bArea = b.r.width * b.r.height;
+            if (aArea !== bArea) return aArea - bArea;
+            return a.r.top - b.r.top;
+          });
+          const best = candidates[0];
+          return {
+            text: best.t,
+            rect: { left: best.r.left, top: best.r.top, right: best.r.right, bottom: best.r.bottom },
+          };
+        }"""
+    )
+
+
+def get_all_inputs(page) -> List[ElementHandle]:
+    return page.query_selector_all("input, select, textarea")
+
+
+def _get_visual_proxy_rect(el: ElementHandle) -> Optional[Rect]:
+    """
+    Return the rect of the thing the user actually sees/clicks for this control.
+    - If element is visible: its rect
+    - If hidden: nearest visible proxy (label, sibling, parent wrapper)
+    """
+    rect = el.evaluate(
+        """(el) => {
+          const isActuallyVisible = (node) => {
+            if (!node || node.nodeType !== 1) return false;
+            // Walk ancestors: if any ancestor hides it, it's not visible to the user.
+            let cur = node;
+            while (cur) {
+              const s = window.getComputedStyle(cur);
+              if (s.display === 'none' || s.visibility === 'hidden') return false;
+              if (parseFloat(s.opacity || '1') === 0) return false;
+              cur = cur.parentElement;
+            }
+            // Must have on-screen geometry.
+            if (!node.getClientRects || node.getClientRects().length === 0) return false;
+            const r = node.getBoundingClientRect();
+            return r.width > 0 && r.height > 0;
+          };
+          const rectOf = (node) => {
+            const r = node.getBoundingClientRect();
+            return { left: r.left, top: r.top, right: r.right, bottom: r.bottom };
+          };
+
+          if (isActuallyVisible(el)) return rectOf(el);
+
+          const proxies = [];
+          const lab = el.closest('label');
+          if (lab) proxies.push(lab);
+          // Only consider parent as proxy if it's itself a label-like wrapper.
+          if (el.parentElement && el.parentElement.tagName && el.parentElement.tagName.toLowerCase() === 'label') {
+            proxies.push(el.parentElement);
+          }
+          if (el.previousElementSibling) proxies.push(el.previousElementSibling);
+          if (el.nextElementSibling) proxies.push(el.nextElementSibling);
+
+          for (const p of proxies) {
+            if (p && isActuallyVisible(p)) return rectOf(p);
+          }
+
+          return null;
+        }"""
+    )
+    return _rect_from_dict(rect)
+
+
+def find_visual_label_match(
+    input_el: ElementHandle, text_nodes: List[Dict[str, Any]]
+) -> Tuple[str, Optional[Dict[str, float]]]:
+    input_rect = _get_visual_proxy_rect(input_el)
+    if not input_rect:
+        return "", None
+
+    tag = (input_el.evaluate("el => el.tagName") or "").lower()
+    input_type = _clean_text(input_el.get_attribute("type")).lower()
+
+    def overlaps(a: Rect, b: Rect) -> bool:
+        left = max(a.left, b.left)
+        right = min(a.right, b.right)
+        top = max(a.top, b.top)
+        bottom = min(a.bottom, b.bottom)
+        if right <= left or bottom <= top:
+            return False
+        inter = (right - left) * (bottom - top)
+        area_b = max(1.0, (b.right - b.left) * (b.bottom - b.top))
+        return (inter / area_b) > 0.5
+
+    best: Tuple[float, str] = (float("inf"), "")
+    best_rect_ss: Optional[Dict[str, float]] = None
+    for item in text_nodes:
+        t = _clean_candidate(item.get("text"))
+        if not t:
+            continue
+        r = _rect_from_dict(item.get("rect"))
+        if not r:
+            continue
+
+        # Avoid picking text that is effectively "inside" the control (e.g. selected value in a <select>).
+        if overlaps(input_rect, r):
+            continue
+
+        score = _distance_score(input_rect, r)
+        # prefer very short label-like strings
+        if len(t) <= 30:
+            score *= 0.9
+        # For selects/text inputs, labels are commonly above/left; slightly penalize far-right text.
+        if tag in {"select"} or (tag == "input" and input_type in {"text", "number"}):
+            if r.left >= input_rect.right:
+                score *= 1.15
+        if score < best[0]:
+            best = (score, t)
+            best_rect_ss = item.get("rect_ss")
+    return best[1], best_rect_ss
+
+
+def find_visual_label(input_el: ElementHandle, text_nodes: List[Dict[str, Any]]) -> str:
+    return find_visual_label_match(input_el, text_nodes)[0]
+
+
+def is_price_relevant(
+    input_el: ElementHandle,
+    label: str,
+    group_label: str,
+    price: Optional[Dict[str, Any]],
+) -> bool:
+    """
+    Heuristic: include product option controls, exclude generic site/search/login/contact/etc.
+    Also prefer controls spatially near the price element if one is found.
+    """
+    label_l = (label or "").lower()
+    group_l = (group_label or "").lower()
+    name_l = (_clean_text(input_el.get_attribute("name"))).lower()
+    id_l = (_clean_text(input_el.get_attribute("id"))).lower()
+
+    hay = " ".join([label_l, group_l, name_l, id_l])
+
+    excluded = [
+        "search",
+        "filter",
+        "sort",
+        "login",
+        "sign in",
+        "email",
+        "password",
+        "phone",
+        "address",
+        "shipping",
+        "billing",
+        "coupon",
+        "promo",
+        "voucher",
+        "qty",
+        "quantity",
+        "add to cart",
+        "submit",
+        "newsletter",
+        "contact",
+    ]
+    if any(k in hay for k in excluded):
+        return False
+
+    included = [
+        "size",
+        "thickness",
+        "width",
+        "height",
+        "length",
+        "colour",
+        "color",
+        "finish",
+        "material",
+        "type",
+        "option",
+        "variant",
+        "rating",
+        "glass",
+        "frame",
+        "insulation",
+        "energy",
+        "cill",
+        "hinge",
+        "handle",
+        "trickle",
+    ]
+
+    score = 0.0
+    if any(k in hay for k in included):
+        score += 3.0
+    if group_l and any(k in group_l for k in ["option", "variant", "configuration", "glazing", "rating", "colour", "color"]):
+        score += 2.0
+
+    # Prefer inputs near the price (above/near it)
+    if price and price.get("rect"):
+        price_rect = _rect_from_dict(price.get("rect"))
+        input_rect = _get_visual_proxy_rect(input_el)
+        if price_rect and input_rect:
+            dx = abs(input_rect.cx - price_rect.cx)
+            dy = abs(input_rect.cy - price_rect.cy)
+            dist = dx + dy
+            if dist < 600:
+                score += 2.0
+            if input_rect.top <= price_rect.bottom + 50:
+                score += 1.0
+
+    # Select/radio/checkbox are often price-relevant; plain text fields usually not (unless keyword hit)
+    tag = (input_el.evaluate("el => el.tagName") or "").lower()
+    itype = (_clean_text(input_el.get_attribute("type"))).lower()
+    if tag == "select" or itype in {"radio", "checkbox"}:
+        score += 1.5
+    if itype in {"text", "email", "tel", "password"}:
+        score -= 1.0
+
+    return score >= 3.0
 
 
 def extract_label(element: ElementHandle) -> Dict[str, str]:
@@ -437,13 +796,16 @@ def get_inputs(url: str) -> List[Dict[str, Any]]:
                 "--disable-blink-features=AutomationControlled",
             ],
         )
-        page = browser.new_page(
+        context = browser.new_context(
+            viewport={"width": 1280, "height": 720},
+            device_scale_factor=1,
             user_agent=(
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
                 "AppleWebKit/537.36 (KHTML, like Gecko) "
                 "Chrome/122.0.0.0 Safari/537.36"
-            )
+            ),
         )
+        page = context.new_page()
         # Some ecommerce pages keep background requests running and may never reach
         # Playwright's "networkidle". We navigate on "load", then *attempt* a
         # best-effort wait for "networkidle" before extracting inputs.
@@ -473,7 +835,50 @@ def get_inputs(url: str) -> List[Dict[str, Any]]:
         except Exception:
             pass
 
-        elements = page.query_selector_all("input, select, textarea")
+        price = get_price_element(page)
+
+        stamp = run_stamp()
+        debug_dir = "debug"
+        os.makedirs(debug_dir, exist_ok=True)
+
+        # OCR: read visible UI text from a screenshot and use it for labels.
+        screenshot_path = os.path.join(debug_dir, f"page_{stamp}.png")
+        ss_w, ss_h = screenshot_page(page, screenshot_path)
+
+        # Normalize OCR coordinates to CSS pixels if needed.
+        viewport_w = page.evaluate("() => window.innerWidth")
+        viewport_h = page.evaluate("() => document.documentElement.scrollHeight")
+        scale_x = float(viewport_w) / float(ss_w) if ss_w else 1.0
+        scale_y = float(viewport_h) / float(ss_h) if ss_h else 1.0
+        ss_scale_x = float(ss_w) / float(viewport_w) if viewport_w else 1.0
+        ss_scale_y = float(ss_h) / float(viewport_h) if viewport_h else 1.0
+
+        ocr_boxes = ocr_text_boxes(screenshot_path)
+        text_nodes: List[Dict[str, Any]] = []
+        for b in ocr_boxes:
+            r = b.get("rect") or {}
+            rect_ss = {
+                "left": float(r.get("left", 0.0)),
+                "top": float(r.get("top", 0.0)),
+                "right": float(r.get("right", 0.0)),
+                "bottom": float(r.get("bottom", 0.0)),
+            }
+            text_nodes.append(
+                {
+                    "text": b.get("text", ""),
+                    "rect": {
+                        "left": rect_ss["left"] * scale_x,
+                        "top": rect_ss["top"] * scale_y,
+                        "right": rect_ss["right"] * scale_x,
+                        "bottom": rect_ss["bottom"] * scale_y,
+                    },
+                    "rect_ss": rect_ss,
+                }
+            )
+
+        overlay_items: List[Dict[str, Any]] = []
+
+        elements = get_all_inputs(page)
         for el in elements:
             tag = (el.evaluate("el => el.tagName") or "").lower()
 
@@ -484,29 +889,10 @@ def get_inputs(url: str) -> List[Dict[str, Any]]:
                 if input_type == "hidden":
                     continue
 
-            # Exclude hidden/invisible elements.
-            #
-            # Exception: many modern UIs hide the real radio/checkbox input (display:none)
-            # and render a clickable, visible <label> as the control. In that case, treat
-            # the input as visible if its closest label is visible.
-            if not el.is_visible():
-                if tag == "input" and input_type in {"radio", "checkbox"}:
-                    label_visible = bool(
-                        el.evaluate(
-                            """(el) => {
-                              const lab = el.closest('label');
-                              if (!lab) return false;
-                              const style = window.getComputedStyle(lab);
-                              if (style.display === 'none' || style.visibility === 'hidden') return false;
-                              const r = lab.getBoundingClientRect();
-                              return r.width > 0 && r.height > 0;
-                            }"""
-                        )
-                    )
-                    if not label_visible:
-                        continue
-                else:
-                    continue
+            # Include hidden controls only when a visible proxy exists (LIVE UI).
+            proxy_rect_css = _get_visual_proxy_rect(el)
+            if not proxy_rect_css:
+                continue
 
             # avoid duplicate elements without mutating DOM attributes
             key = el.evaluate(
@@ -522,9 +908,37 @@ def get_inputs(url: str) -> List[Dict[str, Any]]:
                 continue
             seen.add(str(key))
 
+            # Primary label: OCR (what the user sees). We only keep DOM label if OCR fails.
             labels = extract_label(el)
-            label = _clean_text(labels.get("label"))
             group_label = _clean_text(labels.get("group_label"))
+            label = _clean_text(labels.get("label"))
+            name_clean = _clean_text(el.get_attribute("name"))
+            id_clean = _clean_text(el.get_attribute("id"))
+
+            # If we only got a weak fallback (name/id), prefer what the user actually sees.
+            weak_fallback = (not label) or (label and label in {name_clean, id_clean})
+            if weak_fallback:
+                visual, match_rect_ss = find_visual_label_match(el, text_nodes)
+                visual = _clean_text(visual)
+                if visual:
+                    label = visual
+                    if match_rect_ss:
+                        overlay_items.append(
+                            {
+                                "label": label,
+                                "proxy_rect_ss": {
+                                    "left": proxy_rect_css.left * ss_scale_x,
+                                    "top": proxy_rect_css.top * ss_scale_y,
+                                    "right": proxy_rect_css.right * ss_scale_x,
+                                    "bottom": proxy_rect_css.bottom * ss_scale_y,
+                                },
+                                "ocr_rect_ss": match_rect_ss,
+                            }
+                        )
+
+            price_relevant = is_price_relevant(el, label, group_label, price)
+            if not price_relevant:
+                continue
 
             results.append(
                 {
@@ -534,8 +948,34 @@ def get_inputs(url: str) -> List[Dict[str, Any]]:
                     "type": input_type if tag == "input" else "",
                     "name": _clean_text(el.get_attribute("name")),
                     "id": _clean_text(el.get_attribute("id")),
+                    "bbox": {
+                        "left": proxy_rect_css.left,
+                        "top": proxy_rect_css.top,
+                        "right": proxy_rect_css.right,
+                        "bottom": proxy_rect_css.bottom,
+                    },
+                    "is_price_relevant": True,
                 }
             )
+
+        # Write timestamped JSON output
+        json_path = os.path.join(debug_dir, f"labels_{stamp}.json")
+        with open(json_path, "w", encoding="utf-8") as f:
+            json.dump(results, f, ensure_ascii=False, indent=2)
+
+        # Create overlay image with control proxy boxes + matched OCR boxes
+        overlay_path = os.path.join(debug_dir, f"overlay_{stamp}.png")
+        try:
+            with Image.open(screenshot_path) as im:
+                draw = ImageDraw.Draw(im)
+                for item in overlay_items:
+                    pr = item["proxy_rect_ss"]
+                    orr = item["ocr_rect_ss"]
+                    draw.rectangle([pr["left"], pr["top"], pr["right"], pr["bottom"]], outline="lime", width=3)
+                    draw.rectangle([orr["left"], orr["top"], orr["right"], orr["bottom"]], outline="red", width=3)
+                im.save(overlay_path)
+        except Exception:
+            pass
 
         browser.close()
 
