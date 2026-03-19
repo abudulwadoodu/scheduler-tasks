@@ -1,26 +1,16 @@
 import json
 import os
 import re
-
-from dotenv import load_dotenv
-load_dotenv()
 import base64
 from io import BytesIO
 from datetime import datetime
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple
 
 from playwright.sync_api import ElementHandle, sync_playwright
 
 from PIL import Image
 from PIL import ImageDraw
-
-try:
-    from langchain_openai import ChatOpenAI
-    from langchain_core.messages import HumanMessage
-except Exception:
-    ChatOpenAI = None
-    HumanMessage = None
 
 
 _WHITESPACE_RE = re.compile(r"\s+")
@@ -352,123 +342,6 @@ def _hard_exclude_result(item: Dict[str, Any]) -> bool:
         "plus",
     ]
     return any(k in hay for k in excluded_terms)
-
-
-def _crop_to_base64(image_path: str, bbox: Dict[str, float], pad: int = 120) -> str:
-    with Image.open(image_path) as im:
-        w, h = im.size
-        l = max(0, int(bbox["left"] - pad))
-        t = max(0, int(bbox["top"] - pad))
-        r = min(w, int(bbox["right"] + pad))
-        b = min(h, int(bbox["bottom"] + pad))
-        crop = im.crop((l, t, r, b))
-        buf = BytesIO()
-        crop.save(buf, format="PNG")
-        return base64.b64encode(buf.getvalue()).decode("utf-8")
-
-
-def _nearby_ocr_boxes(
-    bbox_ss: Dict[str, float], text_nodes: List[Dict[str, Any]], max_boxes: int = 30
-) -> List[Dict[str, Any]]:
-    b = _rect_from_dict(bbox_ss)
-    if not b:
-        return []
-    scored: List[Tuple[float, Dict[str, Any]]] = []
-    for n in text_nodes:
-        r = n.get("rect_ss")
-        rr = _rect_from_dict(r)
-        if not rr:
-            continue
-        score = _distance_score(b, rr)
-        scored.append((score, {"text": n.get("text", ""), "bbox": r}))
-    scored.sort(key=lambda x: x[0])
-    return [x[1] for x in scored[:max_boxes]]
-
-
-def filter_price_inputs_with_llm(
-    results: List[Dict[str, Any]],
-    screenshot_path: str,
-    text_nodes: List[Dict[str, Any]],
-) -> List[Dict[str, Any]]:
-    """
-    Final quality gate: use LLM vision to keep only true product option controls
-    and improve label/group_label assignment.
-    Falls back to deterministic results when model/api is unavailable.
-    """
-    api_key = os.getenv("OPENAI_API_KEY", "").strip()
-    if not api_key or ChatOpenAI is None or HumanMessage is None:
-        return [r for r in results if not _hard_exclude_result(r)]
-
-    model_name = os.getenv("UI_LLM_MODEL", "gpt-4.1-mini")
-    llm = ChatOpenAI(model=model_name, temperature=0)
-
-    refined: List[Dict[str, Any]] = []
-    for idx, item in enumerate(results):
-        if _hard_exclude_result(item):
-            continue
-        bbox_ss = item.get("_bbox_ss")
-        if not bbox_ss:
-            refined.append(item)
-            continue
-
-        nearby = _nearby_ocr_boxes(bbox_ss, text_nodes)
-        img_b64 = _crop_to_base64(screenshot_path, bbox_ss, pad=140)
-
-        payload = {
-            "control_id": f"ctrl_{idx}",
-            "tag": item.get("tag", ""),
-            "type": item.get("type", ""),
-            "name": item.get("name", ""),
-            "id": item.get("id", ""),
-            "label": item.get("label", ""),
-            "group_label": item.get("group_label", ""),
-            "bbox": bbox_ss,
-        }
-
-        prompt = f"""
-You are validating one UI control from a product configurator screenshot.
-Return STRICT JSON ONLY with keys:
-control_id,label,group_label,is_option_control,is_price_relevant,confidence,reason
-
-Control metadata:
-{json.dumps(payload, ensure_ascii=False)}
-
-Nearby OCR boxes:
-{json.dumps(nearby, ensure_ascii=False)}
-
-Rules:
-1) Keep only real product option controls that affect pricing/configuration.
-2) Reject reward/points/search/login/coupon/address/stepper/add-minus controls.
-3) Prefer visible label text nearest left/above/same-row to the control.
-4) If uncertain, set is_option_control=false.
-"""
-        try:
-            msg = HumanMessage(
-                content=[
-                    {"type": "text", "text": prompt},
-                    {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{img_b64}"}},
-                ]
-            )
-            resp = llm.invoke([msg])
-            raw = resp.content if isinstance(resp.content, str) else str(resp.content)
-            parsed = json.loads(raw)
-            if not parsed.get("is_option_control", False):
-                continue
-            if not parsed.get("is_price_relevant", True):
-                continue
-
-            lbl = _clean_text(parsed.get("label"))
-            grp = _clean_text(parsed.get("group_label"))
-            if lbl:
-                item["label"] = lbl
-            if grp:
-                item["group_label"] = grp
-            refined.append(item)
-        except Exception:
-            # Keep deterministic output if LLM call/parsing fails for this item.
-            refined.append(item)
-
-    return refined
 
 
 def is_price_relevant(
@@ -984,7 +857,10 @@ def extract_label(element: ElementHandle) -> Dict[str, str]:
     return {"label": nearby, "group_label": group_label}
 
 
-def get_inputs(url: str) -> List[Dict[str, Any]]:
+def get_inputs(
+    url: str,
+    final_filter: Optional[Callable[[List[Dict[str, Any]], str, List[Dict[str, Any]]], List[Dict[str, Any]]]] = None,
+) -> List[Dict[str, Any]]:
     results: List[Dict[str, Any]] = []
     seen: Set[str] = set()
 
@@ -1163,8 +1039,11 @@ def get_inputs(url: str) -> List[Dict[str, Any]]:
                 }
             )
 
-        # Final LLM vision gate + deterministic guardrails.
-        results = filter_price_inputs_with_llm(results, screenshot_path, text_nodes)
+        # Final filter: use provided filter or hard exclusions only.
+        if final_filter is not None:
+            results = final_filter(results, screenshot_path, text_nodes)
+        else:
+            results = [r for r in results if not _hard_exclude_result(r)]
 
         # Remove internal fields from final output.
         for item in results:
@@ -1195,8 +1074,9 @@ def get_inputs(url: str) -> List[Dict[str, Any]]:
 
 
 if __name__ == "__main__":
-    # Example usage:
+    # Example usage (no LangChain, heuristic filtering only):
     #   python playwright_input_labels.py https://example.com
+    # For LLM vision filtering, use: python playwright_input_labels_langchain.py <url>
     import sys
 
     if len(sys.argv) < 2:
