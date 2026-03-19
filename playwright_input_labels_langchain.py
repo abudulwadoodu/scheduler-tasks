@@ -146,8 +146,11 @@ Rules:
     return refined
 
 
-def get_inputs(url: str) -> List[Dict[str, Any]]:
-    """Same as base get_inputs but uses LLM vision for final filtering."""
+def get_inputs(url: str) -> Dict[str, Any]:
+    """Same as base get_inputs but uses LLM vision for final filtering.
+
+    Returns: {"price": {...price element metadata...}, "inputs": [...]}
+    """
     return get_inputs_base(url, final_filter=filter_price_inputs_with_llm)
 
 

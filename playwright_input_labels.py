@@ -133,7 +133,7 @@ def ocr_text_boxes(image_path: str) -> List[Dict[str, Any]]:
 
 def get_price_element(page) -> Optional[Dict[str, Any]]:
     """
-    Best-effort locate a visible price element and return its rect + text.
+    Best-effort locate a visible price element and return its metadata.
     """
     return page.evaluate(
         """() => {
@@ -176,6 +176,10 @@ def get_price_element(page) -> Optional[Dict[str, Any]]:
           const best = candidates[0];
           return {
             text: best.t,
+            tag: (best.el.tagName || '').toLowerCase(),
+            id: best.el.id || '',
+            name: best.el.getAttribute('name') || '',
+            class_name: best.el.className || '',
             rect: { left: best.r.left, top: best.r.top, right: best.r.right, bottom: best.r.bottom },
           };
         }"""
@@ -860,7 +864,7 @@ def extract_label(element: ElementHandle) -> Dict[str, str]:
 def get_inputs(
     url: str,
     final_filter: Optional[Callable[[List[Dict[str, Any]], str, List[Dict[str, Any]]], List[Dict[str, Any]]]] = None,
-) -> List[Dict[str, Any]]:
+) -> Dict[str, Any]:
     results: List[Dict[str, Any]] = []
     seen: Set[str] = set()
 
@@ -1049,10 +1053,30 @@ def get_inputs(
         for item in results:
             item.pop("_bbox_ss", None)
 
+        price_obj: Optional[Dict[str, Any]] = None
+        if price:
+            price_rect = price.get("rect") or {}
+            price_obj = {
+                "label": _clean_text(price.get("text")),
+                "tag": _clean_text(price.get("tag")),
+                "type": "",
+                "name": _clean_text(price.get("name")),
+                "id": _clean_text(price.get("id")),
+                "class_name": _clean_text(price.get("class_name")),
+                "bbox": {
+                    "left": float(price_rect.get("left", 0.0)),
+                    "top": float(price_rect.get("top", 0.0)),
+                    "right": float(price_rect.get("right", 0.0)),
+                    "bottom": float(price_rect.get("bottom", 0.0)),
+                },
+            }
+
+        response = {"price": price_obj, "inputs": results}
+
         # Write timestamped JSON output
         json_path = os.path.join(debug_dir, f"labels_{stamp}.json")
         with open(json_path, "w", encoding="utf-8") as f:
-            json.dump(results, f, ensure_ascii=False, indent=2)
+            json.dump(response, f, ensure_ascii=False, indent=2)
 
         # Create overlay image with control proxy boxes + matched OCR boxes
         overlay_path = os.path.join(debug_dir, f"overlay_{stamp}.png")
@@ -1070,7 +1094,7 @@ def get_inputs(
 
         browser.close()
 
-    return results
+    return response
 
 
 if __name__ == "__main__":
