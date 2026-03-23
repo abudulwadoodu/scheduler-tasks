@@ -115,74 +115,7 @@ r = redis.Redis(
 )
 
 
-# def create_job(urls):
-#     job_id = str(uuid.uuid4())
-#     #created_at = int(time.time())
-#     created_at = datetime.fromtimestamp(time.time()).strftime("%Y-%m-%d %H:%M:%S")
 
-#     r.hset(f"job:{job_id}", mapping={
-#         "id": job_id,
-#         "total": len(urls),
-
-#         # extraction counters
-#         "extracted_done": 0,
-#         "extracted_success": 0,
-#         "extracted_failed": 0,
-
-#         # retry tracking
-#         "retry_pending": 0,
-#         "retry_done": 0,
-
-#         # validator tracking
-#         "validated_done": 0,
-#         "validated_success": 0,
-#         "validated_failed": 0,
-
-#         "db_done": 0,
-#         "llm_done": 0,
-        
-#         "status": "pending",
-#         "created_at": created_at,
-#         "started_at": "",
-#         "completed_at": "",
-#     })
-
-   
-#     for url in urls:
-#         # pushing URLs to a Redis list for reference
-#         r.rpush(f"job:{job_id}:urls", url)
-
-#         stream = route_stream_for_url(url)
-
-#         r.xadd(stream, {
-#             "url": url,
-#             "domain": extract_domain(url),
-#             "job_id": job_id,
-#             "attempt": 0,
-#             "scheduled_attempt": "no"
-#         })
-
-
-#     print(f"[reader] Created Job {job_id} with {len(urls)} URLs")
-#     return job_id
-
-
-# # --- MAIN EXECUTION ---
-# df = pd.read_excel("samples.xlsx")
-# df = df.rename(columns={"Source\n": "Source"})
-# urls = df["URL"].dropna().tolist()
-
-
-# df["domain_count"] = df.groupby("Source")["Source"].transform("count")
-
-# df_sorted = df.sort_values("domain_count", ascending=False)
-
-# #print(df_sorted.dtypes)
-
-# #print(df_sorted["URL"].tolist())
-
-# job_id = create_job(df_sorted["URL"].dropna().tolist())
-# print(f"Job ID: {job_id} queued successfully.")
 
 
 
