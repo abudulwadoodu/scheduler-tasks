@@ -146,12 +146,132 @@ def get_price_element(page) -> Optional[Dict[str, Any]]:
             return r.width > 0 && r.height > 0;
           };
 
+          const asPriceText = (t) => {
+            const v = clean(t);
+            if (!v) return '';
+            if (!(/[£$€]/.test(v) || /\\b\\d+[\\d,.]*\\b/.test(v))) return '';
+            return v;
+          };
+          const firstMoney = (t) => {
+            const m = clean(t).match(/[£$€]\\s*\\d[\\d,.]*/);
+            return m ? m[0] : '';
+          };
+          const looksHistorical = (t) =>
+            /\\b(was|rrp|save|saving|savings)\\b/i.test(clean(t));
+          const looksCurrent = (t) =>
+            /\\b(now|price|total\\s*cost)\\b/i.test(clean(t));
+
+          // Some product pages (e.g. legacy ecommerce markup) render price as:
+          // <img alt="price"> <font>£88.31</font> inside [itemprop="offers"].
+          // Try this first because generic ".price" selectors can miss it.
+          const offers = document.querySelector('[itemprop="offers"]');
+          if (offers) {
+            const imgPrice = offers.querySelector('img[alt]');
+            const allImgs = Array.from(offers.querySelectorAll('img[alt]'));
+            const primary = allImgs.find((n) => /(^|\\s)(price|our price)(\\s|$)/i.test(n.getAttribute('alt') || '')) || imgPrice;
+            if (primary) {
+              const font = primary.nextElementSibling && primary.nextElementSibling.tagName && primary.nextElementSibling.tagName.toLowerCase() === 'font'
+                ? primary.nextElementSibling
+                : primary.parentElement && primary.parentElement.querySelector('font');
+              if (font && visible(font)) {
+                const txt = asPriceText(font.innerText || font.textContent || '');
+                if (txt) {
+                  const r = font.getBoundingClientRect();
+                  return {
+                    text: txt,
+                    tag: (font.tagName || '').toLowerCase(),
+                    id: font.id || '',
+                    name: font.getAttribute('name') || '',
+                    class_name: font.className || '',
+                    rect: { left: r.left, top: r.top, right: r.right, bottom: r.bottom },
+                  };
+                }
+              }
+            }
+          }
+
+          // Fallback 1: promo blocks that render "Now £xx.xx" as current discounted price.
+          const nowCandidates = [];
+          const textNodes = Array.from(document.querySelectorAll('p,div,span,strong,b,h1,h2,h3,h4,h5,h6,li'));
+          for (const el of textNodes) {
+            if (!visible(el)) continue;
+            const t = clean(el.innerText || el.textContent || '');
+            if (!t || t.length > 180) continue;
+            if (!/\\bnow\\b/i.test(t)) continue;
+            const direct = t.match(/\\bnow\\b[^£$€\\d]{0,20}([£$€]\\s*\\d[\\d,.]*)/i);
+            const money = direct ? direct[1] : firstMoney(t);
+            if (!money) continue;
+            const r = el.getBoundingClientRect();
+            nowCandidates.push({ el, t: money, raw: t, r });
+          }
+          if (nowCandidates.length) {
+            nowCandidates.sort((a, b) => {
+              if (a.r.top !== b.r.top) return a.r.top - b.r.top;
+              const aArea = a.r.width * a.r.height;
+              const bArea = b.r.width * b.r.height;
+              return bArea - aArea;
+            });
+            const best = nowCandidates[0];
+            return {
+              text: best.t,
+              tag: (best.el.tagName || '').toLowerCase(),
+              id: best.el.id || '',
+              name: best.el.getAttribute('name') || '',
+              class_name: best.el.className || '',
+              rect: { left: best.r.left, top: best.r.top, right: best.r.right, bottom: best.r.bottom },
+            };
+          }
+
+          // Fallback 2: sites that render "Price £xx.xx" without price classes/ids.
+          const textCandidates = [];
+          for (const el of textNodes) {
+            if (!visible(el)) continue;
+            const t = clean(el.innerText || el.textContent || '');
+            if (!t || t.length > 140) continue;
+            if (!/\\bprice\\b/i.test(t)) continue;
+            const money = firstMoney(t);
+            if (!money) continue;
+            if (/delivery|hotline|basket|more info/i.test(t)) continue;
+            if (looksHistorical(t) && !looksCurrent(t)) continue;
+            const r = el.getBoundingClientRect();
+            textCandidates.push({ el, t: money, raw: t, r });
+          }
+          if (textCandidates.length) {
+            // Prefer current price semantics over historical promo text.
+            textCandidates.sort((a, b) => {
+              const score = (c) => {
+                let s = c.r.top;
+                const area = c.r.width * c.r.height;
+                s -= Math.min(area, 300000) / 10000;
+                if (looksHistorical(c.raw)) s += 3000;
+                if (looksCurrent(c.raw)) s -= 800;
+                return s;
+              };
+              const sa = score(a);
+              const sb = score(b);
+              if (sa !== sb) return sa - sb;
+              const aArea = a.r.width * a.r.height;
+              const bArea = b.r.width * b.r.height;
+              return bArea - aArea;
+            });
+            const best = textCandidates[0];
+            return {
+              text: best.t,
+              tag: (best.el.tagName || '').toLowerCase(),
+              id: best.el.id || '',
+              name: best.el.getAttribute('name') || '',
+              class_name: best.el.className || '',
+              rect: { left: best.r.left, top: best.r.top, right: best.r.right, bottom: best.r.bottom },
+            };
+          }
+
           const selectors = [
             '.price',
             '[class*=\"price\"]',
             '#price',
             '[id*=\"price\"]',
             '[data-price]',
+            '[itemprop=\"offers\"]',
           ];
           const candidates = [];
           for (const sel of selectors) {
@@ -159,19 +279,29 @@ def get_price_element(page) -> Optional[Dict[str, Any]]:
               if (!visible(el)) continue;
               const t = clean(el.innerText || el.textContent || '');
               if (!t) continue;
-              // must contain a currency-ish marker or digits
-              if (!(/[£$€]/.test(t) || /\\b\\d+[\\d,.]*\\b/.test(t))) continue;
+              const priceText = asPriceText(t);
+              if (!priceText) continue;
               const r = el.getBoundingClientRect();
-              candidates.push({ el, t, r });
+              candidates.push({ el, t: priceText, raw: t, r });
             }
           }
           if (!candidates.length) return null;
-          // pick the smallest (often the actual price value), bias towards top area
+          // Rank towards currently applied price and away from "was/rrp/save" text.
           candidates.sort((a,b) => {
+            const score = (c) => {
+              let s = c.r.top;
+              const area = c.r.width * c.r.height;
+              s += Math.min(area, 400000) / 40000; // slight preference for tighter nodes
+              if (looksHistorical(c.raw)) s += 3000;
+              if (looksCurrent(c.raw)) s -= 800;
+              return s;
+            };
+            const sa = score(a);
+            const sb = score(b);
+            if (sa !== sb) return sa - sb;
             const aArea = a.r.width * a.r.height;
             const bArea = b.r.width * b.r.height;
-            if (aArea !== bArea) return aArea - bArea;
-            return a.r.top - b.r.top;
+            return aArea - bArea;
           });
           const best = candidates[0];
           return {
