@@ -1,0 +1,33 @@
+{
+  "price": {
+    "label": "£3.82",
+    "tag": "strong",
+    "type": "",
+    "name": "",
+    "id": "",
+    "class_name": "js-price-ex-vat",
+    "bbox": {
+      "left": 872.65625,
+      "top": 401.984375,
+      "right": 916.96875,
+      "bottom": 424.984375
+    }
+  },
+  "inputs": [
+    {
+      "label": "Ex VAT",
+      "group_label": "",
+      "tag": "input",
+      "type": "checkbox",
+      "name": "",
+      "id": "customSwitch1",
+      "bbox": {
+        "left": 983.671875,
+        "top": 10.0,
+        "right": 1021.484375,
+        "bottom": 26.0
+      },
+      "is_price_relevant": true
+    }
+  ]
+}

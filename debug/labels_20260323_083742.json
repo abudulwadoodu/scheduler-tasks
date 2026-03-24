@@ -1,0 +1,48 @@
+{
+  "price": {
+    "label": "£15.84",
+    "tag": "span",
+    "type": "",
+    "name": "",
+    "id": "product-price-349718",
+    "class_name": "price-wrapper",
+    "bbox": {
+      "left": 640.0,
+      "top": 399.0625,
+      "right": 757.453125,
+      "bottom": 413.0625
+    }
+  },
+  "inputs": [
+    {
+      "label": "Length:",
+      "group_label": "",
+      "tag": "input",
+      "type": "text",
+      "name": "sc_custom_length",
+      "id": "sc_custom_length",
+      "bbox": {
+        "left": 657.0,
+        "top": 751.8125,
+        "right": 695.0,
+        "bottom": 783.8125
+      },
+      "is_price_relevant": true
+    },
+    {
+      "label": "enoth",
+      "group_label": "",
+      "tag": "select",
+      "type": "",
+      "name": "sc_custom_unit",
+      "id": "sc_custom_unit",
+      "bbox": {
+        "left": 700.578125,
+        "top": 751.671875,
+        "right": 770.578125,
+        "bottom": 783.671875
+      },
+      "is_price_relevant": true
+    }
+  ]
+}
