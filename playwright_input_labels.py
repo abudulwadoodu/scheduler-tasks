@@ -19,7 +19,13 @@ _WHITESPACE_RE = re.compile(r"\s+")
 def _clean_text(value: Optional[str]) -> str:
     if not value:
         return ""
-    return _WHITESPACE_RE.sub(" ", value).strip()
+    # OCR sometimes misreads delimiters like `/` as `{` (and sometimes drops `}`).
+    # Normalizing these makes label matching more robust.
+    text = str(value).replace("{", "/").replace("}", "")
+    text = _WHITESPACE_RE.sub(" ", text).strip()
+    # Normalize whitespace around `/` so "Agate Grey /White" -> "Agate Grey/White"
+    text = re.sub(r"\s*/\s*", "/", text)
+    return text
 
 
 def _clean_candidate(value: Optional[str]) -> str:
@@ -157,9 +163,57 @@ def get_price_element(page) -> Optional[Dict[str, Any]]:
             return m ? m[0] : '';
           };
           const looksHistorical = (t) =>
-            /\\b(was|rrp|save|saving|savings)\\b/i.test(clean(t));
+            /\\b(was|rrp|save|saving|savings|regular\\s*price|old\\s*price|from)\\b/i.test(clean(t));
           const looksCurrent = (t) =>
-            /\\b(now|price|total\\s*cost)\\b/i.test(clean(t));
+            /\\b(now|our\\s*price|final\\s*price|inc\\.?\\s*vat|including\\s*vat|ex\\.?\\s*vat|excluding\\s*vat|special\\s*price|as\\s*low\\s*as|current\\s*price|sale\\s*price)\\b/i.test(clean(t));
+          const inRecommendationContext = (el) => {
+            if (!el || !el.closest) return false;
+            const bad = [
+              '[class*="related"]',
+              '[class*="recommend"]',
+              '[class*="crosssell"]',
+              '[class*="upsell"]',
+              '[class*="carousel"]',
+              '[class*="slider"]',
+              '[class*="product-item"]',
+              '[class*="products-grid"]',
+              '[id*="related"]',
+              '[id*="recommend"]',
+              '[id*="upsell"]',
+              '[id*="crosssell"]',
+              '[id*="carousel"]'
+            ];
+            return bad.some((sel) => !!el.closest(sel));
+          };
+          const primaryProductRoot = () => {
+            const roots = [
+              '#maincontent .product-info-main',
+              '.product-info-main',
+              'main .product-info-main',
+              '[itemprop="offers"]',
+              '.product-info-price',
+              '#maincontent'
+            ];
+            for (const sel of roots) {
+              const node = document.querySelector(sel);
+              if (!node || !visible(node)) continue;
+              const r = node.getBoundingClientRect();
+              if (r.width <= 0 || r.height <= 0) continue;
+              return node;
+            }
+            return document.querySelector('main') || document.body;
+          };
+          const buildResult = (el, text) => {
+            const r = el.getBoundingClientRect();
+            return {
+              text: text,
+              tag: (el.tagName || '').toLowerCase(),
+              id: el.id || '',
+              name: el.getAttribute('name') || '',
+              class_name: el.className || '',
+              rect: { left: r.left, top: r.top, right: r.right, bottom: r.bottom },
+            };
+          };
 
           // Some product pages (e.g. legacy ecommerce markup) render price as:
           // <img alt="price"> <font>£88.31</font> inside [itemprop="offers"].
@@ -190,11 +244,52 @@ def get_price_element(page) -> Optional[Dict[str, Any]]:
             }
           }
 
+          // Preferred path for Magento-like PDPs:
+          // find final/current price in the primary product container, not in related products.
+          const root = primaryProductRoot();
+          if (root) {
+            const scopedSelectors = [
+              '[data-price-type="finalPrice"] .price-wrapper',
+              '[data-price-type="finalPrice"] .price',
+              '[id^="product-price-"]',
+              '.price-box.price-final_price .price-wrapper',
+              '.price-box.price-final_price .price',
+              '.product-info-price .price-wrapper',
+              '.product-info-price .price'
+            ];
+            const scopedCandidates = [];
+            for (const sel of scopedSelectors) {
+              for (const el of Array.from(root.querySelectorAll(sel))) {
+                if (!visible(el) || inRecommendationContext(el)) continue;
+                const raw = clean(el.innerText || el.textContent || '');
+                const money = firstMoney(raw);
+                if (!money) continue;
+                const r = el.getBoundingClientRect();
+                scopedCandidates.push({ el, money, raw, r });
+              }
+            }
+            if (scopedCandidates.length) {
+              scopedCandidates.sort((a, b) => {
+                const score = (c) => {
+                  let s = c.r.top;
+                  if (looksHistorical(c.raw)) s += 3000;
+                  if (looksCurrent(c.raw)) s -= 600;
+                  if ((c.el.id || '').startsWith('product-price-')) s -= 450;
+                  if ((c.el.className || '').toString().includes('price-wrapper')) s -= 150;
+                  return s;
+                };
+                return score(a) - score(b);
+              });
+              const best = scopedCandidates[0];
+              return buildResult(best.el, best.money);
+            }
+          }
+
           // Fallback 1: promo blocks that render "Now £xx.xx" as current discounted price.
           const nowCandidates = [];
           const textNodes = Array.from(document.querySelectorAll('p,div,span,strong,b,h1,h2,h3,h4,h5,h6,li'));
           for (const el of textNodes) {
-            if (!visible(el)) continue;
+            if (!visible(el) || inRecommendationContext(el)) continue;
             const t = clean(el.innerText || el.textContent || '');
             if (!t || t.length > 180) continue;
             if (!/\\bnow\\b/i.test(t)) continue;
@@ -225,7 +320,7 @@ def get_price_element(page) -> Optional[Dict[str, Any]]:
           // Fallback 2: sites that render "Price £xx.xx" without price classes/ids.
           const textCandidates = [];
           for (const el of textNodes) {
-            if (!visible(el)) continue;
+            if (!visible(el) || inRecommendationContext(el)) continue;
             const t = clean(el.innerText || el.textContent || '');
             if (!t || t.length > 140) continue;
             if (!/\\bprice\\b/i.test(t)) continue;
@@ -276,7 +371,7 @@ def get_price_element(page) -> Optional[Dict[str, Any]]:
           const candidates = [];
           for (const sel of selectors) {
             for (const el of Array.from(document.querySelectorAll(sel))) {
-              if (!visible(el)) continue;
+              if (!visible(el) || inRecommendationContext(el)) continue;
               const t = clean(el.innerText || el.textContent || '');
               if (!t) continue;
               const priceText = asPriceText(t);
@@ -472,8 +567,6 @@ def _hard_exclude_result(item: Dict[str, Any]) -> bool:
         "add +",
         "increment",
         "decrement",
-        "minus",
-        "plus",
     ]
     return any(k in hay for k in excluded_terms)
 
@@ -531,8 +624,6 @@ def is_price_relevant(
         "add +",
         "increment",
         "decrement",
-        "minus",
-        "plus",
     ]
     if any(k in hay for k in excluded):
         return False
@@ -1144,6 +1235,48 @@ def get_inputs(
                                 "ocr_rect_ss": match_rect_ss,
                             }
                         )
+
+            # Post-correction for radio/checkbox option controls:
+            # OCR/DOM label extraction can sometimes pick up text belonging to
+            # a neighbouring option (or drop the `/` delimiter).
+            # Only apply these id-vs-label sanity checks to the Window Colour
+            # group. Other groups (WER, cills, hardware) often use internal
+            # ids like "arated"/"tripleglazed"/"fitpack" that are not meant
+            # to be used as user-facing labels.
+            if input_type in {"radio", "checkbox"} and id_clean and group_label and "window colour" in group_label.lower():
+                label_l = label.lower()
+                id_l = id_clean.lower()
+
+                # First token is usually the "left side" (e.g., "Cream", "Oak", "White").
+                id_tokens = [t for t in re.split(r"[^a-z0-9]+", id_l) if t]
+                first_token = id_tokens[0] if id_tokens else ""
+
+                # When the id uses the form "Left/Right" (e.g., "Cream/White"),
+                # require the right part to appear in the extracted label.
+                if "/" in id_clean:
+                    left_part, right_part = id_clean.split("/", 1)
+                    right_key = _clean_text(right_part)
+                    right_key_l = right_key.lower()
+
+                    if right_key_l and right_key_l not in label_l:
+                        # Label looks like it belongs to a different option.
+                        label = id_clean
+
+                    # If label has both parts but is missing the `/`, reinsert it.
+                    elif right_key_l and right_key_l in label_l and "/" not in label:
+                        # Replace the trailing " <Right>" with "/<Right>".
+                        label = re.sub(
+                            rf"\s+{re.escape(right_key_l)}\s*$",
+                            f"/{right_key}",
+                            label,
+                            flags=re.IGNORECASE,
+                        )
+                else:
+                    # No `/` in id: if the extracted label doesn't even contain
+                    # the first token, prefer the id (prevents cross-option
+                    # misassignment like "White" being labeled as "Oak Both Sides").
+                    if first_token and first_token not in label_l:
+                        label = id_clean
 
             price_relevant = is_price_relevant(el, label, group_label, price)
             if not price_relevant:

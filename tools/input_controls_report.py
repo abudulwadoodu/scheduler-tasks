@@ -96,7 +96,14 @@ def _run_report(input_xlsx: Path, sheet: str, output_xlsx: Path, limit: int | No
     col_map = _normalize_col_map(df.columns)
 
     url_col = _pick_col(col_map, "url")
-    expected_price_col = _pick_col(col_map, "expected_price", "expected_price ")
+    expected_price_col = _pick_col(
+        col_map,
+        "expected_price_incl_vat",
+        "expected_price_incl_vat ",
+        # Backward-compatible fallback for older sheets.
+        "expected_price",
+        "expected_price ",
+    )
     expected_labels_col = _pick_col(col_map, "expected_labels_csv")
     active_col = col_map.get("active")
     site_col = col_map.get("site")
@@ -164,7 +171,7 @@ def _run_report(input_xlsx: Path, sheet: str, output_xlsx: Path, limit: int | No
                 "sl#": row.get(sl_col) if sl_col in row else "",
                 "site": row.get(site_col, "") if site_col else "",
                 "url": url,
-                "expected_price": expected_price_val,
+                "expected_price_incl_vat": expected_price_val,
                 "actual_price": actual_price_val,
                 "actual_price_label": actual_price_label,
                 "price_status": price_status,
