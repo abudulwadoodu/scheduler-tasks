@@ -71,9 +71,59 @@ def main():
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
+<<<<<<< HEAD
         page = browser.new_page()
         page.goto(url)
         page.wait_for_load_state('networkidle')
+=======
+        context = browser.new_context(
+            viewport={"width": 1280, "height": 720},
+            device_scale_factor=1,
+            user_agent=(
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/122.0.0.0 Safari/537.36"
+            ),
+        )
+        page = context.new_page()
+        page.set_default_navigation_timeout(120_000)
+        page.set_default_timeout(60_000)
+        page.goto(url, wait_until="load", timeout=120_000)
+        # Best effort only: dynamic ecommerce pages can keep long-lived requests open.
+        try:
+            page.wait_for_load_state("networkidle", timeout=30_000)
+        except Exception:
+            pass
+        # Wait for form controls to render before checking selectors.
+        try:
+            page.wait_for_selector("input, select, textarea", timeout=15_000)
+        except Exception:
+            pass
+        # Optional targeted waits for expected IDs and names.
+        for item in inputs:
+            item_id = (item.get("id") or "").strip()
+            item_name = (item.get("name") or "").strip()
+            if item_id:
+                try:
+                    page.wait_for_selector(f"#{item_id}", timeout=3_000)
+                    continue
+                except Exception:
+                    pass
+            if item_name:
+                try:
+                    page.wait_for_selector(f"[name='{item_name}']", timeout=3_000)
+                except Exception:
+                    pass
+        page_info = {
+            "page_url": page.url,
+            "page_title": page.title(),
+            "controls_count": {
+                "input": page.locator("input").count(),
+                "select": page.locator("select").count(),
+                "textarea": page.locator("textarea").count(),
+            },
+        }
+>>>>>>> 22d44e23b866688259d5fdb858bdca24e56fbe03
         for item in inputs:
             selectors, found, outer_html = try_find_element(page, item)
             report.append({
@@ -82,8 +132,17 @@ def main():
                 'name': item.get('name'),
                 'selectors_tried': selectors,
                 'found': found,
+<<<<<<< HEAD
                 'outer_html': outer_html
             })
+=======
+                'outer_html': outer_html,
+                'page_url': page_info["page_url"] if not found else None,
+                'page_title': page_info["page_title"] if not found else None,
+                'controls_count': page_info["controls_count"] if not found else None,
+            })
+        context.close()
+>>>>>>> 22d44e23b866688259d5fdb858bdca24e56fbe03
         browser.close()
 
     found_count = sum(1 for r in report if r['found'])
