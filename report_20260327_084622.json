@@ -1,0 +1,424 @@
+[
+  {
+    "label": "Frame Width (mm)",
+    "id": "framewidth",
+    "name": "framewidth",
+    "selectors_tried": [
+      "#framewidth",
+      "[name='framewidth']",
+      "label:has-text('Frame Width (mm)')",
+      "input[type='text']"
+    ],
+    "found": true,
+    "outer_html": [
+      "<input name=\"framewidth\" type=\"text\" required=\"\" class=\"form-control form-control-md rounded-0 g-mb-10\" id=\"framewidth\" data-msg-required=\"Please enter a frame width\" is=\"dmx-input\" value=\"\" placeholder=\"Please enter a width between 300 - 1300\" data-msg-min=\"Please enter a width greater than 300mm\" data-msg-max=\"Please enter a width less than 1300mm\" max=\"1300\" data-rule-max=\"1300\" min=\"300\" data-rule-min=\"300\">",
+      "<input name=\"framewidth\" type=\"text\" required=\"\" class=\"form-control form-control-md rounded-0 g-mb-10\" id=\"framewidth\" data-msg-required=\"Please enter a frame width\" is=\"dmx-input\" value=\"\" placeholder=\"Please enter a width between 300 - 1300\" data-msg-min=\"Please enter a width greater than 300mm\" data-msg-max=\"Please enter a width less than 1300mm\" max=\"1300\" data-rule-max=\"1300\" min=\"300\" data-rule-min=\"300\">",
+      "<label class=\"g-mb-10\" for=\"framewidth\">Frame Width (mm)</label>",
+      "<input name=\"framewidth\" type=\"text\" required=\"\" class=\"form-control form-control-md rounded-0 g-mb-10\" id=\"framewidth\" data-msg-required=\"Please enter a frame width\" is=\"dmx-input\" value=\"\" placeholder=\"Please enter a width between 300 - 1300\" data-msg-min=\"Please enter a width greater than 300mm\" data-msg-max=\"Please enter a width less than 1300mm\" max=\"1300\" data-rule-max=\"1300\" min=\"300\" data-rule-min=\"300\">"
+    ]
+  },
+  {
+    "label": "Frame Height (mm)",
+    "id": "frameheight",
+    "name": "frameheight",
+    "selectors_tried": [
+      "#frameheight",
+      "[name='frameheight']",
+      "label:has-text('Frame Height (mm)')",
+      "input[type='text']"
+    ],
+    "found": true,
+    "outer_html": [
+      "<input name=\"frameheight\" type=\"text\" required=\"\" class=\"form-control form-control-md rounded-0 g-mb-10\" id=\"frameheight\" data-msg-required=\"Please enter a frame height\" is=\"dmx-input\" value=\"\" placeholder=\"Please enter a height between 300 - 2200\" data-msg-min=\"Please enter a frame height greater than 300mm\" data-msg-max=\"Please enter a frame height less than 2200mm\" max=\"2200\" data-rule-max=\"2200\" min=\"300\" data-rule-min=\"300\">",
+      "<input name=\"frameheight\" type=\"text\" required=\"\" class=\"form-control form-control-md rounded-0 g-mb-10\" id=\"frameheight\" data-msg-required=\"Please enter a frame height\" is=\"dmx-input\" value=\"\" placeholder=\"Please enter a height between 300 - 2200\" data-msg-min=\"Please enter a frame height greater than 300mm\" data-msg-max=\"Please enter a frame height less than 2200mm\" max=\"2200\" data-rule-max=\"2200\" min=\"300\" data-rule-min=\"300\">",
+      "<label class=\"g-mb-10\" for=\"frameheight\">Frame Height (mm)</label>",
+      "<input name=\"framewidth\" type=\"text\" required=\"\" class=\"form-control form-control-md rounded-0 g-mb-10\" id=\"framewidth\" data-msg-required=\"Please enter a frame width\" is=\"dmx-input\" value=\"\" placeholder=\"Please enter a width between 300 - 1300\" data-msg-min=\"Please enter a width greater than 300mm\" data-msg-max=\"Please enter a width less than 1300mm\" max=\"1300\" data-rule-max=\"1300\" min=\"300\" data-rule-min=\"300\">"
+    ]
+  },
+  {
+    "label": "No",
+    "id": "cillno",
+    "name": "cill",
+    "selectors_tried": [
+      "#cillno",
+      "[name='cill']",
+      "label:has-text('No')",
+      "input[type='radio']"
+    ],
+    "found": true,
+    "outer_html": [
+      "<input name=\"cill\" type=\"radio\" required=\"\" class=\"cill form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" id=\"cillno\" is=\"dmx-radio\" data-msg-required=\"Please select a cill option\" value=\"No\">",
+      "<input name=\"cill\" type=\"radio\" required=\"\" class=\"cill form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" id=\"cillno\" is=\"dmx-radio\" data-msg-required=\"Please select a cill option\" value=\"No\">",
+      "<label class=\"radio-inline u-check g-pl-25 ml-0 g-mr-25\">\n                      <input name=\"cill\" type=\"radio\" required=\"\" class=\"cill form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" id=\"cillno\" is=\"dmx-radio\" data-msg-required=\"Please select a cill option\" value=\"No\">\n                   \n                    <div class=\"u-check-icon-radio-v4 g-absolute-centered--y g-left-0 g-width-18 g-height-18\"> <i class=\"g-absolute-centered d-block g-width-10 g-height-10 g-bg-primary--checked\"></i></div>\n                    No </label>",
+      "<input name=\"cill\" type=\"radio\" required=\"\" class=\"cill form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" id=\"cillno\" is=\"dmx-radio\" data-msg-required=\"Please select a cill option\" value=\"No\">"
+    ]
+  },
+  {
+    "label": "85mm Stub",
+    "id": "cill85",
+    "name": "cill",
+    "selectors_tried": [
+      "#cill85",
+      "[name='cill']",
+      "label:has-text('85mm Stub')",
+      "input[type='radio']"
+    ],
+    "found": true,
+    "outer_html": [
+      "<input class=\"cill form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" name=\"cill\" type=\"radio\" id=\"cill85\" is=\"dmx-radio\" value=\"85mm\">",
+      "<input name=\"cill\" type=\"radio\" required=\"\" class=\"cill form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" id=\"cillno\" is=\"dmx-radio\" data-msg-required=\"Please select a cill option\" value=\"No\">",
+      "<label class=\"radio-inline u-check g-pl-25 ml-0 g-mr-25\">\n                      <input class=\"cill form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" name=\"cill\" type=\"radio\" id=\"cill85\" is=\"dmx-radio\" value=\"85mm\">\n                    \n                    <div class=\"u-check-icon-radio-v4 g-absolute-centered--y g-left-0 g-width-18 g-height-18\"> <i class=\"g-absolute-centered d-block g-width-10 g-height-10 g-bg-primary--checked\"></i></div>\n                    85mm Stub </label>",
+      "<input name=\"cill\" type=\"radio\" required=\"\" class=\"cill form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" id=\"cillno\" is=\"dmx-radio\" data-msg-required=\"Please select a cill option\" value=\"No\">"
+    ]
+  },
+  {
+    "label": "Standard 150mm",
+    "id": "cill150",
+    "name": "cill",
+    "selectors_tried": [
+      "#cill150",
+      "[name='cill']",
+      "label:has-text('Standard 150mm')",
+      "input[type='radio']"
+    ],
+    "found": true,
+    "outer_html": [
+      "<input name=\"cill\" type=\"radio\" class=\"cill form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" id=\"cill150\" is=\"dmx-radio\" value=\"150mm\">",
+      "<input name=\"cill\" type=\"radio\" required=\"\" class=\"cill form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" id=\"cillno\" is=\"dmx-radio\" data-msg-required=\"Please select a cill option\" value=\"No\">",
+      "<label class=\"radio-inline u-check g-pl-25 ml-0 g-mr-25\">\n                      <input name=\"cill\" type=\"radio\" class=\"cill form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" id=\"cill150\" is=\"dmx-radio\" value=\"150mm\">\n                    \n                    <div class=\"u-check-icon-radio-v4 g-absolute-centered--y g-left-0 g-width-18 g-height-18\"> <i class=\"g-absolute-centered d-block g-width-10 g-height-10 g-bg-primary--checked\"></i></div>\n                    Standard 150mm </label>",
+      "<input name=\"cill\" type=\"radio\" required=\"\" class=\"cill form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" id=\"cillno\" is=\"dmx-radio\" data-msg-required=\"Please select a cill option\" value=\"No\">"
+    ]
+  },
+  {
+    "label": "180mm",
+    "id": "cill180",
+    "name": "cill",
+    "selectors_tried": [
+      "#cill180",
+      "[name='cill']",
+      "label:has-text('180mm')",
+      "input[type='radio']"
+    ],
+    "found": true,
+    "outer_html": [
+      "<input name=\"cill\" type=\"radio\" class=\"cill form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" id=\"cill180\" is=\"dmx-radio\" value=\"180mm\">",
+      "<input name=\"cill\" type=\"radio\" required=\"\" class=\"cill form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" id=\"cillno\" is=\"dmx-radio\" data-msg-required=\"Please select a cill option\" value=\"No\">",
+      "<label class=\"radio-inline u-check g-pl-25 ml-0\">\n                      <input name=\"cill\" type=\"radio\" class=\"cill form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" id=\"cill180\" is=\"dmx-radio\" value=\"180mm\">\n                    \n                    <div class=\"u-check-icon-radio-v4 g-absolute-centered--y g-left-0 g-width-18 g-height-18\"> <i class=\"g-absolute-centered d-block g-width-10 g-height-10 g-bg-primary--checked\"></i></div>\n                    180mm </label>",
+      "<input name=\"cill\" type=\"radio\" required=\"\" class=\"cill form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" id=\"cillno\" is=\"dmx-radio\" data-msg-required=\"Please select a cill option\" value=\"No\">"
+    ]
+  },
+  {
+    "label": "Oal Rorh Sides",
+    "id": "White",
+    "name": "colour",
+    "selectors_tried": [
+      "#White",
+      "[name='colour']",
+      "input[type='radio']"
+    ],
+    "found": true,
+    "outer_html": [
+      "<input name=\"colour\" type=\"radio\" required=\"\" class=\"colour form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" data-msg-required=\"Please select a colour\" value=\"White\" id=\"White\" data-price=\"1.00\">",
+      "<input name=\"colour\" type=\"radio\" required=\"\" class=\"colour form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" data-msg-required=\"Please select a colour\" value=\"White\" id=\"White\" data-price=\"1.00\">",
+      "<input name=\"cill\" type=\"radio\" required=\"\" class=\"cill form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" id=\"cillno\" is=\"dmx-radio\" data-msg-required=\"Please select a cill option\" value=\"No\">"
+    ]
+  },
+  {
+    "label": "Anthracite Grev Both Sides",
+    "id": "Oak/White",
+    "name": "colour",
+    "selectors_tried": [
+      "[name='colour']",
+      "input[type='radio']"
+    ],
+    "found": true,
+    "outer_html": [
+      "<input name=\"colour\" type=\"radio\" required=\"\" class=\"colour form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" data-msg-required=\"Please select a colour\" value=\"White\" id=\"White\" data-price=\"1.00\">",
+      "<input name=\"cill\" type=\"radio\" required=\"\" class=\"cill form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" id=\"cillno\" is=\"dmx-radio\" data-msg-required=\"Please select a cill option\" value=\"No\">"
+    ]
+  },
+  {
+    "label": "Rosewood Both Sides",
+    "id": "Rosewood Both Sides",
+    "name": "colour",
+    "selectors_tried": [
+      "[name='colour']",
+      "input[type='radio']"
+    ],
+    "found": true,
+    "outer_html": [
+      "<input name=\"colour\" type=\"radio\" required=\"\" class=\"colour form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" data-msg-required=\"Please select a colour\" value=\"White\" id=\"White\" data-price=\"1.00\">",
+      "<input name=\"cill\" type=\"radio\" required=\"\" class=\"cill form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" id=\"cillno\" is=\"dmx-radio\" data-msg-required=\"Please select a cill option\" value=\"No\">"
+    ]
+  },
+  {
+    "label": "Rosewood White",
+    "id": "Rosewood/White",
+    "name": "colour",
+    "selectors_tried": [
+      "[name='colour']",
+      "input[type='radio']"
+    ],
+    "found": true,
+    "outer_html": [
+      "<input name=\"colour\" type=\"radio\" required=\"\" class=\"colour form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" data-msg-required=\"Please select a colour\" value=\"White\" id=\"White\" data-price=\"1.00\">",
+      "<input name=\"cill\" type=\"radio\" required=\"\" class=\"cill form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" id=\"cillno\" is=\"dmx-radio\" data-msg-required=\"Please select a cill option\" value=\"No\">"
+    ]
+  },
+  {
+    "label": "Anthracite Grev White",
+    "id": "Anthracite Grey/White",
+    "name": "colour",
+    "selectors_tried": [
+      "[name='colour']",
+      "input[type='radio']"
+    ],
+    "found": true,
+    "outer_html": [
+      "<input name=\"colour\" type=\"radio\" required=\"\" class=\"colour form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" data-msg-required=\"Please select a colour\" value=\"White\" id=\"White\" data-price=\"1.00\">",
+      "<input name=\"cill\" type=\"radio\" required=\"\" class=\"cill form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" id=\"cillno\" is=\"dmx-radio\" data-msg-required=\"Please select a cill option\" value=\"No\">"
+    ]
+  },
+  {
+    "label": "Chartwell White",
+    "id": "Chartwell/White",
+    "name": "colour",
+    "selectors_tried": [
+      "[name='colour']",
+      "input[type='radio']"
+    ],
+    "found": true,
+    "outer_html": [
+      "<input name=\"colour\" type=\"radio\" required=\"\" class=\"colour form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" data-msg-required=\"Please select a colour\" value=\"White\" id=\"White\" data-price=\"1.00\">",
+      "<input name=\"cill\" type=\"radio\" required=\"\" class=\"cill form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" id=\"cillno\" is=\"dmx-radio\" data-msg-required=\"Please select a cill option\" value=\"No\">"
+    ]
+  },
+  {
+    "label": "Cream Both Sides",
+    "id": "Cream Both Sides",
+    "name": "colour",
+    "selectors_tried": [
+      "[name='colour']",
+      "input[type='radio']"
+    ],
+    "found": true,
+    "outer_html": [
+      "<input name=\"colour\" type=\"radio\" required=\"\" class=\"colour form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" data-msg-required=\"Please select a colour\" value=\"White\" id=\"White\" data-price=\"1.00\">",
+      "<input name=\"cill\" type=\"radio\" required=\"\" class=\"cill form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" id=\"cillno\" is=\"dmx-radio\" data-msg-required=\"Please select a cill option\" value=\"No\">"
+    ]
+  },
+  {
+    "label": "Black-Brown Both Sides",
+    "id": "Cream/White",
+    "name": "colour",
+    "selectors_tried": [
+      "[name='colour']",
+      "input[type='radio']"
+    ],
+    "found": true,
+    "outer_html": [
+      "<input name=\"colour\" type=\"radio\" required=\"\" class=\"colour form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" data-msg-required=\"Please select a colour\" value=\"White\" id=\"White\" data-price=\"1.00\">",
+      "<input name=\"cill\" type=\"radio\" required=\"\" class=\"cill form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" id=\"cillno\" is=\"dmx-radio\" data-msg-required=\"Please select a cill option\" value=\"No\">"
+    ]
+  },
+  {
+    "label": "Black-Brown/White",
+    "id": "Black-Brown/White",
+    "name": "colour",
+    "selectors_tried": [
+      "[name='colour']",
+      "input[type='radio']"
+    ],
+    "found": true,
+    "outer_html": [
+      "<input name=\"colour\" type=\"radio\" required=\"\" class=\"colour form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" data-msg-required=\"Please select a colour\" value=\"White\" id=\"White\" data-price=\"1.00\">",
+      "<input name=\"cill\" type=\"radio\" required=\"\" class=\"cill form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" id=\"cillno\" is=\"dmx-radio\" data-msg-required=\"Please select a cill option\" value=\"No\">"
+    ]
+  },
+  {
+    "label": "Whitegrain Both Sides",
+    "id": "Whitegrain Both Sides",
+    "name": "colour",
+    "selectors_tried": [
+      "[name='colour']",
+      "input[type='radio']"
+    ],
+    "found": true,
+    "outer_html": [
+      "<input name=\"colour\" type=\"radio\" required=\"\" class=\"colour form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" data-msg-required=\"Please select a colour\" value=\"White\" id=\"White\" data-price=\"1.00\">",
+      "<input name=\"cill\" type=\"radio\" required=\"\" class=\"cill form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" id=\"cillno\" is=\"dmx-radio\" data-msg-required=\"Please select a cill option\" value=\"No\">"
+    ]
+  },
+  {
+    "label": "Smooth Anthracite Grey/White",
+    "id": "Irish Oak Both Sides",
+    "name": "colour",
+    "selectors_tried": [
+      "[name='colour']",
+      "input[type='radio']"
+    ],
+    "found": true,
+    "outer_html": [
+      "<input name=\"colour\" type=\"radio\" required=\"\" class=\"colour form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" data-msg-required=\"Please select a colour\" value=\"White\" id=\"White\" data-price=\"1.00\">",
+      "<input name=\"cill\" type=\"radio\" required=\"\" class=\"cill form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" id=\"cillno\" is=\"dmx-radio\" data-msg-required=\"Please select a cill option\" value=\"No\">"
+    ]
+  },
+  {
+    "label": "Agate Grey {White",
+    "id": "Agate Grey/White",
+    "name": "colour",
+    "selectors_tried": [
+      "[name='colour']",
+      "input[type='radio']"
+    ],
+    "found": true,
+    "outer_html": [
+      "<input name=\"colour\" type=\"radio\" required=\"\" class=\"colour form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" data-msg-required=\"Please select a colour\" value=\"White\" id=\"White\" data-price=\"1.00\">",
+      "<input name=\"cill\" type=\"radio\" required=\"\" class=\"cill form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" id=\"cillno\" is=\"dmx-radio\" data-msg-required=\"Please select a cill option\" value=\"No\">"
+    ]
+  },
+  {
+    "label": "Clear",
+    "id": "clear",
+    "name": "glass",
+    "selectors_tried": [
+      "#clear",
+      "[name='glass']",
+      "label:has-text('Clear')",
+      "input[type='radio']"
+    ],
+    "found": true,
+    "outer_html": [
+      "<input name=\"glass\" type=\"radio\" required=\"\" class=\"clear form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" id=\"clear\" onclick=\"\" data-msg-required=\"Please select a glass type\" value=\"Clear\">",
+      "<input name=\"glass\" type=\"radio\" required=\"\" class=\"clear form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" id=\"clear\" onclick=\"\" data-msg-required=\"Please select a glass type\" value=\"Clear\">",
+      "<label class=\"radio-inline u-check g-pl-25 ml-0 g-mr-25\">\n                    <input name=\"glass\" type=\"radio\" required=\"\" class=\"clear form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" id=\"clear\" onclick=\"\" data-msg-required=\"Please select a glass type\" value=\"Clear\">\n                   \n                  <div class=\"u-check-icon-radio-v4 g-absolute-centered--y g-left-0 g-width-18 g-height-18\"> <i class=\"g-absolute-centered d-block g-width-10 g-height-10 g-bg-primary--checked\"></i></div>\n                  Clear</label>",
+      "<input name=\"cill\" type=\"radio\" required=\"\" class=\"cill form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" id=\"cillno\" is=\"dmx-radio\" data-msg-required=\"Please select a cill option\" value=\"No\">"
+    ]
+  },
+  {
+    "label": "Obscure",
+    "id": "obscure",
+    "name": "glass",
+    "selectors_tried": [
+      "#obscure",
+      "[name='glass']",
+      "label:has-text('Obscure')",
+      "input[type='radio']"
+    ],
+    "found": true,
+    "outer_html": [
+      "<input class=\"obscure form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" name=\"glass\" is=\"dmx-radio\" type=\"radio\" id=\"obscure\" value=\"Obscure\">",
+      "<input name=\"glass\" type=\"radio\" required=\"\" class=\"clear form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" id=\"clear\" onclick=\"\" data-msg-required=\"Please select a glass type\" value=\"Clear\">",
+      "<label class=\"radio-inline u-check g-pl-25 ml-0 g-mr-25\">\n                    <input class=\"obscure form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" name=\"glass\" is=\"dmx-radio\" type=\"radio\" id=\"obscure\" value=\"Obscure\">\n                  <div class=\"u-check-icon-radio-v4 g-absolute-centered--y g-left-0 g-width-18 g-height-18\"> <i class=\"g-absolute-centered d-block g-width-10 g-height-10 g-bg-primary--checked\"></i></div>\n                  Obscure</label>",
+      "<input name=\"cill\" type=\"radio\" required=\"\" class=\"cill form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" id=\"cillno\" is=\"dmx-radio\" data-msg-required=\"Please select a cill option\" value=\"No\">"
+    ]
+  },
+  {
+    "label": "Standard A Rated",
+    "id": "arated",
+    "name": "argonglass",
+    "selectors_tried": [
+      "#arated",
+      "[name='argonglass']",
+      "label:has-text('Standard A Rated')",
+      "input[type='radio']"
+    ],
+    "found": true,
+    "outer_html": [
+      "<input name=\"argonglass\" type=\"radio\" required=\"\" class=\"thermal form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" id=\"arated\" onclick=\"\" data-msg-required=\"Please select an energy rating\" value=\"A Rated\">",
+      "<input name=\"argonglass\" type=\"radio\" required=\"\" class=\"thermal form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" id=\"arated\" onclick=\"\" data-msg-required=\"Please select an energy rating\" value=\"A Rated\">",
+      "<label class=\"radio u-check g-pl-25 ml-0\">\n                    <input name=\"argonglass\" type=\"radio\" required=\"\" class=\"thermal form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" id=\"arated\" onclick=\"\" data-msg-required=\"Please select an energy rating\" value=\"A Rated\">\n                   \n                  <div class=\"u-check-icon-radio-v4 g-absolute-centered--y g-left-0 g-width-18 g-height-18\"> <i class=\"g-absolute-centered d-block g-width-10 g-height-10 g-bg-primary--checked\"></i></div>\n                  Standard A Rated</label>",
+      "<input name=\"cill\" type=\"radio\" required=\"\" class=\"cill form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" id=\"cillno\" is=\"dmx-radio\" data-msg-required=\"Please select a cill option\" value=\"No\">"
+    ]
+  },
+  {
+    "label": "A++ Triple Glazed",
+    "id": "tripleglazed",
+    "name": "argonglass",
+    "selectors_tried": [
+      "#tripleglazed",
+      "[name='argonglass']",
+      "label:has-text('A++ Triple Glazed')",
+      "input[type='radio']"
+    ],
+    "found": true,
+    "outer_html": [
+      "<input class=\"tripleglazed form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" name=\"argonglass\" is=\"dmx-radio\" type=\"radio\" id=\"tripleglazed\" value=\"A++ Triple Glazed\">",
+      "<input name=\"argonglass\" type=\"radio\" required=\"\" class=\"thermal form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" id=\"arated\" onclick=\"\" data-msg-required=\"Please select an energy rating\" value=\"A Rated\">",
+      "<label class=\"radio u-check g-pl-25 ml-0\">\n                    <input class=\"tripleglazed form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" name=\"argonglass\" is=\"dmx-radio\" type=\"radio\" id=\"tripleglazed\" value=\"A++ Triple Glazed\">\n                  <div class=\"u-check-icon-radio-v4 g-absolute-centered--y g-left-0 g-width-18 g-height-18\"> <i class=\"g-absolute-centered d-block g-width-10 g-height-10 g-bg-primary--checked\"></i></div>\n\t\t\t\t\t\t A++ Triple Glazed</label>",
+      "<input name=\"cill\" type=\"radio\" required=\"\" class=\"cill form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" id=\"cillno\" is=\"dmx-radio\" data-msg-required=\"Please select a cill option\" value=\"No\">"
+    ]
+  },
+  {
+    "label": "Toughened Glass",
+    "id": "toughened",
+    "name": "toughenedglass",
+    "selectors_tried": [
+      "#toughened",
+      "[name='toughenedglass']",
+      "label:has-text('Toughened Glass')",
+      "input[type='checkbox']"
+    ],
+    "found": true,
+    "outer_html": [
+      "<input class=\"toughened g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" name=\"toughenedglass\" type=\"checkbox\" id=\"toughened\" is=\"dmx-checkbox\" value=\"Toughened Glass\">",
+      "<input class=\"toughened g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" name=\"toughenedglass\" type=\"checkbox\" id=\"toughened\" is=\"dmx-checkbox\" value=\"Toughened Glass\">",
+      "<label class=\"u-check g-pl-25\">\n                    <input class=\"toughened g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" name=\"toughenedglass\" type=\"checkbox\" id=\"toughened\" is=\"dmx-checkbox\" value=\"Toughened Glass\">\n                  \n                  <div class=\"u-check-icon-checkbox-v6 g-absolute-centered--y g-left-0\"> <i class=\"fa\" data-check-icon=\"\"></i></div>\n                  Toughened Glass</label>",
+      "<input class=\"g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" type=\"checkbox\" name=\"leftextensions10\" id=\"leftextension_10\" data-price=\"10\" is=\"dmx-checkbox\" value=\"10mm Left\">"
+    ]
+  },
+  {
+    "label": "Laminated Glass",
+    "id": "laminated",
+    "name": "laminatedglass",
+    "selectors_tried": [
+      "#laminated",
+      "[name='laminatedglass']",
+      "label:has-text('Laminated Glass')",
+      "input[type='checkbox']"
+    ],
+    "found": true,
+    "outer_html": [
+      "<input class=\"laminated g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" name=\"laminatedglass\" type=\"checkbox\" id=\"laminated\" is=\"dmx-checkbox\" value=\"Laminated Glass\">",
+      "<input class=\"laminated g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" name=\"laminatedglass\" type=\"checkbox\" id=\"laminated\" is=\"dmx-checkbox\" value=\"Laminated Glass\">",
+      "<label class=\"u-check g-pl-25\">\n                    <input class=\"laminated g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" name=\"laminatedglass\" type=\"checkbox\" id=\"laminated\" is=\"dmx-checkbox\" value=\"Laminated Glass\">\n                  \n                  <div class=\"u-check-icon-checkbox-v6 g-absolute-centered--y g-left-0\"> <i class=\"fa\" data-check-icon=\"\"></i></div>\n                  Laminated Glass</label>",
+      "<input class=\"g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" type=\"checkbox\" name=\"leftextensions10\" id=\"leftextension_10\" data-price=\"10\" is=\"dmx-checkbox\" value=\"10mm Left\">"
+    ]
+  },
+  {
+    "label": "Trickle Vents",
+    "id": "tricklevents",
+    "name": "tricklevents",
+    "selectors_tried": [
+      "#tricklevents",
+      "[name='tricklevents']",
+      "label:has-text('Trickle Vents')",
+      "select"
+    ],
+    "found": true,
+    "outer_html": [
+      "<select class=\"tricklevents g-ml-10\" name=\"tricklevents\" id=\"tricklevents\" is=\"dmx-select\">\n                <option data-price=\"0\" value=\"Not Required\">Not Required</option>\n                <option data-price=\"15\" value=\"1\">1</option>\n                <option data-price=\"30\" value=\"2\">2</option>\n                </select>",
+      "<select class=\"tricklevents g-ml-10\" name=\"tricklevents\" id=\"tricklevents\" is=\"dmx-select\">\n                <option data-price=\"0\" value=\"Not Required\">Not Required</option>\n                <option data-price=\"15\" value=\"1\">1</option>\n                <option data-price=\"30\" value=\"2\">2</option>\n                </select>",
+      "<label class=\"mb-3 mb-lg-0 g-mr-5\" for=\"trickle vents\">Trickle Vents</label>",
+      "<select name=\"handlecolour\" class=\"handlecolour g-ml-10\" id=\"handlecolour\" is=\"dmx-select\">\n                    <option selected=\"\" data-price=\"0\" value=\"\">Please select</option>\n\t\t\t\t\t<!--Repeat serverconnect1.data.handles-->\n                  </select>"
+    ]
+  },
+  {
+    "label": "Fit Pack",
+    "id": "fitpack",
+    "name": "fitpack",
+    "selectors_tried": [
+      "#fitpack",
+      "[name='fitpack']",
+      "label:has-text('Fit Pack')",
+      "input[type='checkbox']"
+    ],
+    "found": true,
+    "outer_html": [
+      "<input class=\"fitpack g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" name=\"fitpack\" id=\"fitpack\" type=\"checkbox\" data-price=\"15\" is=\"dmx-checkbox\" value=\"Yes\">",
+      "<input class=\"fitpack g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" name=\"fitpack\" id=\"fitpack\" type=\"checkbox\" data-price=\"15\" is=\"dmx-checkbox\" value=\"Yes\">",
+      "<label class=\"u-check g-pl-25\">\n                    <input class=\"fitpack g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" name=\"fitpack\" id=\"fitpack\" type=\"checkbox\" data-price=\"15\" is=\"dmx-checkbox\" value=\"Yes\">\n                 \n                  <div class=\"u-check-icon-checkbox-v6 g-absolute-centered--y g-left-0\"> <i class=\"fa\" data-check-icon=\"\"></i></div>\n                  Fit Pack <a href=\"#fitpackmodal\" data-modal-target=\"#fitpackmodal\" data-modal-effect=\"fadein\"><i class=\"icon-info\"></i></a></label>",
+      "<input class=\"g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" type=\"checkbox\" name=\"leftextensions10\" id=\"leftextension_10\" data-price=\"10\" is=\"dmx-checkbox\" value=\"10mm Left\">"
+    ]
+  }
+]
