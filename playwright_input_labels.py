@@ -5,6 +5,8 @@ import base64
 from io import BytesIO
 from datetime import datetime
 from dataclasses import dataclass
+from pathlib import Path
+from urllib.parse import urlparse
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple
 
 from playwright.sync_api import ElementHandle, sync_playwright
@@ -92,6 +94,18 @@ def _looks_like_noise(text: str) -> bool:
 def run_stamp(dt: Optional[datetime] = None) -> str:
     d = dt or datetime.now()
     return d.strftime("%Y%m%d_%H%M%S")
+
+
+def _manual_output_path(url: str, suffix: str) -> Path:
+    parsed = urlparse((url or "").strip())
+    host = re.sub(r"[^a-z0-9]+", "-", (parsed.netloc or "site").lower()).strip("-")
+    path_part = re.sub(r"[^a-z0-9]+", "-", (parsed.path or "/").lower()).strip("-")
+    slug = f"{host}-{path_part}" if path_part else host
+    slug = slug[:120] if len(slug) > 120 else slug
+    root = Path(__file__).resolve().parent
+    out_dir = root / "data" / "results" / "playwright_manual_outputs"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    return out_dir / f"{slug}{suffix}"
 
 
 def screenshot_page(page, path: str) -> Tuple[int, int]:
@@ -1528,6 +1542,10 @@ if __name__ == "__main__":
         print("Usage: python playwright_input_labels.py <url>")
         raise SystemExit(2)
 
-    data = get_inputs(sys.argv[1])
+    target_url = sys.argv[1]
+    data = get_inputs(target_url)
+    out_path = _manual_output_path(target_url, "_labels.json")
+    with open(out_path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
     print(json.dumps(data, indent=2, ensure_ascii=False))
 

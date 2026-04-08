@@ -7,6 +7,8 @@ import os
 import base64
 import re
 from io import BytesIO
+from pathlib import Path
+from urllib.parse import urlparse
 from typing import Any, Dict, List, Tuple
 
 from dotenv import load_dotenv
@@ -31,6 +33,18 @@ from playwright_input_labels import (
     get_price_element,
     get_inputs as get_inputs_base,
 )
+
+
+def _manual_output_path(url: str, suffix: str) -> Path:
+    parsed = urlparse((url or "").strip())
+    host = re.sub(r"[^a-z0-9]+", "-", (parsed.netloc or "site").lower()).strip("-")
+    path_part = re.sub(r"[^a-z0-9]+", "-", (parsed.path or "/").lower()).strip("-")
+    slug = f"{host}-{path_part}" if path_part else host
+    slug = slug[:120] if len(slug) > 120 else slug
+    root = Path(__file__).resolve().parent
+    out_dir = root / "data" / "results" / "playwright_manual_outputs"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    return out_dir / f"{slug}{suffix}"
 
 
 def _crop_to_base64(image_path: str, bbox: Dict[str, float], pad: int = 120) -> str:
@@ -228,5 +242,9 @@ if __name__ == "__main__":
         print("Usage: python playwright_input_labels_langchain.py <url>")
         raise SystemExit(2)
 
-    data = get_inputs(sys.argv[1])
+    target_url = sys.argv[1]
+    data = get_inputs(target_url)
+    out_path = _manual_output_path(target_url, "_labels_langchain.json")
+    with open(out_path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
     print(json.dumps(data, indent=2, ensure_ascii=False))
