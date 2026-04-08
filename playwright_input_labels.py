@@ -19,7 +19,13 @@ _WHITESPACE_RE = re.compile(r"\s+")
 def _clean_text(value: Optional[str]) -> str:
     if not value:
         return ""
-    return _WHITESPACE_RE.sub(" ", value).strip()
+    # OCR sometimes misreads delimiters like `/` as `{` (and sometimes drops `}`).
+    # Normalizing these makes label matching more robust.
+    text = str(value).replace("{", "/").replace("}", "")
+    text = _WHITESPACE_RE.sub(" ", text).strip()
+    # Normalize whitespace around `/` so "Agate Grey /White" -> "Agate Grey/White"
+    text = re.sub(r"\s*/\s*", "/", text)
+    return text
 
 
 def _clean_candidate(value: Optional[str]) -> str:
@@ -146,32 +152,251 @@ def get_price_element(page) -> Optional[Dict[str, Any]]:
             return r.width > 0 && r.height > 0;
           };
 
+          const asPriceText = (t) => {
+            const v = clean(t);
+            if (!v) return '';
+            if (!(/[£$€]/.test(v) || /\\b\\d+[\\d,.]*\\b/.test(v))) return '';
+            return v;
+          };
+          const firstMoney = (t) => {
+            const m = clean(t).match(/[£$€]\\s*\\d[\\d,.]*/);
+            return m ? m[0] : '';
+          };
+          const looksHistorical = (t) =>
+            /\\b(was|rrp|save|saving|savings|regular\\s*price|old\\s*price|from)\\b/i.test(clean(t));
+          const looksCurrent = (t) =>
+            /\\b(now|our\\s*price|final\\s*price|inc\\.?\\s*vat|including\\s*vat|ex\\.?\\s*vat|excluding\\s*vat|special\\s*price|as\\s*low\\s*as|current\\s*price|sale\\s*price)\\b/i.test(clean(t));
+          const inRecommendationContext = (el) => {
+            if (!el || !el.closest) return false;
+            const bad = [
+              '[class*="related"]',
+              '[class*="recommend"]',
+              '[class*="crosssell"]',
+              '[class*="upsell"]',
+              '[class*="carousel"]',
+              '[class*="slider"]',
+              '[class*="product-item"]',
+              '[class*="products-grid"]',
+              '[id*="related"]',
+              '[id*="recommend"]',
+              '[id*="upsell"]',
+              '[id*="crosssell"]',
+              '[id*="carousel"]'
+            ];
+            return bad.some((sel) => !!el.closest(sel));
+          };
+          const primaryProductRoot = () => {
+            const roots = [
+              '#maincontent .product-info-main',
+              '.product-info-main',
+              'main .product-info-main',
+              '[itemprop="offers"]',
+              '.product-info-price',
+              '#maincontent'
+            ];
+            for (const sel of roots) {
+              const node = document.querySelector(sel);
+              if (!node || !visible(node)) continue;
+              const r = node.getBoundingClientRect();
+              if (r.width <= 0 || r.height <= 0) continue;
+              return node;
+            }
+            return document.querySelector('main') || document.body;
+          };
+          const buildResult = (el, text) => {
+            const r = el.getBoundingClientRect();
+            return {
+              text: text,
+              tag: (el.tagName || '').toLowerCase(),
+              id: el.id || '',
+              name: el.getAttribute('name') || '',
+              class_name: el.className || '',
+              rect: { left: r.left, top: r.top, right: r.right, bottom: r.bottom },
+            };
+          };
+
+          // Some product pages (e.g. legacy ecommerce markup) render price as:
+          // <img alt="price"> <font>£88.31</font> inside [itemprop="offers"].
+          // Try this first because generic ".price" selectors can miss it.
+          const offers = document.querySelector('[itemprop="offers"]');
+          if (offers) {
+            const imgPrice = offers.querySelector('img[alt]');
+            const allImgs = Array.from(offers.querySelectorAll('img[alt]'));
+            const primary = allImgs.find((n) => /(^|\\s)(price|our price)(\\s|$)/i.test(n.getAttribute('alt') || '')) || imgPrice;
+            if (primary) {
+              const font = primary.nextElementSibling && primary.nextElementSibling.tagName && primary.nextElementSibling.tagName.toLowerCase() === 'font'
+                ? primary.nextElementSibling
+                : primary.parentElement && primary.parentElement.querySelector('font');
+              if (font && visible(font)) {
+                const txt = asPriceText(font.innerText || font.textContent || '');
+                if (txt) {
+                  const r = font.getBoundingClientRect();
+                  return {
+                    text: txt,
+                    tag: (font.tagName || '').toLowerCase(),
+                    id: font.id || '',
+                    name: font.getAttribute('name') || '',
+                    class_name: font.className || '',
+                    rect: { left: r.left, top: r.top, right: r.right, bottom: r.bottom },
+                  };
+                }
+              }
+            }
+          }
+
+          // Preferred path for Magento-like PDPs:
+          // find final/current price in the primary product container, not in related products.
+          const root = primaryProductRoot();
+          if (root) {
+            const scopedSelectors = [
+              '[data-price-type="finalPrice"] .price-wrapper',
+              '[data-price-type="finalPrice"] .price',
+              '[id^="product-price-"]',
+              '.price-box.price-final_price .price-wrapper',
+              '.price-box.price-final_price .price',
+              '.product-info-price .price-wrapper',
+              '.product-info-price .price'
+            ];
+            const scopedCandidates = [];
+            for (const sel of scopedSelectors) {
+              for (const el of Array.from(root.querySelectorAll(sel))) {
+                if (!visible(el) || inRecommendationContext(el)) continue;
+                const raw = clean(el.innerText || el.textContent || '');
+                const money = firstMoney(raw);
+                if (!money) continue;
+                const r = el.getBoundingClientRect();
+                scopedCandidates.push({ el, money, raw, r });
+              }
+            }
+            if (scopedCandidates.length) {
+              scopedCandidates.sort((a, b) => {
+                const score = (c) => {
+                  let s = c.r.top;
+                  if (looksHistorical(c.raw)) s += 3000;
+                  if (looksCurrent(c.raw)) s -= 600;
+                  if ((c.el.id || '').startsWith('product-price-')) s -= 450;
+                  if ((c.el.className || '').toString().includes('price-wrapper')) s -= 150;
+                  return s;
+                };
+                return score(a) - score(b);
+              });
+              const best = scopedCandidates[0];
+              return buildResult(best.el, best.money);
+            }
+          }
+
+          // Fallback 1: promo blocks that render "Now £xx.xx" as current discounted price.
+          const nowCandidates = [];
+          const textNodes = Array.from(document.querySelectorAll('p,div,span,strong,b,h1,h2,h3,h4,h5,h6,li'));
+          for (const el of textNodes) {
+            if (!visible(el) || inRecommendationContext(el)) continue;
+            const t = clean(el.innerText || el.textContent || '');
+            if (!t || t.length > 180) continue;
+            if (!/\\bnow\\b/i.test(t)) continue;
+            const direct = t.match(/\\bnow\\b[^£$€\\d]{0,20}([£$€]\\s*\\d[\\d,.]*)/i);
+            const money = direct ? direct[1] : firstMoney(t);
+            if (!money) continue;
+            const r = el.getBoundingClientRect();
+            nowCandidates.push({ el, t: money, raw: t, r });
+          }
+          if (nowCandidates.length) {
+            nowCandidates.sort((a, b) => {
+              if (a.r.top !== b.r.top) return a.r.top - b.r.top;
+              const aArea = a.r.width * a.r.height;
+              const bArea = b.r.width * b.r.height;
+              return bArea - aArea;
+            });
+            const best = nowCandidates[0];
+            return {
+              text: best.t,
+              tag: (best.el.tagName || '').toLowerCase(),
+              id: best.el.id || '',
+              name: best.el.getAttribute('name') || '',
+              class_name: best.el.className || '',
+              rect: { left: best.r.left, top: best.r.top, right: best.r.right, bottom: best.r.bottom },
+            };
+          }
+
+          // Fallback 2: sites that render "Price £xx.xx" without price classes/ids.
+          const textCandidates = [];
+          for (const el of textNodes) {
+            if (!visible(el) || inRecommendationContext(el)) continue;
+            const t = clean(el.innerText || el.textContent || '');
+            if (!t || t.length > 140) continue;
+            if (!/\\bprice\\b/i.test(t)) continue;
+            const money = firstMoney(t);
+            if (!money) continue;
+            if (/delivery|hotline|basket|more info/i.test(t)) continue;
+            if (looksHistorical(t) && !looksCurrent(t)) continue;
+            const r = el.getBoundingClientRect();
+            textCandidates.push({ el, t: money, raw: t, r });
+          }
+          if (textCandidates.length) {
+            // Prefer current price semantics over historical promo text.
+            textCandidates.sort((a, b) => {
+              const score = (c) => {
+                let s = c.r.top;
+                const area = c.r.width * c.r.height;
+                s -= Math.min(area, 300000) / 10000;
+                if (looksHistorical(c.raw)) s += 3000;
+                if (looksCurrent(c.raw)) s -= 800;
+                return s;
+              };
+              const sa = score(a);
+              const sb = score(b);
+              if (sa !== sb) return sa - sb;
+              const aArea = a.r.width * a.r.height;
+              const bArea = b.r.width * b.r.height;
+              return bArea - aArea;
+            });
+            const best = textCandidates[0];
+            return {
+              text: best.t,
+              tag: (best.el.tagName || '').toLowerCase(),
+              id: best.el.id || '',
+              name: best.el.getAttribute('name') || '',
+              class_name: best.el.className || '',
+              rect: { left: best.r.left, top: best.r.top, right: best.r.right, bottom: best.r.bottom },
+            };
+          }
+
           const selectors = [
             '.price',
             '[class*=\"price\"]',
             '#price',
             '[id*=\"price\"]',
             '[data-price]',
+            '[itemprop=\"offers\"]',
           ];
           const candidates = [];
           for (const sel of selectors) {
             for (const el of Array.from(document.querySelectorAll(sel))) {
-              if (!visible(el)) continue;
+              if (!visible(el) || inRecommendationContext(el)) continue;
               const t = clean(el.innerText || el.textContent || '');
               if (!t) continue;
-              // must contain a currency-ish marker or digits
-              if (!(/[£$€]/.test(t) || /\\b\\d+[\\d,.]*\\b/.test(t))) continue;
+              const priceText = asPriceText(t);
+              if (!priceText) continue;
               const r = el.getBoundingClientRect();
-              candidates.push({ el, t, r });
+              candidates.push({ el, t: priceText, raw: t, r });
             }
           }
           if (!candidates.length) return null;
-          // pick the smallest (often the actual price value), bias towards top area
+          // Rank towards currently applied price and away from "was/rrp/save" text.
           candidates.sort((a,b) => {
+            const score = (c) => {
+              let s = c.r.top;
+              const area = c.r.width * c.r.height;
+              s += Math.min(area, 400000) / 40000; // slight preference for tighter nodes
+              if (looksHistorical(c.raw)) s += 3000;
+              if (looksCurrent(c.raw)) s -= 800;
+              return s;
+            };
+            const sa = score(a);
+            const sb = score(b);
+            if (sa !== sb) return sa - sb;
             const aArea = a.r.width * a.r.height;
             const bArea = b.r.width * b.r.height;
-            if (aArea !== bArea) return aArea - bArea;
-            return a.r.top - b.r.top;
+            return aArea - bArea;
           });
           const best = candidates[0];
           return {
@@ -184,6 +409,127 @@ def get_price_element(page) -> Optional[Dict[str, Any]]:
           };
         }"""
     )
+
+
+def get_all_prices(page) -> List[Dict[str, Any]]:
+    """
+    Collect all visible money-like prices within the main product detail area.
+    Excludes related/recommended product sections.
+    """
+    data = page.evaluate(
+        """() => {
+          const clean = (t) => (t || '').replace(/\\s+/g,' ').trim();
+          const visible = (el) => {
+            if (!el || el.nodeType !== 1) return false;
+            const s = getComputedStyle(el);
+            if (s.display === 'none' || s.visibility === 'hidden') return false;
+            const r = el.getBoundingClientRect();
+            return r.width > 0 && r.height > 0;
+          };
+          const firstMoney = (t) => {
+            const m = clean(t).match(/[£$€]\\s*\\d[\\d,.]*/);
+            return m ? m[0] : '';
+          };
+          const inRecommendationContext = (el) => {
+            if (!el || !el.closest) return false;
+            const bad = [
+              '[class*="related"]',
+              '[class*="recommend"]',
+              '[class*="crosssell"]',
+              '[class*="upsell"]',
+              '[class*="carousel"]',
+              '[class*="slider"]',
+              '[class*="product-item"]',
+              '[class*="products-grid"]',
+              '[id*="related"]',
+              '[id*="recommend"]',
+              '[id*="upsell"]',
+              '[id*="crosssell"]',
+              '[id*="carousel"]'
+            ];
+            return bad.some((sel) => !!el.closest(sel));
+          };
+          const primaryProductRoot = () => {
+            const roots = [
+              '#maincontent .product-info-main',
+              '.product-info-main',
+              'main .product-info-main',
+              '[itemprop="offers"]',
+              '.product-info-price',
+              '#maincontent'
+            ];
+            for (const sel of roots) {
+              const node = document.querySelector(sel);
+              if (!node || !visible(node)) continue;
+              const r = node.getBoundingClientRect();
+              if (r.width <= 0 || r.height <= 0) continue;
+              return node;
+            }
+            return null;
+          };
+
+          const root = primaryProductRoot();
+          if (!root) return [];
+
+          const selectors = [
+            '[data-price-type="finalPrice"] .price-wrapper',
+            '[data-price-type="finalPrice"] .price',
+            '[id^="product-price-"]',
+            '.price-box.price-final_price .price-wrapper',
+            '.price-box.price-final_price .price',
+            '.product-info-price .price-wrapper',
+            '.product-info-price .price',
+            '.price',
+            '[class*="price"]',
+            '[id*="price"]',
+            '[data-price]',
+            '[itemprop="offers"] font'
+          ];
+
+          const seen = new Set();
+          const out = [];
+          for (const sel of selectors) {
+            for (const el of Array.from(root.querySelectorAll(sel))) {
+              if (!visible(el) || inRecommendationContext(el)) continue;
+              const raw = clean(el.innerText || el.textContent || '');
+              if (!raw || raw.length > 180) continue;
+              const money = firstMoney(raw);
+              if (!money) continue;
+              const r = el.getBoundingClientRect();
+              const key = [
+                clean(el.id || ''),
+                clean(el.getAttribute('name') || ''),
+                clean(el.className || ''),
+                money,
+                Math.round(r.left),
+                Math.round(r.top),
+                Math.round(r.width),
+                Math.round(r.height),
+              ].join('|');
+              if (seen.has(key)) continue;
+              seen.add(key);
+              out.push({
+                text: money,
+                tag: (el.tagName || '').toLowerCase(),
+                id: el.id || '',
+                name: el.getAttribute('name') || '',
+                class_name: el.className || '',
+                rect: { left: r.left, top: r.top, right: r.right, bottom: r.bottom },
+              });
+            }
+          }
+
+          out.sort((a, b) => {
+            const dy = a.rect.top - b.rect.top;
+            if (Math.abs(dy) > 2) return dy;
+            return a.rect.left - b.rect.left;
+          });
+          return out;
+        }"""
+    )
+    if not isinstance(data, list):
+        return []
+    return data
 
 
 def get_all_inputs(page) -> List[ElementHandle]:
@@ -342,8 +688,6 @@ def _hard_exclude_result(item: Dict[str, Any]) -> bool:
         "add +",
         "increment",
         "decrement",
-        "minus",
-        "plus",
     ]
     return any(k in hay for k in excluded_terms)
 
@@ -401,8 +745,6 @@ def is_price_relevant(
         "add +",
         "increment",
         "decrement",
-        "minus",
-        "plus",
     ]
     if any(k in hay for k in excluded):
         return False
@@ -915,6 +1257,7 @@ def get_inputs(
             pass
 
         price = get_price_element(page)
+        all_prices_raw = get_all_prices(page)
 
         stamp = run_stamp()
         debug_dir = "debug"
@@ -1015,6 +1358,48 @@ def get_inputs(
                             }
                         )
 
+            # Post-correction for radio/checkbox option controls:
+            # OCR/DOM label extraction can sometimes pick up text belonging to
+            # a neighbouring option (or drop the `/` delimiter).
+            # Only apply these id-vs-label sanity checks to the Window Colour
+            # group. Other groups (WER, cills, hardware) often use internal
+            # ids like "arated"/"tripleglazed"/"fitpack" that are not meant
+            # to be used as user-facing labels.
+            if input_type in {"radio", "checkbox"} and id_clean and group_label and "window colour" in group_label.lower():
+                label_l = label.lower()
+                id_l = id_clean.lower()
+
+                # First token is usually the "left side" (e.g., "Cream", "Oak", "White").
+                id_tokens = [t for t in re.split(r"[^a-z0-9]+", id_l) if t]
+                first_token = id_tokens[0] if id_tokens else ""
+
+                # When the id uses the form "Left/Right" (e.g., "Cream/White"),
+                # require the right part to appear in the extracted label.
+                if "/" in id_clean:
+                    left_part, right_part = id_clean.split("/", 1)
+                    right_key = _clean_text(right_part)
+                    right_key_l = right_key.lower()
+
+                    if right_key_l and right_key_l not in label_l:
+                        # Label looks like it belongs to a different option.
+                        label = id_clean
+
+                    # If label has both parts but is missing the `/`, reinsert it.
+                    elif right_key_l and right_key_l in label_l and "/" not in label:
+                        # Replace the trailing " <Right>" with "/<Right>".
+                        label = re.sub(
+                            rf"\s+{re.escape(right_key_l)}\s*$",
+                            f"/{right_key}",
+                            label,
+                            flags=re.IGNORECASE,
+                        )
+                else:
+                    # No `/` in id: if the extracted label doesn't even contain
+                    # the first token, prefer the id (prevents cross-option
+                    # misassignment like "White" being labeled as "Oak Both Sides").
+                    if first_token and first_token not in label_l:
+                        label = id_clean
+
             price_relevant = is_price_relevant(el, label, group_label, price)
             if not price_relevant:
                 continue
@@ -1071,7 +1456,43 @@ def get_inputs(
                 },
             }
 
-        response = {"price": price_obj, "inputs": results}
+        all_prices: List[Dict[str, Any]] = []
+        seen_price_labels: Set[str] = set()
+        for p in all_prices_raw:
+            if not isinstance(p, dict):
+                continue
+            rect = p.get("rect") or {}
+            label = _clean_text(p.get("text"))
+            left = float(rect.get("left", 0.0))
+            top = float(rect.get("top", 0.0))
+            right = float(rect.get("right", 0.0))
+            bottom = float(rect.get("bottom", 0.0))
+            if not label or label in seen_price_labels:
+                continue
+            seen_price_labels.add(label)
+            all_prices.append(
+                {
+                    "label": label,
+                    "tag": _clean_text(p.get("tag")),
+                    "type": "",
+                    "name": _clean_text(p.get("name")),
+                    "id": _clean_text(p.get("id")),
+                    "class_name": _clean_text(p.get("class_name")),
+                    "bbox": {
+                        "left": left,
+                        "top": top,
+                        "right": right,
+                        "bottom": bottom,
+                    },
+                }
+            )
+
+        # Keep all_prices useful on single-price pages where the scoped collector
+        # returns no candidates but the primary price heuristic still succeeds.
+        if not all_prices and price_obj:
+            all_prices.append(dict(price_obj))
+
+        response = {"price": price_obj, "all_prices": all_prices, "inputs": results}
 
         # Write timestamped JSON output
         json_path = os.path.join(debug_dir, f"labels_{stamp}.json")
