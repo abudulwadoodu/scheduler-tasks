@@ -29,6 +29,8 @@ def scrape_price(
 
 {comment_parser_function}
 
+
+
 ```
 ## Navigation steps
 - Navigation steps contain all the possible steps to perform to get correct price

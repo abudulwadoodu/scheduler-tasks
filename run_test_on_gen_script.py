@@ -1,5 +1,5 @@
 import pandas as pd
-from justdooruk_gen_3 import scrape_price
+from justdoork_gen_claude import scrape_price
 
 test_data = pd.read_excel("./dataset/justdooruk_materials.xlsx")
 test_data['text_input'] = test_data['Description'] + " " + test_data['Comments']
@@ -26,7 +26,8 @@ def run_test(test_data : pd.DataFrame):
         print(f"Extracted price for index {index}: {price}")
 
     print(test_data[['URL', 'text_input', 'Extracted_Price']])
+    test_data.to_excel("./dataset/justdooruk_materials_with_prices.xlsx", index=False)
 
 if __name__ == "__main__":
-    run_test(test_data[:1])
+    run_test(test_data)
               

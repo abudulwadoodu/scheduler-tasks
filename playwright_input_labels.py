@@ -163,63 +163,9 @@ def get_price_element(page) -> Optional[Dict[str, Any]]:
             return m ? m[0] : '';
           };
           const looksHistorical = (t) =>
-<<<<<<< HEAD
             /\\b(was|rrp|save|saving|savings)\\b/i.test(clean(t));
           const looksCurrent = (t) =>
             /\\b(now|price|total\\s*cost)\\b/i.test(clean(t));
-=======
-            /\\b(was|rrp|save|saving|savings|regular\\s*price|old\\s*price|from)\\b/i.test(clean(t));
-          const looksCurrent = (t) =>
-            /\\b(now|our\\s*price|final\\s*price|inc\\.?\\s*vat|including\\s*vat|ex\\.?\\s*vat|excluding\\s*vat|special\\s*price|as\\s*low\\s*as|current\\s*price|sale\\s*price)\\b/i.test(clean(t));
-          const inRecommendationContext = (el) => {
-            if (!el || !el.closest) return false;
-            const bad = [
-              '[class*="related"]',
-              '[class*="recommend"]',
-              '[class*="crosssell"]',
-              '[class*="upsell"]',
-              '[class*="carousel"]',
-              '[class*="slider"]',
-              '[class*="product-item"]',
-              '[class*="products-grid"]',
-              '[id*="related"]',
-              '[id*="recommend"]',
-              '[id*="upsell"]',
-              '[id*="crosssell"]',
-              '[id*="carousel"]'
-            ];
-            return bad.some((sel) => !!el.closest(sel));
-          };
-          const primaryProductRoot = () => {
-            const roots = [
-              '#maincontent .product-info-main',
-              '.product-info-main',
-              'main .product-info-main',
-              '[itemprop="offers"]',
-              '.product-info-price',
-              '#maincontent'
-            ];
-            for (const sel of roots) {
-              const node = document.querySelector(sel);
-              if (!node || !visible(node)) continue;
-              const r = node.getBoundingClientRect();
-              if (r.width <= 0 || r.height <= 0) continue;
-              return node;
-            }
-            return document.querySelector('main') || document.body;
-          };
-          const buildResult = (el, text) => {
-            const r = el.getBoundingClientRect();
-            return {
-              text: text,
-              tag: (el.tagName || '').toLowerCase(),
-              id: el.id || '',
-              name: el.getAttribute('name') || '',
-              class_name: el.className || '',
-              rect: { left: r.left, top: r.top, right: r.right, bottom: r.bottom },
-            };
-          };
->>>>>>> 22d44e23b866688259d5fdb858bdca24e56fbe03
 
           // Some product pages (e.g. legacy ecommerce markup) render price as:
           // <img alt="price"> <font>£88.31</font> inside [itemprop="offers"].
@@ -250,59 +196,11 @@ def get_price_element(page) -> Optional[Dict[str, Any]]:
             }
           }
 
-<<<<<<< HEAD
-=======
-          // Preferred path for Magento-like PDPs:
-          // find final/current price in the primary product container, not in related products.
-          const root = primaryProductRoot();
-          if (root) {
-            const scopedSelectors = [
-              '[data-price-type="finalPrice"] .price-wrapper',
-              '[data-price-type="finalPrice"] .price',
-              '[id^="product-price-"]',
-              '.price-box.price-final_price .price-wrapper',
-              '.price-box.price-final_price .price',
-              '.product-info-price .price-wrapper',
-              '.product-info-price .price'
-            ];
-            const scopedCandidates = [];
-            for (const sel of scopedSelectors) {
-              for (const el of Array.from(root.querySelectorAll(sel))) {
-                if (!visible(el) || inRecommendationContext(el)) continue;
-                const raw = clean(el.innerText || el.textContent || '');
-                const money = firstMoney(raw);
-                if (!money) continue;
-                const r = el.getBoundingClientRect();
-                scopedCandidates.push({ el, money, raw, r });
-              }
-            }
-            if (scopedCandidates.length) {
-              scopedCandidates.sort((a, b) => {
-                const score = (c) => {
-                  let s = c.r.top;
-                  if (looksHistorical(c.raw)) s += 3000;
-                  if (looksCurrent(c.raw)) s -= 600;
-                  if ((c.el.id || '').startsWith('product-price-')) s -= 450;
-                  if ((c.el.className || '').toString().includes('price-wrapper')) s -= 150;
-                  return s;
-                };
-                return score(a) - score(b);
-              });
-              const best = scopedCandidates[0];
-              return buildResult(best.el, best.money);
-            }
-          }
-
->>>>>>> 22d44e23b866688259d5fdb858bdca24e56fbe03
           // Fallback 1: promo blocks that render "Now £xx.xx" as current discounted price.
           const nowCandidates = [];
           const textNodes = Array.from(document.querySelectorAll('p,div,span,strong,b,h1,h2,h3,h4,h5,h6,li'));
           for (const el of textNodes) {
-<<<<<<< HEAD
             if (!visible(el)) continue;
-=======
-            if (!visible(el) || inRecommendationContext(el)) continue;
->>>>>>> 22d44e23b866688259d5fdb858bdca24e56fbe03
             const t = clean(el.innerText || el.textContent || '');
             if (!t || t.length > 180) continue;
             if (!/\\bnow\\b/i.test(t)) continue;
@@ -333,11 +231,7 @@ def get_price_element(page) -> Optional[Dict[str, Any]]:
           // Fallback 2: sites that render "Price £xx.xx" without price classes/ids.
           const textCandidates = [];
           for (const el of textNodes) {
-<<<<<<< HEAD
             if (!visible(el)) continue;
-=======
-            if (!visible(el) || inRecommendationContext(el)) continue;
->>>>>>> 22d44e23b866688259d5fdb858bdca24e56fbe03
             const t = clean(el.innerText || el.textContent || '');
             if (!t || t.length > 140) continue;
             if (!/\\bprice\\b/i.test(t)) continue;
