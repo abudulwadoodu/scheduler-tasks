@@ -230,3 +230,12 @@ if __name__ == "__main__":
 
     data = get_inputs(sys.argv[1])
     print(json.dumps(data, indent=2, ensure_ascii=False))
+
+    url = sys.argv[1]
+    print("url:", url)
+    domain = re.findall(r"https?://([^/]+)", url)
+    domain_str = domain[0] if domain else "output"
+    filename =''.join(url.split('.')[1:]).replace('/', '_')
+
+    with open(f"./price_input_validator/input_jsons/{filename}.json", "w") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
