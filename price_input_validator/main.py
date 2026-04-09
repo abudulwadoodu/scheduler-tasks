@@ -38,7 +38,7 @@ class PriceInputValidator:
         self.api_key = api_key or os.getenv("OPENAI_API_KEY")
         # self.api_base = api_base or os.getenv("AZURE_API_BASE")
         # self.api_version = api_version or os.getenv("AZURE_API_VERSION")
-        self.model =  "gpt-4"
+        self.model =  "gpt-4.1"
         
         # if not all([self.api_key, self.api_base, self.api_version]):
         #     raise ValueError(
@@ -90,9 +90,22 @@ class PriceInputValidator:
         
         # Step 1: Load JSON
         print("\n[1/4] 📥 Loading JSON configuration...")
-        with open(labels_json_path, 'r', encoding='utf-8') as f:
-            json_data = json.load(f)
+
+        for enc in ["utf-8", "cp1252", "latin-1"]:
+            try:
+               with open(labels_json_path, "r", encoding=enc) as f:
+                    json_data = json.load(f)
+            except UnicodeDecodeError:
+                continue
+            else:
+                print(f"✅ Successfully loaded JSON with encoding: {enc}")
+            
+                break
+        # with open(labels_json_path, 'r', encoding='utf-8') as f:
+        #     json_data = json.load(f)
+        print("json_data:", json_data)
         labels_json = LabelsJSON(**json_data)
+      
         print(f"✅ Loaded {len(labels_json.inputs)} input definitions")
         
         # Step 2: Vision analysis

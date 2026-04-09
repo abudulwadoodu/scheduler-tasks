@@ -1,0 +1,11 @@
+{
+  "missing": [
+    {
+      "label": "Quantity",
+      "type": "number",
+      "description": "Number input for specifying how many units of the product to purchase",
+      "reason_missing": "Likely overlooked during initial form analysis or considered a standard cart input not specific to product configuration"
+    }
+  ],
+  "timestamp": ""
+}

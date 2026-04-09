@@ -237,5 +237,5 @@ if __name__ == "__main__":
     domain_str = domain[0] if domain else "output"
     filename =''.join(url.split('.')[1:]).replace('/', '_')
 
-    with open(f"./price_input_validator/input_jsons/{filename}.json", "w") as f:
+    with open(f"./price_input_validator/input_jsons/data.json", "w") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)

@@ -15,7 +15,7 @@ class ScreenshotAnalyzer:
     def __init__(
         self,
         api_key: str,
-        model: str = "gpt-4-vision-preview"
+        model: str = "gpt-4.1-vision-preview"
     ):
         """Initialize the screenshot analyzer with Azure OpenAI credentials."""
         self.client = OpenAI(api_key=api_key)  # Use OpenAI client for GPT-4 Vision
@@ -36,16 +36,20 @@ class ScreenshotAnalyzer:
             page = browser.new_page(viewport={"width": 1920, "height": 1080})
             
             try:
-                page.goto(url, wait_until="networkidle", timeout=30000)
-                # Wait a bit for any dynamic content
-                page.wait_for_timeout(2000)
-                
+                try:
+                    page.goto(url, wait_until="networkidle", timeout=60000)
+                except Exception as e:
+                    print(f"[WARN] networkidle timed out, retrying with 'load' event: {e}")
+                    page.goto(url, wait_until="load", timeout=60000)
+                    page.wait_for_timeout(5000) 
+                else:
+                    page.wait_for_timeout(2000)
                 # Take full page screenshot
                 screenshot_bytes = page.screenshot(full_page=True)
-                
                 return screenshot_bytes
             finally:
                 browser.close()
+        
     
     def analyze_screenshot(self, screenshot_bytes: bytes) -> List[IdentifiedComponent]:
         """

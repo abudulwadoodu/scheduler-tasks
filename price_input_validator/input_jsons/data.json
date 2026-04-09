@@ -1,0 +1,499 @@
+{
+  "price": {
+    "label": "£65.00",
+    "tag": "div",
+    "type": "",
+    "name": "",
+    "id": "",
+    "class_name": "card g-brd-primary rounded-0 g-mb-15 d-none d-sm-block",
+    "bbox": {
+      "left": 85.0,
+      "top": 847.1875,
+      "right": 530.0,
+      "bottom": 1041.28125
+    }
+  },
+  "all_prices": [
+    {
+      "label": "£65.00",
+      "tag": "div",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "card g-brd-primary rounded-0 g-mb-15 d-none d-sm-block",
+      "bbox": {
+        "left": 85.0,
+        "top": 847.1875,
+        "right": 530.0,
+        "bottom": 1041.28125
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "label": "Frame Width (mm)",
+      "group_label": "Dimensions:",
+      "tag": "input",
+      "type": "text",
+      "name": "framewidth",
+      "id": "framewidth",
+      "bbox": {
+        "left": 576.0,
+        "top": 541.546875,
+        "right": 1179.0,
+        "bottom": 575.046875
+      },
+      "is_price_relevant": true
+    },
+    {
+      "label": "Frame Height (mm)",
+      "group_label": "Dimensions:",
+      "tag": "input",
+      "type": "text",
+      "name": "frameheight",
+      "id": "frameheight",
+      "bbox": {
+        "left": 576.0,
+        "top": 627.421875,
+        "right": 1179.0,
+        "bottom": 660.921875
+      },
+      "is_price_relevant": true
+    },
+    {
+      "label": "No",
+      "group_label": "External Cill:",
+      "tag": "input",
+      "type": "radio",
+      "name": "cill",
+      "id": "cillno",
+      "bbox": {
+        "left": 576.0,
+        "top": 759.203125,
+        "right": 618.96875,
+        "bottom": 781.59375
+      },
+      "is_price_relevant": true
+    },
+    {
+      "label": "85mm Stub",
+      "group_label": "External Cill:",
+      "tag": "input",
+      "type": "radio",
+      "name": "cill",
+      "id": "cill85",
+      "bbox": {
+        "left": 647.4375,
+        "top": 759.203125,
+        "right": 744.671875,
+        "bottom": 781.59375
+      },
+      "is_price_relevant": true
+    },
+    {
+      "label": "Standard 150mm",
+      "group_label": "External Cill:",
+      "tag": "input",
+      "type": "radio",
+      "name": "cill",
+      "id": "cill150",
+      "bbox": {
+        "left": 773.140625,
+        "top": 759.203125,
+        "right": 906.03125,
+        "bottom": 781.59375
+      },
+      "is_price_relevant": true
+    },
+    {
+      "label": "180mm",
+      "group_label": "External Cill:",
+      "tag": "input",
+      "type": "radio",
+      "name": "cill",
+      "id": "cill180",
+      "bbox": {
+        "left": 934.5,
+        "top": 759.203125,
+        "right": 1007.65625,
+        "bottom": 781.59375
+      },
+      "is_price_relevant": true
+    },
+    {
+      "label": "White",
+      "group_label": "Window Colour",
+      "tag": "input",
+      "type": "radio",
+      "name": "colour",
+      "id": "White",
+      "bbox": {
+        "left": 658.75,
+        "top": 1145.859375,
+        "right": 676.75,
+        "bottom": 1163.859375
+      },
+      "is_price_relevant": true
+    },
+    {
+      "label": "Oak Both Sides",
+      "group_label": "Window Colour",
+      "tag": "input",
+      "type": "radio",
+      "name": "colour",
+      "id": "Oak Both Sides",
+      "bbox": {
+        "left": 869.75,
+        "top": 1145.859375,
+        "right": 887.75,
+        "bottom": 1163.859375
+      },
+      "is_price_relevant": true
+    },
+    {
+      "label": "Oak/White",
+      "group_label": "Window Colour",
+      "tag": "input",
+      "type": "radio",
+      "name": "colour",
+      "id": "Oak/White",
+      "bbox": {
+        "left": 1080.75,
+        "top": 1145.859375,
+        "right": 1098.75,
+        "bottom": 1163.859375
+      },
+      "is_price_relevant": true
+    },
+    {
+      "label": "Rosewood Both Sides",
+      "group_label": "Window Colour",
+      "tag": "input",
+      "type": "radio",
+      "name": "colour",
+      "id": "Rosewood Both Sides",
+      "bbox": {
+        "left": 658.75,
+        "top": 1268.828125,
+        "right": 676.75,
+        "bottom": 1286.828125
+      },
+      "is_price_relevant": true
+    },
+    {
+      "label": "Rosewood/White",
+      "group_label": "Window Colour",
+      "tag": "input",
+      "type": "radio",
+      "name": "colour",
+      "id": "Rosewood/White",
+      "bbox": {
+        "left": 869.75,
+        "top": 1268.828125,
+        "right": 887.75,
+        "bottom": 1286.828125
+      },
+      "is_price_relevant": true
+    },
+    {
+      "label": "Anthracite Grev Both Sides",
+      "group_label": "Window Colour",
+      "tag": "input",
+      "type": "radio",
+      "name": "colour",
+      "id": "Anthracite Grey Both Sides",
+      "bbox": {
+        "left": 1080.75,
+        "top": 1268.828125,
+        "right": 1098.75,
+        "bottom": 1286.828125
+      },
+      "is_price_relevant": true
+    },
+    {
+      "label": "Anthracite Grev/White",
+      "group_label": "Window Colour",
+      "tag": "input",
+      "type": "radio",
+      "name": "colour",
+      "id": "Anthracite Grey/White",
+      "bbox": {
+        "left": 658.75,
+        "top": 1391.796875,
+        "right": 676.75,
+        "bottom": 1409.796875
+      },
+      "is_price_relevant": true
+    },
+    {
+      "label": "Chartwell/White",
+      "group_label": "Window Colour",
+      "tag": "input",
+      "type": "radio",
+      "name": "colour",
+      "id": "Chartwell/White",
+      "bbox": {
+        "left": 869.75,
+        "top": 1391.796875,
+        "right": 887.75,
+        "bottom": 1409.796875
+      },
+      "is_price_relevant": true
+    },
+    {
+      "label": "Cream Both Sides",
+      "group_label": "Window Colour",
+      "tag": "input",
+      "type": "radio",
+      "name": "colour",
+      "id": "Cream Both Sides",
+      "bbox": {
+        "left": 1080.75,
+        "top": 1391.796875,
+        "right": 1098.75,
+        "bottom": 1409.796875
+      },
+      "is_price_relevant": true
+    },
+    {
+      "label": "Cream/White",
+      "group_label": "Window Colour",
+      "tag": "input",
+      "type": "radio",
+      "name": "colour",
+      "id": "Cream/White",
+      "bbox": {
+        "left": 658.75,
+        "top": 1514.765625,
+        "right": 676.75,
+        "bottom": 1532.765625
+      },
+      "is_price_relevant": true
+    },
+    {
+      "label": "Black-Brown Both Sides",
+      "group_label": "Window Colour",
+      "tag": "input",
+      "type": "radio",
+      "name": "colour",
+      "id": "Black-Brown Both Sides",
+      "bbox": {
+        "left": 869.75,
+        "top": 1514.765625,
+        "right": 887.75,
+        "bottom": 1532.765625
+      },
+      "is_price_relevant": true
+    },
+    {
+      "label": "Black-Brown/White",
+      "group_label": "Window Colour",
+      "tag": "input",
+      "type": "radio",
+      "name": "colour",
+      "id": "Black-Brown/White",
+      "bbox": {
+        "left": 1080.75,
+        "top": 1514.765625,
+        "right": 1098.75,
+        "bottom": 1532.765625
+      },
+      "is_price_relevant": true
+    },
+    {
+      "label": "Whitegrain Both Sides",
+      "group_label": "Window Colour",
+      "tag": "input",
+      "type": "radio",
+      "name": "colour",
+      "id": "Whitegrain Both Sides",
+      "bbox": {
+        "left": 658.75,
+        "top": 1637.734375,
+        "right": 676.75,
+        "bottom": 1655.734375
+      },
+      "is_price_relevant": true
+    },
+    {
+      "label": "Irish Oak Both Sides",
+      "group_label": "Window Colour",
+      "tag": "input",
+      "type": "radio",
+      "name": "colour",
+      "id": "Irish Oak Both Sides",
+      "bbox": {
+        "left": 869.75,
+        "top": 1637.734375,
+        "right": 887.75,
+        "bottom": 1655.734375
+      },
+      "is_price_relevant": true
+    },
+    {
+      "label": "Smooth Anthracite Grey/White",
+      "group_label": "Window Colour",
+      "tag": "input",
+      "type": "radio",
+      "name": "colour",
+      "id": "Smooth Anthracite Grey/White",
+      "bbox": {
+        "left": 1080.75,
+        "top": 1637.734375,
+        "right": 1098.75,
+        "bottom": 1655.734375
+      },
+      "is_price_relevant": true
+    },
+    {
+      "label": "Agate Grey/White",
+      "group_label": "Window Colour",
+      "tag": "input",
+      "type": "radio",
+      "name": "colour",
+      "id": "Agate Grey/White",
+      "bbox": {
+        "left": 658.75,
+        "top": 1760.703125,
+        "right": 676.75,
+        "bottom": 1778.703125
+      },
+      "is_price_relevant": true
+    },
+    {
+      "label": "Clear",
+      "group_label": "Please choose your glass type:",
+      "tag": "input",
+      "type": "radio",
+      "name": "glass",
+      "id": "clear",
+      "bbox": {
+        "left": 576.0,
+        "top": 1939.0625,
+        "right": 633.296875,
+        "bottom": 1961.453125
+      },
+      "is_price_relevant": true
+    },
+    {
+      "label": "Obscure",
+      "group_label": "Please choose your glass type:",
+      "tag": "input",
+      "type": "radio",
+      "name": "glass",
+      "id": "obscure",
+      "bbox": {
+        "left": 661.765625,
+        "top": 1939.0625,
+        "right": 738.5625,
+        "bottom": 1961.453125
+      },
+      "is_price_relevant": true
+    },
+    {
+      "label": "Standard A Rated",
+      "group_label": "Window Energy Rating (WER)",
+      "tag": "input",
+      "type": "radio",
+      "name": "argonglass",
+      "id": "arated",
+      "bbox": {
+        "left": 576.0,
+        "top": 2027.9375,
+        "right": 709.46875,
+        "bottom": 2050.328125
+      },
+      "is_price_relevant": true
+    },
+    {
+      "label": "A+ Rated Energy Upgrade",
+      "group_label": "Window Energy Rating (WER)",
+      "tag": "input",
+      "type": "radio",
+      "name": "argonglass",
+      "id": "aplusrated",
+      "bbox": {
+        "left": 745.421875,
+        "top": 2027.9375,
+        "right": 928.46875,
+        "bottom": 2050.328125
+      },
+      "is_price_relevant": true
+    },
+    {
+      "label": "A++ Triple Glazed",
+      "group_label": "Window Energy Rating (WER)",
+      "tag": "input",
+      "type": "radio",
+      "name": "argonglass",
+      "id": "tripleglazed",
+      "bbox": {
+        "left": 964.421875,
+        "top": 2027.9375,
+        "right": 1098.5,
+        "bottom": 2050.328125
+      },
+      "is_price_relevant": true
+    },
+    {
+      "label": "Toughened Glass",
+      "group_label": "Additional Glass Options:",
+      "tag": "input",
+      "type": "checkbox",
+      "name": "toughenedglass",
+      "id": "toughened",
+      "bbox": {
+        "left": 576.0,
+        "top": 2116.8125,
+        "right": 708.890625,
+        "bottom": 2139.203125
+      },
+      "is_price_relevant": true
+    },
+    {
+      "label": "Laminated Glass",
+      "group_label": "Additional Glass Options:",
+      "tag": "input",
+      "type": "checkbox",
+      "name": "laminatedglass",
+      "id": "laminated",
+      "bbox": {
+        "left": 576.0,
+        "top": 2156.203125,
+        "right": 705.546875,
+        "bottom": 2178.59375
+      },
+      "is_price_relevant": true
+    },
+    {
+      "label": "Trickle Vents",
+      "group_label": "Hardware & Options",
+      "tag": "select",
+      "type": "",
+      "name": "tricklevents",
+      "id": "tricklevents",
+      "bbox": {
+        "left": 685.28125,
+        "top": 2357.78125,
+        "right": 789.28125,
+        "bottom": 2378.78125
+      },
+      "is_price_relevant": true
+    },
+    {
+      "label": "Fit Pack",
+      "group_label": "Hardware & Options",
+      "tag": "input",
+      "type": "checkbox",
+      "name": "fitpack",
+      "id": "fitpack",
+      "bbox": {
+        "left": 576.0,
+        "top": 2389.484375,
+        "right": 668.453125,
+        "bottom": 2411.875
+      },
+      "is_price_relevant": true
+    }
+  ]
+}

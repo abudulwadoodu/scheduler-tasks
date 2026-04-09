@@ -30,7 +30,7 @@ class InputValidator:
         
        
         self.llm_client = OpenAI(api_key=api_key or os.getenv("OPENAI_API_KEY"))
-        self.model = model or "gpt-4"
+        self.model = model or "gpt-4.1"
     
     def analyze_element_with_llm(self, outer_html: str, expected_label: str) -> str:
         """
@@ -193,16 +193,21 @@ Provide a concise description of this element."""
             
             try:
                 print(f"🌐 Loading {url}...")
-                page.goto(url, wait_until="networkidle", timeout=30000)
-                page.wait_for_timeout(2000)  # Wait for dynamic content
-                
+                try:
+                    page.goto(url, wait_until="networkidle", timeout=60000)
+                except Exception as e:
+                    print(f"[WARN] networkidle timed out, retrying with 'load' event: {e}")
+                    page.goto(url, wait_until="load", timeout=60000)
+                    page.wait_for_timeout(5000)  
+                else:
+                    page.wait_for_timeout(2000)  
+
                 print(f"✅ Page loaded, validating {len(labels_json.inputs)} inputs...")
-                
+
                 for i, input_element in enumerate(labels_json.inputs, 1):
                     print(f"  [{i}/{len(labels_json.inputs)}] Validating: {input_element.label}")
                     label_data = self.validate_element(page, input_element)
                     results.append(label_data)
-                    
                     status = "✓" if label_data.verified else "✗"
                     print(f"    {status} {label_data.reason}")
                 
