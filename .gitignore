@@ -21,5 +21,4 @@ html_archive/
 
 # Excel results (optional, but often ignored)
 # output_prices.xlsx
-data/results/*.xlsx
-!data/results/.gitkeep
+data/results

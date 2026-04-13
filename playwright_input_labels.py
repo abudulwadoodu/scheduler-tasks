@@ -425,13 +425,21 @@ def get_price_element(page) -> Optional[Dict[str, Any]]:
     )
 
 
-def get_all_prices(page) -> List[Dict[str, Any]]:
+def _collect_price_candidates_raw(page, scope: str) -> List[Dict[str, Any]]:
     """
-    Collect all visible money-like prices within the main product detail area.
-    Excludes related/recommended product sections.
+    Browser-side collection of visible money-like price elements.
+
+    scope:
+      - 'main': primary product root only; skip related/recommend/similar blocks.
+      - 'page': document.body; include those blocks (header/footer/nav may appear too).
     """
+    if scope not in ("main", "page"):
+        return []
     data = page.evaluate(
-        """() => {
+        """(args) => {
+          const scope = (args && args.scope) || 'main';
+          const skipRelated = scope === 'main';
+
           const clean = (t) => (t || '').replace(/\\s+/g,' ').trim();
           const visible = (el) => {
             if (!el || el.nodeType !== 1) return false;
@@ -482,7 +490,7 @@ def get_all_prices(page) -> List[Dict[str, Any]]:
             return null;
           };
 
-          const root = primaryProductRoot();
+          const root = scope === 'page' ? document.body : primaryProductRoot();
           if (!root) return [];
 
           const selectors = [
@@ -504,7 +512,7 @@ def get_all_prices(page) -> List[Dict[str, Any]]:
           const out = [];
           for (const sel of selectors) {
             for (const el of Array.from(root.querySelectorAll(sel))) {
-              if (!visible(el) || inRecommendationContext(el)) continue;
+              if (!visible(el) || (skipRelated && inRecommendationContext(el))) continue;
               const raw = clean(el.innerText || el.textContent || '');
               if (!raw || raw.length > 180) continue;
               const money = firstMoney(raw);
@@ -539,11 +547,77 @@ def get_all_prices(page) -> List[Dict[str, Any]]:
             return a.rect.left - b.rect.left;
           });
           return out;
-        }"""
+        }""",
+        {"scope": scope},
     )
     if not isinstance(data, list):
         return []
     return data
+
+
+def get_main_block_prices(page) -> List[Dict[str, Any]]:
+    """
+    Collect visible money-like prices within the main product detail area.
+    Excludes related/recommended product sections.
+    """
+    return _collect_price_candidates_raw(page, "main")
+
+
+def get_page_prices(page) -> List[Dict[str, Any]]:
+    """
+    Collect visible money-like prices across the page (document.body), including
+    related/similar product regions. May include header/footer promos.
+    """
+    return _collect_price_candidates_raw(page, "page")
+
+
+def _normalize_price_candidates(
+    raw_rows: List[Dict[str, Any]],
+    *,
+    dedupe_by_label_only: bool,
+) -> List[Dict[str, Any]]:
+    """Map raw browser rows to API price dicts; dedupe by label or by label+position."""
+    out: List[Dict[str, Any]] = []
+    seen_labels: Set[str] = set()
+    seen_pos: Set[Tuple[str, int, int]] = set()
+
+    for p in raw_rows:
+        if not isinstance(p, dict):
+            continue
+        rect = p.get("rect") or {}
+        label = _clean_text(p.get("text"))
+        left = float(rect.get("left", 0.0))
+        top = float(rect.get("top", 0.0))
+        right = float(rect.get("right", 0.0))
+        bottom = float(rect.get("bottom", 0.0))
+        if not label:
+            continue
+        if dedupe_by_label_only:
+            if label in seen_labels:
+                continue
+            seen_labels.add(label)
+        else:
+            pos_key = (label, round(left), round(top))
+            if pos_key in seen_pos:
+                continue
+            seen_pos.add(pos_key)
+        out.append(
+            {
+                "label": label,
+                "tag": _clean_text(p.get("tag")),
+                "type": "",
+                "name": _clean_text(p.get("name")),
+                "id": _clean_text(p.get("id")),
+                "class_name": _clean_text(p.get("class_name")),
+                "bbox": {
+                    "left": left,
+                    "top": top,
+                    "right": right,
+                    "bottom": bottom,
+                },
+            }
+        )
+    return out
 
 
 def get_all_inputs(page) -> List[ElementHandle]:
@@ -1221,6 +1295,11 @@ def get_inputs(
     url: str,
     final_filter: Optional[Callable[[List[Dict[str, Any]], str, List[Dict[str, Any]]], List[Dict[str, Any]]]] = None,
 ) -> Dict[str, Any]:
+    """
+    Extract primary price, main-block and page-wide price lists, and price-relevant inputs.
+
+    Returns keys: price, main_block_prices, page_prices, inputs.
+    """
     results: List[Dict[str, Any]] = []
     seen: Set[str] = set()
 
@@ -1271,7 +1350,8 @@ def get_inputs(
             pass
 
         price = get_price_element(page)
-        all_prices_raw = get_all_prices(page)
+        main_block_prices_raw = get_main_block_prices(page)
+        page_prices_raw = get_page_prices(page)
 
         stamp = run_stamp()
         debug_dir = "debug"
@@ -1470,43 +1550,23 @@ def get_inputs(
                 },
             }
 
-        all_prices: List[Dict[str, Any]] = []
-        seen_price_labels: Set[str] = set()
-        for p in all_prices_raw:
-            if not isinstance(p, dict):
-                continue
-            rect = p.get("rect") or {}
-            label = _clean_text(p.get("text"))
-            left = float(rect.get("left", 0.0))
-            top = float(rect.get("top", 0.0))
-            right = float(rect.get("right", 0.0))
-            bottom = float(rect.get("bottom", 0.0))
-            if not label or label in seen_price_labels:
-                continue
-            seen_price_labels.add(label)
-            all_prices.append(
-                {
-                    "label": label,
-                    "tag": _clean_text(p.get("tag")),
-                    "type": "",
-                    "name": _clean_text(p.get("name")),
-                    "id": _clean_text(p.get("id")),
-                    "class_name": _clean_text(p.get("class_name")),
-                    "bbox": {
-                        "left": left,
-                        "top": top,
-                        "right": right,
-                        "bottom": bottom,
-                    },
-                }
-            )
+        main_block_prices = _normalize_price_candidates(
+            main_block_prices_raw, dedupe_by_label_only=True
+        )
+        page_prices = _normalize_price_candidates(page_prices_raw, dedupe_by_label_only=False)
 
-        # Keep all_prices useful on single-price pages where the scoped collector
-        # returns no candidates but the primary price heuristic still succeeds.
-        if not all_prices and price_obj:
-            all_prices.append(dict(price_obj))
+        # When scoped collectors return nothing but the primary price heuristic succeeds.
+        if not main_block_prices and price_obj:
+            main_block_prices.append(dict(price_obj))
+        if not page_prices and price_obj:
+            page_prices.append(dict(price_obj))
 
-        response = {"price": price_obj, "all_prices": all_prices, "inputs": results}
+        response = {
+            "price": price_obj,
+            "main_block_prices": main_block_prices,
+            "page_prices": page_prices,
+            "inputs": results,
+        }
 
         # Write timestamped JSON output
         json_path = os.path.join(debug_dir, f"labels_{stamp}.json")
