@@ -1,0 +1,865 @@
+{
+  "required_components": [
+    {
+      "label": "Frame Width (mm)",
+      "type": "text",
+      "description": "Text input for entering the width of the window frame in millimeters",
+      "price_relevance_reason": "Larger frame width increases material usage and cost",
+      "group_context": "Window Details - Dimensions"
+    },
+    {
+      "label": "Frame Height (mm)",
+      "type": "text",
+      "description": "Text input for entering the height of the window frame in millimeters",
+      "price_relevance_reason": "Larger frame height increases material usage and cost",
+      "group_context": "Window Details - Dimensions"
+    },
+    {
+      "label": "External Cill",
+      "type": "radio",
+      "description": "Radio buttons to select the size of the external cill (None, 85mm Stub, Standard 150mm, 180mm)",
+      "price_relevance_reason": "Different cill sizes or omitting the cill affects the total price due to material and labor differences",
+      "group_context": "Window Details"
+    },
+    {
+      "label": "Frame Extensions (add-ons)",
+      "type": "button/link",
+      "description": "Button to add frame extensions as an optional extra",
+      "price_relevance_reason": "Adding frame extensions increases the total price",
+      "group_context": "Window Details"
+    },
+    {
+      "label": "Window Colour",
+      "type": "radio",
+      "description": "Radio buttons to select the window frame color/finish (e.g., White, Oak, Rosewood, Anthracite Grey, etc.)",
+      "price_relevance_reason": "Different colors/finishes may have different costs due to materials or manufacturing complexity",
+      "group_context": "Window Colour"
+    },
+    {
+      "label": "Glass Type",
+      "type": "radio",
+      "description": "Radio buttons to choose between clear or obscure glass",
+      "price_relevance_reason": "Obscure glass may cost more than clear glass",
+      "group_context": "Glazing & Energy Rating"
+    },
+    {
+      "label": "Window Energy Rating (WER)",
+      "type": "radio",
+      "description": "Radio buttons to select the energy rating of the window (Standard A Rated, A+ Rated Energy Upgrade, A++ Triple Glazed)",
+      "price_relevance_reason": "Higher energy ratings and triple glazing increase the price due to better materials and construction",
+      "group_context": "Glazing & Energy Rating"
+    },
+    {
+      "label": "Toughened Glass",
+      "type": "checkbox",
+      "description": "Checkbox to select toughened glass as an additional option",
+      "price_relevance_reason": "Toughened glass is a premium option and increases the price",
+      "group_context": "Glazing & Energy Rating - Additional Glass Options"
+    },
+    {
+      "label": "Laminated Glass",
+      "type": "checkbox",
+      "description": "Checkbox to select laminated glass as an additional option",
+      "price_relevance_reason": "Laminated glass is a premium option and increases the price",
+      "group_context": "Glazing & Energy Rating - Additional Glass Options"
+    },
+    {
+      "label": "Georgian bars or Lead",
+      "type": "button/link",
+      "description": "Button to add Georgian bars or lead as decorative glazing options",
+      "price_relevance_reason": "Adding decorative bars or lead increases the price",
+      "group_context": "Glazing & Energy Rating - Additional Glass Options"
+    },
+    {
+      "label": "Trickle Vents",
+      "type": "select",
+      "description": "Dropdown to select if trickle vents are required or not",
+      "price_relevance_reason": "Adding trickle vents increases the price",
+      "group_context": "Hardware & Options"
+    },
+    {
+      "label": "Fire Pack",
+      "type": "checkbox",
+      "description": "Checkbox to add a fire pack option",
+      "price_relevance_reason": "Adding a fire pack increases the price",
+      "group_context": "Hardware & Options"
+    }
+  ],
+  "validated_inputs": [
+    {
+      "label": "Frame Width (mm)",
+      "xpath": "//*[@id=\"framewidth\"]",
+      "verified": true,
+      "identified_element": "This is a single-line text input field labeled \"Frame Width (mm)\" that allows the user to enter a width value between 300 and 1300 millimeters, with a placeholder guiding the valid range and validation messages for required, minimum, and maximum values. It is styled with form-control classes and is required for form submission.",
+      "reason": "Successfully located and verified on page",
+      "input_data": {
+        "label": "Frame Width (mm)",
+        "group_label": "Dimensions:",
+        "tag": "input",
+        "type": "text",
+        "name": "framewidth",
+        "id": "framewidth",
+        "class_name": "",
+        "bbox": {
+          "left": 576.0,
+          "top": 541.546875,
+          "right": 1179.0,
+          "bottom": 575.046875
+        },
+        "is_price_relevant": true
+      },
+      "outer_html": "<input name=\"framewidth\" type=\"text\" required=\"\" class=\"form-control form-control-md rounded-0 g-mb-10\" id=\"framewidth\" data-msg-required=\"Please enter a frame width\" is=\"dmx-input\" value=\"\" placeholder=\"Please enter a width between 300 - 1300\" data-msg-min=\"Please enter a width greater than 300mm\" data-msg-max=\"Please enter a width less than 1300mm\" max=\"1300\" data-rule-max=\"1300\" min=\"300\" data-rule-min=\"300\">"
+    },
+    {
+      "label": "Frame Height (mm)",
+      "xpath": "//*[@id=\"frameheight\"]",
+      "verified": true,
+      "identified_element": "This is a single-line text input field labeled \"Frame Height (mm)\" that allows the user to enter a frame height value between 300 and 2200 millimeters; it is required, displays a placeholder with entry guidance, and provides validation messages for out-of-range values.",
+      "reason": "Successfully located and verified on page",
+      "input_data": {
+        "label": "Frame Height (mm)",
+        "group_label": "Dimensions:",
+        "tag": "input",
+        "type": "text",
+        "name": "frameheight",
+        "id": "frameheight",
+        "class_name": "",
+        "bbox": {
+          "left": 576.0,
+          "top": 627.421875,
+          "right": 1179.0,
+          "bottom": 660.921875
+        },
+        "is_price_relevant": true
+      },
+      "outer_html": "<input name=\"frameheight\" type=\"text\" required=\"\" class=\"form-control form-control-md rounded-0 g-mb-10\" id=\"frameheight\" data-msg-required=\"Please enter a frame height\" is=\"dmx-input\" value=\"\" placeholder=\"Please enter a height between 300 - 2200\" data-msg-min=\"Please enter a frame height greater than 300mm\" data-msg-max=\"Please enter a frame height less than 2200mm\" max=\"2200\" data-rule-max=\"2200\" min=\"300\" data-rule-min=\"300\">"
+    },
+    {
+      "label": "No",
+      "xpath": "//*[@id=\"cillno\"]",
+      "verified": true,
+      "identified_element": "This is a radio button input labeled \"No\" that allows the user to select the \"No\" option for a field named \"cill\"; it is required for form submission and is visually hidden, likely controlled by custom styling or scripts.",
+      "reason": "Successfully located and verified on page",
+      "input_data": {
+        "label": "No",
+        "group_label": "External Cill:",
+        "tag": "input",
+        "type": "radio",
+        "name": "cill",
+        "id": "cillno",
+        "class_name": "",
+        "bbox": {
+          "left": 576.0,
+          "top": 759.203125,
+          "right": 618.96875,
+          "bottom": 781.59375
+        },
+        "is_price_relevant": true
+      },
+      "outer_html": "<input name=\"cill\" type=\"radio\" required=\"\" class=\"cill form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" id=\"cillno\" is=\"dmx-radio\" data-msg-required=\"Please select a cill option\" value=\"No\">"
+    },
+    {
+      "label": "85mm Stub",
+      "xpath": "//*[@id=\"cill85\"]",
+      "verified": true,
+      "identified_element": "This is a radio button input labeled \"85mm Stub\" that allows the user to select the \"85mm\" option for a field named \"cill\"; it is visually hidden in the UI, likely used for custom styling or scripting purposes.",
+      "reason": "Successfully located and verified on page",
+      "input_data": {
+        "label": "85mm Stub",
+        "group_label": "External Cill:",
+        "tag": "input",
+        "type": "radio",
+        "name": "cill",
+        "id": "cill85",
+        "class_name": "",
+        "bbox": {
+          "left": 647.4375,
+          "top": 759.203125,
+          "right": 744.671875,
+          "bottom": 781.59375
+        },
+        "is_price_relevant": true
+      },
+      "outer_html": "<input class=\"cill form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" name=\"cill\" type=\"radio\" id=\"cill85\" is=\"dmx-radio\" value=\"85mm\">"
+    },
+    {
+      "label": "Standard 150mm",
+      "xpath": "//*[@id=\"cill150\"]",
+      "verified": true,
+      "identified_element": "This is a radio button input labeled \"Standard 150mm\" that allows the user to select the \"150mm\" option for the \"cill\" field; it is visually hidden in the UI, likely controlled or displayed through custom styling or scripting.",
+      "reason": "Successfully located and verified on page",
+      "input_data": {
+        "label": "Standard 150mm",
+        "group_label": "External Cill:",
+        "tag": "input",
+        "type": "radio",
+        "name": "cill",
+        "id": "cill150",
+        "class_name": "",
+        "bbox": {
+          "left": 773.140625,
+          "top": 759.203125,
+          "right": 906.03125,
+          "bottom": 781.59375
+        },
+        "is_price_relevant": true
+      },
+      "outer_html": "<input name=\"cill\" type=\"radio\" class=\"cill form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" id=\"cill150\" is=\"dmx-radio\" value=\"150mm\">"
+    },
+    {
+      "label": "180mm",
+      "xpath": "//*[@id=\"cill180\"]",
+      "verified": true,
+      "identified_element": "This is a radio button input with the value \"180mm,\" intended for selecting the \"180mm\" option in a group of choices; it is likely visually hidden (using classes like \"g-hidden-xs-up\") and associated with a label displaying \"180mm\" elsewhere in the UI.",
+      "reason": "Successfully located and verified on page",
+      "input_data": {
+        "label": "180mm",
+        "group_label": "External Cill:",
+        "tag": "input",
+        "type": "radio",
+        "name": "cill",
+        "id": "cill180",
+        "class_name": "",
+        "bbox": {
+          "left": 934.5,
+          "top": 759.203125,
+          "right": 1007.65625,
+          "bottom": 781.59375
+        },
+        "is_price_relevant": true
+      },
+      "outer_html": "<input name=\"cill\" type=\"radio\" class=\"cill form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" id=\"cill180\" is=\"dmx-radio\" value=\"180mm\">"
+    },
+    {
+      "label": "White",
+      "xpath": "//*[@id=\"White\"]",
+      "verified": true,
+      "identified_element": "This is a radio button input labeled \"White\" that allows the user to select \"White\" as a colour option; it is required for form submission and includes a custom validation message if not selected. The element is visually hidden (likely styled for custom UI), and it stores an associated price value of \"1.00\".",
+      "reason": "Successfully located and verified on page",
+      "input_data": {
+        "label": "White",
+        "group_label": "Window Colour",
+        "tag": "input",
+        "type": "radio",
+        "name": "colour",
+        "id": "White",
+        "class_name": "",
+        "bbox": {
+          "left": 658.75,
+          "top": 1145.859375,
+          "right": 676.75,
+          "bottom": 1163.859375
+        },
+        "is_price_relevant": true
+      },
+      "outer_html": "<input name=\"colour\" type=\"radio\" required=\"\" class=\"colour form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" data-msg-required=\"Please select a colour\" value=\"White\" id=\"White\" data-price=\"1.00\">"
+    },
+    {
+      "label": "Oak Both Sides",
+      "xpath": "//*[@id=\"Oak Both Sides\"]",
+      "verified": true,
+      "identified_element": "This is a radio button input labeled \"Oak Both Sides\" that allows the user to select this specific color option; it is required for form submission and includes validation messaging if not selected. The element is visually hidden (likely styled for custom UI), but still functions as a selectable option in a group of color choices.",
+      "reason": "Successfully located and verified on page",
+      "input_data": {
+        "label": "Oak Both Sides",
+        "group_label": "Window Colour",
+        "tag": "input",
+        "type": "radio",
+        "name": "colour",
+        "id": "Oak Both Sides",
+        "class_name": "",
+        "bbox": {
+          "left": 869.75,
+          "top": 1145.859375,
+          "right": 887.75,
+          "bottom": 1163.859375
+        },
+        "is_price_relevant": true
+      },
+      "outer_html": "<input name=\"colour\" type=\"radio\" required=\"\" class=\"colour form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" data-msg-required=\"Please select a colour\" value=\"Oak Both Sides\" id=\"Oak Both Sides\" data-price=\"1.30\">"
+    },
+    {
+      "label": "Oak/White",
+      "xpath": "//*[@id=\"Oak/White\"]",
+      "verified": true,
+      "identified_element": "This is a radio button input labeled \"Oak/White\" that allows the user to select this specific colour option; it is required for form submission and includes a custom validation message if not selected. The element is visually hidden (likely styled for custom UI), and it carries an associated price value of 1.30.",
+      "reason": "Successfully located and verified on page",
+      "input_data": {
+        "label": "Oak/White",
+        "group_label": "Window Colour",
+        "tag": "input",
+        "type": "radio",
+        "name": "colour",
+        "id": "Oak/White",
+        "class_name": "",
+        "bbox": {
+          "left": 1080.75,
+          "top": 1145.859375,
+          "right": 1098.75,
+          "bottom": 1163.859375
+        },
+        "is_price_relevant": true
+      },
+      "outer_html": "<input name=\"colour\" type=\"radio\" required=\"\" class=\"colour form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" data-msg-required=\"Please select a colour\" value=\"Oak/White\" id=\"Oak/White\" data-price=\"1.30\">"
+    },
+    {
+      "label": "Rosewood Both Sides",
+      "xpath": "//*[@id=\"Rosewood Both Sides\"]",
+      "verified": true,
+      "identified_element": "This is a radio button input labeled \"Rosewood Both Sides\" that allows the user to select this specific colour option; it is required for form submission and includes a custom validation message if not selected. The element is visually hidden (likely styled for custom UI), and it carries an associated price value of 1.30.",
+      "reason": "Successfully located and verified on page",
+      "input_data": {
+        "label": "Rosewood Both Sides",
+        "group_label": "Window Colour",
+        "tag": "input",
+        "type": "radio",
+        "name": "colour",
+        "id": "Rosewood Both Sides",
+        "class_name": "",
+        "bbox": {
+          "left": 658.75,
+          "top": 1268.828125,
+          "right": 676.75,
+          "bottom": 1286.828125
+        },
+        "is_price_relevant": true
+      },
+      "outer_html": "<input name=\"colour\" type=\"radio\" required=\"\" class=\"colour form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" data-msg-required=\"Please select a colour\" value=\"Rosewood Both Sides\" id=\"Rosewood Both Sides\" data-price=\"1.30\">"
+    },
+    {
+      "label": "Rosewood/White",
+      "xpath": "//*[@id=\"Rosewood/White\"]",
+      "verified": true,
+      "identified_element": "This is a radio input element labeled \"Rosewood/White\" that allows the user to select this specific colour option; it is required for form submission and includes a custom validation message if not selected. The element is visually hidden (likely styled for custom UI controls) and has an associated price value of 1.30.",
+      "reason": "Successfully located and verified on page",
+      "input_data": {
+        "label": "Rosewood/White",
+        "group_label": "Window Colour",
+        "tag": "input",
+        "type": "radio",
+        "name": "colour",
+        "id": "Rosewood/White",
+        "class_name": "",
+        "bbox": {
+          "left": 869.75,
+          "top": 1268.828125,
+          "right": 887.75,
+          "bottom": 1286.828125
+        },
+        "is_price_relevant": true
+      },
+      "outer_html": "<input name=\"colour\" type=\"radio\" required=\"\" class=\"colour form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" data-msg-required=\"Please select a colour\" value=\"Rosewood/White\" id=\"Rosewood/White\" data-price=\"1.30\">"
+    },
+    {
+      "label": "Anthracite Grev Both Sides",
+      "xpath": "//*[@id=\"Anthracite Grey Both Sides\"]",
+      "verified": true,
+      "identified_element": "This is a radio button input labeled \"Anthracite Grey Both Sides\" that allows the user to select this specific colour option; it is required for form submission and includes a custom validation message if not selected. The element is visually hidden (likely styled for custom UI), and it carries an associated price value of 1.30.",
+      "reason": "Successfully located and verified on page",
+      "input_data": {
+        "label": "Anthracite Grev Both Sides",
+        "group_label": "Window Colour",
+        "tag": "input",
+        "type": "radio",
+        "name": "colour",
+        "id": "Anthracite Grey Both Sides",
+        "class_name": "",
+        "bbox": {
+          "left": 1080.75,
+          "top": 1268.828125,
+          "right": 1098.75,
+          "bottom": 1286.828125
+        },
+        "is_price_relevant": true
+      },
+      "outer_html": "<input name=\"colour\" type=\"radio\" required=\"\" class=\"colour form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" data-msg-required=\"Please select a colour\" value=\"Anthracite Grey Both Sides\" id=\"Anthracite Grey Both Sides\" data-price=\"1.30\">"
+    },
+    {
+      "label": "Anthracite Grev/White",
+      "xpath": "//*[@id=\"Anthracite Grey/White\"]",
+      "verified": true,
+      "identified_element": "This is a radio button input labeled \"Anthracite Grey/White\" that allows the user to select this specific colour option; it is required for form submission and includes a custom validation message if not selected. The element is visually hidden (likely styled for custom UI), and it carries an associated price value of 1.30.",
+      "reason": "Successfully located and verified on page",
+      "input_data": {
+        "label": "Anthracite Grev/White",
+        "group_label": "Window Colour",
+        "tag": "input",
+        "type": "radio",
+        "name": "colour",
+        "id": "Anthracite Grey/White",
+        "class_name": "",
+        "bbox": {
+          "left": 658.75,
+          "top": 1391.796875,
+          "right": 676.75,
+          "bottom": 1409.796875
+        },
+        "is_price_relevant": true
+      },
+      "outer_html": "<input name=\"colour\" type=\"radio\" required=\"\" class=\"colour form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" data-msg-required=\"Please select a colour\" value=\"Anthracite Grey/White\" id=\"Anthracite Grey/White\" data-price=\"1.30\">"
+    },
+    {
+      "label": "Chartwell/White",
+      "xpath": "//*[@id=\"Chartwell/White\"]",
+      "verified": true,
+      "identified_element": "This is a radio button input labeled \"Chartwell/White\" that allows the user to select this specific colour option; it is required for form submission and includes a custom validation message if not selected. The element is visually hidden (likely styled for custom UI), and it carries an associated price value of 1.50.",
+      "reason": "Successfully located and verified on page",
+      "input_data": {
+        "label": "Chartwell/White",
+        "group_label": "Window Colour",
+        "tag": "input",
+        "type": "radio",
+        "name": "colour",
+        "id": "Chartwell/White",
+        "class_name": "",
+        "bbox": {
+          "left": 869.75,
+          "top": 1391.796875,
+          "right": 887.75,
+          "bottom": 1409.796875
+        },
+        "is_price_relevant": true
+      },
+      "outer_html": "<input name=\"colour\" type=\"radio\" required=\"\" class=\"colour form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" data-msg-required=\"Please select a colour\" value=\"Chartwell/White\" id=\"Chartwell/White\" data-price=\"1.50\">"
+    },
+    {
+      "label": "Cream Both Sides",
+      "xpath": "//*[@id=\"Cream Both Sides\"]",
+      "verified": true,
+      "identified_element": "This is a radio button input labeled \"Cream Both Sides\" that allows the user to select this specific color option; it is required for form submission and includes a custom validation message if not selected. The element is visually hidden (likely styled for custom UI rendering) and carries an associated price value of 1.30.",
+      "reason": "Successfully located and verified on page",
+      "input_data": {
+        "label": "Cream Both Sides",
+        "group_label": "Window Colour",
+        "tag": "input",
+        "type": "radio",
+        "name": "colour",
+        "id": "Cream Both Sides",
+        "class_name": "",
+        "bbox": {
+          "left": 1080.75,
+          "top": 1391.796875,
+          "right": 1098.75,
+          "bottom": 1409.796875
+        },
+        "is_price_relevant": true
+      },
+      "outer_html": "<input name=\"colour\" type=\"radio\" required=\"\" class=\"colour form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" data-msg-required=\"Please select a colour\" value=\"Cream Both Sides\" id=\"Cream Both Sides\" data-price=\"1.30\">"
+    },
+    {
+      "label": "Cream/White",
+      "xpath": "//*[@id=\"Cream/White\"]",
+      "verified": true,
+      "identified_element": "This is a radio input element labeled \"Cream/White\" that allows the user to select this color option; it is required for form submission and includes a custom validation message if not selected. The element is visually hidden (likely styled for custom UI), and it carries an associated price value of 1.30.",
+      "reason": "Successfully located and verified on page",
+      "input_data": {
+        "label": "Cream/White",
+        "group_label": "Window Colour",
+        "tag": "input",
+        "type": "radio",
+        "name": "colour",
+        "id": "Cream/White",
+        "class_name": "",
+        "bbox": {
+          "left": 658.75,
+          "top": 1514.765625,
+          "right": 676.75,
+          "bottom": 1532.765625
+        },
+        "is_price_relevant": true
+      },
+      "outer_html": "<input name=\"colour\" type=\"radio\" required=\"\" class=\"colour form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" data-msg-required=\"Please select a colour\" value=\"Cream/White\" id=\"Cream/White\" data-price=\"1.30\">"
+    },
+    {
+      "label": "Black-Brown Both Sides",
+      "xpath": "//*[@id=\"Black-Brown Both Sides\"]",
+      "verified": true,
+      "identified_element": "This is a radio button input labeled \"Black-Brown Both Sides\" that allows the user to select this specific colour option; it is required for form submission and includes a custom validation message if not selected. The element is visually hidden (likely styled for custom UI), but still functions as a selectable option in a group of colour choices.",
+      "reason": "Successfully located and verified on page",
+      "input_data": {
+        "label": "Black-Brown Both Sides",
+        "group_label": "Window Colour",
+        "tag": "input",
+        "type": "radio",
+        "name": "colour",
+        "id": "Black-Brown Both Sides",
+        "class_name": "",
+        "bbox": {
+          "left": 869.75,
+          "top": 1514.765625,
+          "right": 887.75,
+          "bottom": 1532.765625
+        },
+        "is_price_relevant": true
+      },
+      "outer_html": "<input name=\"colour\" type=\"radio\" required=\"\" class=\"colour form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" data-msg-required=\"Please select a colour\" value=\"Black-Brown Both Sides\" id=\"Black-Brown Both Sides\" data-price=\"1.30\">"
+    },
+    {
+      "label": "Black-Brown/White",
+      "xpath": "//*[@id=\"Black-Brown/White\"]",
+      "verified": true,
+      "identified_element": "This is a radio button input labeled \"Black-Brown/White\" that allows the user to select this specific colour option; it is required for form submission and includes a custom validation message if not selected. The element is visually hidden (likely styled for custom UI), and it carries an associated price value of 1.30.",
+      "reason": "Successfully located and verified on page",
+      "input_data": {
+        "label": "Black-Brown/White",
+        "group_label": "Window Colour",
+        "tag": "input",
+        "type": "radio",
+        "name": "colour",
+        "id": "Black-Brown/White",
+        "class_name": "",
+        "bbox": {
+          "left": 1080.75,
+          "top": 1514.765625,
+          "right": 1098.75,
+          "bottom": 1532.765625
+        },
+        "is_price_relevant": true
+      },
+      "outer_html": "<input name=\"colour\" type=\"radio\" required=\"\" class=\"colour form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" data-msg-required=\"Please select a colour\" value=\"Black-Brown/White\" id=\"Black-Brown/White\" data-price=\"1.30\">"
+    },
+    {
+      "label": "Whitegrain Both Sides",
+      "xpath": "//*[@id=\"Whitegrain Both Sides\"]",
+      "verified": true,
+      "identified_element": "This is a radio button input labeled \"Whitegrain Both Sides\" that allows the user to select this specific colour option; it is required for form submission and includes a custom validation message if not selected. The element is visually hidden (likely styled for custom UI rendering) and stores an associated price value of 1.30.",
+      "reason": "Successfully located and verified on page",
+      "input_data": {
+        "label": "Whitegrain Both Sides",
+        "group_label": "Window Colour",
+        "tag": "input",
+        "type": "radio",
+        "name": "colour",
+        "id": "Whitegrain Both Sides",
+        "class_name": "",
+        "bbox": {
+          "left": 658.75,
+          "top": 1637.734375,
+          "right": 676.75,
+          "bottom": 1655.734375
+        },
+        "is_price_relevant": true
+      },
+      "outer_html": "<input name=\"colour\" type=\"radio\" required=\"\" class=\"colour form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" data-msg-required=\"Please select a colour\" value=\"Whitegrain Both Sides\" id=\"Whitegrain Both Sides\" data-price=\"1.30\">"
+    },
+    {
+      "label": "Irish Oak Both Sides",
+      "xpath": "//*[@id=\"Irish Oak Both Sides\"]",
+      "verified": true,
+      "identified_element": "Element with expected label 'Irish Oak Both Sides' (LLM analysis failed: Error code: 400 - {'error': {'message': \"We could not parse the JSON body of your request. (HINT: This likely means you aren't using your HTTP library correctly. The OpenAI API expects a JSON payload, but what was sent was not valid JSON. If you have trouble figuring out how to fix this, please contact us through our help center at help.openai.com.)\", 'type': 'invalid_request_error', 'param': None, 'code': None}})",
+      "reason": "Successfully located and verified on page",
+      "input_data": {
+        "label": "Irish Oak Both Sides",
+        "group_label": "Window Colour",
+        "tag": "input",
+        "type": "radio",
+        "name": "colour",
+        "id": "Irish Oak Both Sides",
+        "class_name": "",
+        "bbox": {
+          "left": 869.75,
+          "top": 1637.734375,
+          "right": 887.75,
+          "bottom": 1655.734375
+        },
+        "is_price_relevant": true
+      },
+      "outer_html": "<input name=\"colour\" type=\"radio\" required=\"\" class=\"colour form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" data-msg-required=\"Please select a colour\" value=\"Irish Oak Both Sides\" id=\"Irish Oak Both Sides\" data-price=\"1.80\">"
+    },
+    {
+      "label": "Smooth Anthracite Grey/White",
+      "xpath": "//*[@id=\"Smooth Anthracite Grey/White\"]",
+      "verified": true,
+      "identified_element": "This is a radio button input labeled \"Smooth Anthracite Grey/White\" that allows the user to select this specific colour option; it is required for form submission and includes a custom validation message if not selected. The element is visually hidden (likely styled for custom UI) and carries an associated price value of 1.30.",
+      "reason": "Successfully located and verified on page",
+      "input_data": {
+        "label": "Smooth Anthracite Grey/White",
+        "group_label": "Window Colour",
+        "tag": "input",
+        "type": "radio",
+        "name": "colour",
+        "id": "Smooth Anthracite Grey/White",
+        "class_name": "",
+        "bbox": {
+          "left": 1080.75,
+          "top": 1637.734375,
+          "right": 1098.75,
+          "bottom": 1655.734375
+        },
+        "is_price_relevant": true
+      },
+      "outer_html": "<input name=\"colour\" type=\"radio\" required=\"\" class=\"colour form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" data-msg-required=\"Please select a colour\" value=\"Smooth Anthracite Grey/White\" id=\"Smooth Anthracite Grey/White\" data-price=\"1.30\">"
+    },
+    {
+      "label": "Agate Grey/White",
+      "xpath": "//*[@id=\"Agate Grey/White\"]",
+      "verified": true,
+      "identified_element": "This is a radio input element labeled \"Agate Grey/White\" that allows the user to select this specific colour option; it is required for form submission and includes a custom validation message if not selected. The element is visually hidden (likely styled for custom UI), and it carries an associated price value of 1.30.",
+      "reason": "Successfully located and verified on page",
+      "input_data": {
+        "label": "Agate Grey/White",
+        "group_label": "Window Colour",
+        "tag": "input",
+        "type": "radio",
+        "name": "colour",
+        "id": "Agate Grey/White",
+        "class_name": "",
+        "bbox": {
+          "left": 658.75,
+          "top": 1760.703125,
+          "right": 676.75,
+          "bottom": 1778.703125
+        },
+        "is_price_relevant": true
+      },
+      "outer_html": "<input name=\"colour\" type=\"radio\" required=\"\" class=\"colour form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" data-msg-required=\"Please select a colour\" value=\"Agate Grey/White\" id=\"Agate Grey/White\" data-price=\"1.30\">"
+    },
+    {
+      "label": "Clear",
+      "xpath": "//*[@id=\"clear\"]",
+      "verified": true,
+      "identified_element": "This is a radio button input labeled \"Clear\" that allows the user to select \"Clear\" as a glass type option; it is required for form submission and is visually hidden, likely styled to be replaced by a custom UI element.",
+      "reason": "Successfully located and verified on page",
+      "input_data": {
+        "label": "Clear",
+        "group_label": "Please choose your glass type:",
+        "tag": "input",
+        "type": "radio",
+        "name": "glass",
+        "id": "clear",
+        "class_name": "",
+        "bbox": {
+          "left": 576.0,
+          "top": 1939.0625,
+          "right": 633.296875,
+          "bottom": 1961.453125
+        },
+        "is_price_relevant": true
+      },
+      "outer_html": "<input name=\"glass\" type=\"radio\" required=\"\" class=\"clear form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" id=\"clear\" onclick=\"\" data-msg-required=\"Please select a glass type\" value=\"Clear\">"
+    },
+    {
+      "label": "Obscure",
+      "xpath": "//*[@id=\"obscure\"]",
+      "verified": true,
+      "identified_element": "This is a radio button input labeled \"Obscure\" that allows the user to select the \"Obscure\" option for the \"glass\" field; it is visually hidden in the UI, likely used for accessibility or programmatic selection rather than direct user interaction.",
+      "reason": "Successfully located and verified on page",
+      "input_data": {
+        "label": "Obscure",
+        "group_label": "Please choose your glass type:",
+        "tag": "input",
+        "type": "radio",
+        "name": "glass",
+        "id": "obscure",
+        "class_name": "",
+        "bbox": {
+          "left": 661.765625,
+          "top": 1939.0625,
+          "right": 738.5625,
+          "bottom": 1961.453125
+        },
+        "is_price_relevant": true
+      },
+      "outer_html": "<input class=\"obscure form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" name=\"glass\" is=\"dmx-radio\" type=\"radio\" id=\"obscure\" value=\"Obscure\">"
+    },
+    {
+      "label": "Standard A Rated",
+      "xpath": "//*[@id=\"arated\"]",
+      "verified": true,
+      "identified_element": "This is a radio button input labeled \"Standard A Rated\" that allows the user to select the \"A Rated\" energy rating option; it is required for form submission and is visually hidden, likely controlled or revealed by custom styling or scripting in the UI.",
+      "reason": "Successfully located and verified on page",
+      "input_data": {
+        "label": "Standard A Rated",
+        "group_label": "Window Energy Rating (WER)",
+        "tag": "input",
+        "type": "radio",
+        "name": "argonglass",
+        "id": "arated",
+        "class_name": "",
+        "bbox": {
+          "left": 576.0,
+          "top": 2027.9375,
+          "right": 709.46875,
+          "bottom": 2050.328125
+        },
+        "is_price_relevant": true
+      },
+      "outer_html": "<input name=\"argonglass\" type=\"radio\" required=\"\" class=\"thermal form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" is=\"dmx-radio\" id=\"arated\" onclick=\"\" data-msg-required=\"Please select an energy rating\" value=\"A Rated\">"
+    },
+    {
+      "label": "A+ Rated Energy Upgrade",
+      "xpath": "//*[@id=\"aplusrated\"]",
+      "verified": true,
+      "identified_element": "This is a radio button input labeled \"A+ Rated Energy Upgrade\" that allows the user to select the \"A+ Rated\" option, likely as part of an energy upgrade selection; it is visually hidden on extra-small screens and positioned absolutely within its container.",
+      "reason": "Successfully located and verified on page",
+      "input_data": {
+        "label": "A+ Rated Energy Upgrade",
+        "group_label": "Window Energy Rating (WER)",
+        "tag": "input",
+        "type": "radio",
+        "name": "argonglass",
+        "id": "aplusrated",
+        "class_name": "",
+        "bbox": {
+          "left": 745.421875,
+          "top": 2027.9375,
+          "right": 928.46875,
+          "bottom": 2050.328125
+        },
+        "is_price_relevant": true
+      },
+      "outer_html": "<input class=\"aplusrated form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" name=\"argonglass\" is=\"dmx-radio\" type=\"radio\" id=\"aplusrated\" value=\"A+ Rated\">"
+    },
+    {
+      "label": "A++ Triple Glazed",
+      "xpath": "//*[@id=\"tripleglazed\"]",
+      "verified": true,
+      "identified_element": "This is a radio button input labeled \"A++ Triple Glazed\" that allows the user to select the \"A++ Triple Glazed\" option, likely as part of a group for choosing glass types; it is visually hidden on extra-small screens and positioned absolutely within its container.",
+      "reason": "Successfully located and verified on page",
+      "input_data": {
+        "label": "A++ Triple Glazed",
+        "group_label": "Window Energy Rating (WER)",
+        "tag": "input",
+        "type": "radio",
+        "name": "argonglass",
+        "id": "tripleglazed",
+        "class_name": "",
+        "bbox": {
+          "left": 964.421875,
+          "top": 2027.9375,
+          "right": 1098.5,
+          "bottom": 2050.328125
+        },
+        "is_price_relevant": true
+      },
+      "outer_html": "<input class=\"tripleglazed form-control g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" name=\"argonglass\" is=\"dmx-radio\" type=\"radio\" id=\"tripleglazed\" value=\"A++ Triple Glazed\">"
+    },
+    {
+      "label": "Toughened Glass",
+      "xpath": "//*[@id=\"toughened\"]",
+      "verified": true,
+      "identified_element": "This is a custom checkbox input labeled \"Toughened Glass\" that allows the user to select or deselect the \"Toughened Glass\" option; it is visually hidden on extra-small screens and positioned absolutely within its container.",
+      "reason": "Successfully located and verified on page",
+      "input_data": {
+        "label": "Toughened Glass",
+        "group_label": "Additional Glass Options:",
+        "tag": "input",
+        "type": "checkbox",
+        "name": "toughenedglass",
+        "id": "toughened",
+        "class_name": "",
+        "bbox": {
+          "left": 576.0,
+          "top": 2116.8125,
+          "right": 708.890625,
+          "bottom": 2139.203125
+        },
+        "is_price_relevant": true
+      },
+      "outer_html": "<input class=\"toughened g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" name=\"toughenedglass\" type=\"checkbox\" id=\"toughened\" is=\"dmx-checkbox\" value=\"Toughened Glass\">"
+    },
+    {
+      "label": "Laminated Glass",
+      "xpath": "//*[@id=\"laminated\"]",
+      "verified": true,
+      "identified_element": "This is a checkbox input for selecting \"Laminated Glass,\" likely used in a form where users can choose glass options; it is visually hidden on extra-small screens and positioned absolutely, indicating it may be paired with a custom label or UI element for user interaction.",
+      "reason": "Successfully located and verified on page",
+      "input_data": {
+        "label": "Laminated Glass",
+        "group_label": "Additional Glass Options:",
+        "tag": "input",
+        "type": "checkbox",
+        "name": "laminatedglass",
+        "id": "laminated",
+        "class_name": "",
+        "bbox": {
+          "left": 576.0,
+          "top": 2156.203125,
+          "right": 705.546875,
+          "bottom": 2178.59375
+        },
+        "is_price_relevant": true
+      },
+      "outer_html": "<input class=\"laminated g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" name=\"laminatedglass\" type=\"checkbox\" id=\"laminated\" is=\"dmx-checkbox\" value=\"Laminated Glass\">"
+    },
+    {
+      "label": "Trickle Vents",
+      "xpath": "//*[@id=\"tricklevents\"]",
+      "verified": true,
+      "identified_element": "This is a dropdown (select) element labeled \"Trickle Vents\" that allows users to choose between \"Not Required,\" \"1,\" or \"2\" trickle vents, with each option carrying an associated data-price attribute. It enables users to specify the number of trickle vents needed for a product or configuration in the UI.",
+      "reason": "Successfully located and verified on page",
+      "input_data": {
+        "label": "Trickle Vents",
+        "group_label": "Hardware & Options",
+        "tag": "select",
+        "type": "",
+        "name": "tricklevents",
+        "id": "tricklevents",
+        "class_name": "",
+        "bbox": {
+          "left": 685.28125,
+          "top": 2357.78125,
+          "right": 789.28125,
+          "bottom": 2378.78125
+        },
+        "is_price_relevant": true
+      },
+      "outer_html": "<select class=\"tricklevents g-ml-10\" name=\"tricklevents\" id=\"tricklevents\" is=\"dmx-select\">\n                <option data-price=\"0\" value=\"Not Required\">Not Required</option>\n                <option data-price=\"15\" value=\"1\">1</option>\n                <option data-price=\"30\" value=\"2\">2</option>\n                </select>"
+    },
+    {
+      "label": "Fit Pack",
+      "xpath": "//*[@id=\"fitpack\"]",
+      "verified": true,
+      "identified_element": "This is a custom-styled checkbox input labeled \"Fit Pack\" that allows the user to select or deselect an optional feature, with an associated price of 15; it is visually hidden on extra-small screens and positioned absolutely within its container.",
+      "reason": "Successfully located and verified on page",
+      "input_data": {
+        "label": "Fit Pack",
+        "group_label": "Hardware & Options",
+        "tag": "input",
+        "type": "checkbox",
+        "name": "fitpack",
+        "id": "fitpack",
+        "class_name": "",
+        "bbox": {
+          "left": 576.0,
+          "top": 2389.484375,
+          "right": 668.453125,
+          "bottom": 2411.875
+        },
+        "is_price_relevant": true
+      },
+      "outer_html": "<input class=\"fitpack g-hidden-xs-up g-pos-abs g-top-0 g-left-0\" name=\"fitpack\" id=\"fitpack\" type=\"checkbox\" data-price=\"15\" is=\"dmx-checkbox\" value=\"Yes\">"
+    }
+  ],
+  "missing_components": [
+    {
+      "label": "Frame Extensions (add-ons)",
+      "type": "button/link",
+      "description": "Button to add frame extensions as an optional extra",
+      "reason_missing": "No matching component or similar label found in JSON; likely overlooked or not implemented in the configuration"
+    },
+    {
+      "label": "Georgian bars or Lead",
+      "type": "button/link",
+      "description": "Button to add Georgian bars or lead as decorative glazing options",
+      "reason_missing": "No matching component or similar label found in JSON; likely overlooked or not implemented in the configuration"
+    },
+    {
+      "label": "Fire Pack",
+      "type": "checkbox",
+      "description": "Checkbox to add a fire pack option",
+      "reason_missing": "No matching component or similar label found in JSON; possibly omitted or not discovered during initial scraping"
+    }
+  ],
+  "summary": {
+    "total_vision_components": 12,
+    "total_json_inputs": 31,
+    "verified_inputs": 31,
+    "failed_validations": 0,
+    "missing_components": 3,
+    "completeness_percentage": 258.33,
+    "warnings": [
+      "3 component(s) found on page but missing from JSON"
+    ]
+  }
+}
