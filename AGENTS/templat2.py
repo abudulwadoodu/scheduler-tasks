@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 from typing import Literal, Optional
 import dotenv
 
+
 dotenv.load_dotenv()
 
 
@@ -24,7 +25,7 @@ Your job is to extract values from the comment and return ONLY a filled Pydantic
 Rules:
 - Return only the Pydantic constructor call e.g. ModelName(field=value, ...)
 - Only include fields that have a value extracted from the comment
-- For numerical values take numerical values from the comment and convert to string (e.g. "630mm" → "630")
+- For numerical values take numerical values from the comment and convert to string (e.g. "630mm" -> "630")
 - For radio button fields (Optional[bool]): set True for the matched option, or set to default value if not specified
 - For radio groups: only ONE field in the group can be True
 - For checkbox fields (Optional[bool]): set True if mentioned, or set to default value if not specified
@@ -34,12 +35,10 @@ Rules:
 - Use Python field names (not aliases) in the constructor"""
 
 
-
-
 # =========================
 # CONSTANTS
 # =========================
-PRICE_XPATH = $price_xpath
+PRICE_XPATH = '$price_xpath'
 
 STEPS = $steps
 
@@ -52,34 +51,33 @@ prompt = ChatPromptTemplate.from_messages([
 ])
 
 
-# ── Parser Function ───────────────────────────────────────────────────────────
+# ── Fallback Parser ───────────────────────────────────────────────────────────
 
 def parse_order_from_comment(comment: str) -> NagivationStepsModel:
     """
     Uses LangChain with OpenAI structured output.
-    The Pydantic model is passed directly as the output schema.
     Returns a fully validated NagivationStepsModel instance.
     """
-    llm = ChatOpenAI(model="gpt-5.2", temperature=0)
-
-    # with_structured_output passes the Pydantic model as the schema
-    # and returns a validated Pydantic object directly
+    llm = ChatOpenAI(model="gpt-4o", temperature=0)
     structured_llm = llm.with_structured_output(NagivationStepsModel)
-
     chain = prompt | structured_llm
-
     return chain.invoke({"comment": comment})
+
 
 # =========================
 # COMMENT PARSER
 # =========================
 $comment_parser_function
 
+
 # =========================
 # SMART LOCATOR
 # =========================
 def _smart_locator(page, step, timeout=5000):
-    base = page.locator(f"xpath={{step[\'xpath\']}}")
+    step_xpath = step["xpath"]
+    step_label = step["label"]
+
+    base = page.locator("xpath=" + step_xpath)
 
     try:
         base.wait_for(state="attached", timeout=2000)
@@ -93,41 +91,41 @@ def _smart_locator(page, step, timeout=5000):
 
     if element_id:
         icon_div = page.locator(
-            f"label[for=\'{{element_id}}\'] div[class*=\'u-check-icon\']"
+            "label[for='" + element_id + "'] div[class*='u-check-icon']"
         )
         if icon_div.count() > 0:
             return icon_div.first
 
-        label_for = page.locator(f"label[for=\'{{element_id}}\']")
+        label_for = page.locator("label[for='" + element_id + "']")
         if label_for.count() > 0:
             return label_for.first
 
     ancestor_label = page.locator(
-        f"xpath={{step[\'xpath\']}}/ancestor::label"
+        "xpath=" + step_xpath + "/ancestor::label"
     )
     if ancestor_label.count() > 0:
-        ancestor_icon = ancestor_label.first.locator("div[class*=\'u-check-icon\']")
+        ancestor_icon = ancestor_label.first.locator("div[class*='u-check-icon']")
         if ancestor_icon.count() > 0:
             return ancestor_icon.first
         return ancestor_label.first
 
-    text = step["label"].lower()
+    text = step_label.lower()
     label_by_text = page.locator(
-        f"""//label[contains(
-                translate(normalize-space(.),
-                \'ABCDEFGHIJKLMNOPQRSTUVWXYZ\',
-                \'abcdefghijklmnopqrstuvwxyz\'),
-                \'{{text}}\'
-        )]"""
+        "//label[contains("
+        "translate(normalize-space(.),"
+        "'ABCDEFGHIJKLMNOPQRSTUVWXYZ',"
+        "'abcdefghijklmnopqrstuvwxyz'),"
+        "'" + text + "'"
+        ")]"
     )
     if label_by_text.count() > 0:
-        icon = label_by_text.first.locator("div[class*=\'u-check-icon\']")
+        icon = label_by_text.first.locator("div[class*='u-check-icon']")
         if icon.count() > 0:
             return icon.first
         return label_by_text.first
 
     wrapper = page.locator(
-        f"xpath={{step[\'xpath\']}}/ancestor::*[self::div or self::span][1]"
+        "xpath=" + step_xpath + "/ancestor::*[self::div or self::span][1]"
     )
     if wrapper.count() > 0:
         return wrapper.first
@@ -139,8 +137,8 @@ def _smart_locator(page, step, timeout=5000):
 # DROPDOWN SELECT
 # =========================
 def _xpath_to_css_for_select(xpath: str) -> str:
-    m = re.search(r"\\[@id=\'([^\']+)\'\\]", xpath)
-    return f"#{{m.group(1)}}" if m else xpath
+    m = re.search(r"\\[@id='([^']+)'\\]", xpath)
+    return "#" + m.group(1) if m else xpath
 
 
 def _select_option_partial(page, xpath: str, target, step_index: int) -> bool:
@@ -154,10 +152,10 @@ def _select_option_partial(page, xpath: str, target, step_index: int) -> bool:
 
     for attempt in range(3):
         try:
-            options = page.query_selector_all(f"{{css}} option")
+            options = page.query_selector_all(css + " option")
             if not options:
                 raise RuntimeError(
-                    f"Step {{step_index}}: no <option> elements found in select {{xpath}}"
+                    "Step " + str(step_index) + ": no <option> elements found in select " + xpath
                 )
 
             for opt in options:
@@ -177,11 +175,11 @@ def _select_option_partial(page, xpath: str, target, step_index: int) -> bool:
                     page.select_option(css, value=raw_value)
                     return True
 
-            print(f"[DEBUG] Step {{step_index}}: no option matched \'{{target_stripped}}\'")
+            print("[DEBUG] Step " + str(step_index) + ": no option matched '" + target_stripped + "'")
             for opt in options:
-                print(f"  text={{opt.inner_text()!r:40s}}  value={{opt.get_attribute(\'value\')!r}}")
+                print("  text=" + repr(opt.inner_text()) + "  value=" + repr(opt.get_attribute("value")))
             raise RuntimeError(
-                f"Step {{step_index}}: no option matching \'{{target_stripped}}\' found in {{xpath}}"
+                "Step " + str(step_index) + ": no option matching '" + target_stripped + "' found in " + xpath
             )
 
         except RuntimeError:
@@ -189,7 +187,7 @@ def _select_option_partial(page, xpath: str, target, step_index: int) -> bool:
         except Exception as exc:
             if attempt == 2:
                 raise RuntimeError(
-                    f"Step {{step_index}}: select failed after 3 attempts - {{exc}}"
+                    "Step " + str(step_index) + ": select failed after 3 attempts - " + str(exc)
                 ) from exc
             time.sleep(1)
 
@@ -214,6 +212,7 @@ def scrape_price(
 
     model = parse_comment(comment)
     values = model.model_dump(by_alias=True)
+    print("values : ", values)
 
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(
@@ -231,7 +230,7 @@ def scrape_price(
         context.route(
             "**/*",
             lambda route: route.abort()
-            if route.request.resource_type in {{"image", "font", "media"}}
+            if route.request.resource_type in {"image", "font", "media"}
             else route.continue_(),
         )
 
@@ -248,7 +247,7 @@ def scrape_price(
             # Capture baseline price
             old_price: str | None = None
             try:
-                price_el = page.locator(f"xpath={{price_xpath}}")
+                price_el = page.locator("xpath=" + price_xpath)
                 price_el.wait_for(state="attached", timeout=3000)
                 old_price = price_el.inner_text().strip()
             except Exception:
@@ -258,8 +257,9 @@ def scrape_price(
             # EXECUTE STEPS
             # =========================
             for idx, step in enumerate(STEPS):
-                label = step["label"]
-                value = values.get(label)
+                label      = step["label"]
+                step_xpath = step["xpath"]
+                value      = values.get(label)
 
                 if value is None:
                     continue
@@ -268,17 +268,17 @@ def scrape_price(
                 itype = step.get("type", "")
 
                 if tag == "select":
-                    _select_option_partial(page, step["xpath"], value, idx)
+                    _select_option_partial(page, step_xpath, value, idx)
                     _random_delay()
                     continue
 
                 if itype == "text":
-                    locator = page.locator(f"xpath={{step[\'xpath\']}}")
+                    locator = page.locator("xpath=" + step_xpath)
                     try:
                         locator.wait_for(state="visible", timeout=timeout)
                     except PlaywrightTimeoutError:
                         raise RuntimeError(
-                            f"Step {{idx}}: timeout waiting for text input - {{step[\'xpath\']}}"
+                            "Step " + str(idx) + ": timeout waiting for text input - " + step_xpath
                         )
                     locator.scroll_into_view_if_needed()
                     locator.click()
@@ -286,12 +286,12 @@ def scrape_price(
                     _random_delay()
                     continue
 
-                if value != True:
+                if value is not True:
                     continue
 
                 smart = _smart_locator(page, step, timeout=timeout)
                 if smart is None:
-                    print(f"[WARN] Step {{idx}}: could not resolve locator for \'{{label}}\' - skipping")
+                    print("[WARN] Step " + str(idx) + ": could not resolve locator for '" + label + "' - skipping")
                     continue
 
                 try:
@@ -299,7 +299,7 @@ def scrape_price(
                     smart.click(timeout=timeout)
                 except PlaywrightTimeoutError as exc:
                     raise RuntimeError(
-                        f"Step {{idx}}: timeout clicking \'{{itype}}\' element - {{step[\'xpath\']}}"
+                        "Step " + str(idx) + ": timeout clicking '" + itype + "' element - " + step_xpath
                     ) from exc
 
                 _random_delay()
@@ -310,13 +310,13 @@ def scrape_price(
             if old_price is not None:
                 try:
                     page.wait_for_function(
-                        """([xpath, oldPrice]) => {{
+                        """([xpath, oldPrice]) => {
                             const el = document.evaluate(
                                 xpath, document, null,
                                 XPathResult.FIRST_ORDERED_NODE_TYPE, null
                             ).singleNodeValue;
                             return el && el.innerText.trim() !== oldPrice;
-                        }}""",
+                        }""",
                         arg=[price_xpath, old_price],
                         timeout=timeout,
                     )
@@ -326,25 +326,25 @@ def scrape_price(
             # =========================
             # EXTRACT PRICE
             # =========================
-            price_locator = page.locator(f"xpath={{price_xpath}}").first
+            price_locator = page.locator("xpath=" + price_xpath).first
             try:
                 price_locator.wait_for(state="attached", timeout=timeout)
             except PlaywrightTimeoutError:
-                raise TimeoutError(f"Price element not found: {{price_xpath}}")
+                raise TimeoutError("Price element not found: " + price_xpath)
 
             try:
                 expect(price_locator).not_to_be_empty(timeout=timeout)
             except (PlaywrightTimeoutError, AssertionError):
-                raise TimeoutError(f"Price element found but empty: {{price_xpath}}")
+                raise TimeoutError("Price element found but empty: " + price_xpath)
 
             raw_price = price_locator.inner_text().strip()
             cleaned   = re.sub(r"[€£¥₹,]", "", raw_price).strip()
 
-            print(f"Extracted price: {{cleaned}}")
+            print("Extracted price: " + cleaned)
 
             if screenshot_path:
                 page.screenshot(path=screenshot_path, full_page=True)
-                print(f"Screenshot saved: {{screenshot_path}}")
+                print("Screenshot saved: " + screenshot_path)
 
             return cleaned
 
@@ -367,5 +367,5 @@ if __name__ == "__main__":
         screenshot_path="price_screenshot.png",
         timeout=20_000,
     )
-    print(f"Final price: {{price}}")
+    print("Final price: " + price)
 '''

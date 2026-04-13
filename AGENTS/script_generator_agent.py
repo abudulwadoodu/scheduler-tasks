@@ -5,8 +5,8 @@ and writes the final executable script.
 
 import ast
 import textwrap
-from template import SCRAPER_TEMPLATE
-
+from templat2 import SCRAPER_TEMPLATE
+from string import Template
 
 def script_generator(
     comment_parser_function: str,
@@ -40,7 +40,7 @@ def script_generator(
     steps_clean  = textwrap.dedent(steps).strip()
     pydantic_clean = textwrap.dedent(pydantic_model).strip()
 
-    script = SCRAPER_TEMPLATE.format(
+    script = Template(SCRAPER_TEMPLATE).safe_substitute(
         price_xpath=price_xpath,
         steps=steps_clean,
         comment_parser_function=parser_clean,

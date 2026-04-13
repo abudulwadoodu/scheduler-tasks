@@ -2,6 +2,37 @@ import re
 import time
 import random
 from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError, expect
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_openai import ChatOpenAI
+from pydantic import BaseModel, Field
+from typing import Literal, Optional
+import dotenv
+
+
+dotenv.load_dotenv()
+
+
+SYSTEM_PROMPT = """
+You are a form-filling assistant.
+
+You will be given:
+1. A Pydantic model definition representing a web form
+2. A customer comment describing what they want
+
+Your job is to extract values from the comment and return ONLY a filled Pydantic object constructor call — nothing else. No explanation, no code block, no markdown.
+
+Rules:
+- Return only the Pydantic constructor call e.g. ModelName(field=value, ...)
+- Only include fields that have a value extracted from the comment
+- For numerical values take numerical values from the comment and convert to string (e.g. "630mm" -> "630")
+- For radio button fields (Optional[bool]): set True for the matched option, or set to default value if not specified
+- For radio groups: only ONE field in the group can be True
+- For checkbox fields (Optional[bool]): set True if mentioned, or set to default value if not specified
+- For text fields (Optional[str]): extract the value as a string
+- For select/dropdown fields (Literal[...]): pick the closest matching allowed value
+- If the item is mentioned but no quantity found, default to the minimum non-zero option value
+- Use Python field names (not aliases) in the constructor"""
+
 
 # =========================
 # CONSTANTS
@@ -42,200 +73,179 @@ STEPS = [
 ]
 
 # Pydantic model
-from typing import Optional
-from pydantic import BaseModel, Field
+from typing import Literal, Optional
+from pydantic import BaseModel, Field, field_validator
+
 class NagivationStepsModel(BaseModel):
+
     model_config = {"populate_by_name": True}
-    # -- Dimensions --
-    Frame_Width_mm: Optional[str] = Field(default=None, alias="Frame Width (mm)")
-    Frame_Height_mm: Optional[str] = Field(default=None, alias="Frame Height (mm)")
+    Frame_Width_mm: Optional[str] = Field(None, alias="Frame Width (mm)")
+    Frame_Height_mm: Optional[str] = Field(None, alias="Frame Height (mm)")
+    No: Optional[bool] = Field(None, alias="No")
+    mm85_Stub: Optional[bool] = Field(None, alias="85mm Stub")
+    Standard_150mm: Optional[bool] = Field(None, alias="Standard 150mm")
+    mm180: Optional[bool] = Field(None, alias="180mm")
+    White: Optional[bool] = Field(None, alias="White")
+    Oak_Both_Side: Optional[bool] = Field(None, alias="Oak Both Side")
+    Oak_White: Optional[bool] = Field(None, alias="Oak/White")
+    Rosewood_Both_Sides: Optional[bool] = Field(None, alias="Rosewood Both Sides")
+    Rosewood_White: Optional[bool] = Field(None, alias="Rosewood/White")
+    Anthracite_Grey_Both_Sides: Optional[bool] = Field(None, alias="Anthracite Grev Both Sides")
+    Anthracite_Grey_White: Optional[bool] = Field(None, alias="Anthracite Grev/White")
+    Chartwell_White: Optional[bool] = Field(None, alias="Chartwell/White")
+    Cream_Both_Sides: Optional[bool] = Field(None, alias="Cream Both Sides")
+    Cream_White: Optional[bool] = Field(None, alias="Cream/White")
+    Black_Brown_Both_Sides: Optional[bool] = Field(None, alias="Black-Brown Both Sides")
+    Black_Brown_White: Optional[bool] = Field(None, alias="Black-Brown/White")
+    Whitegrain_Both_Sides: Optional[bool] = Field(None, alias="Whitegrain Both Sides")
+    Irish_Oak_Both_Sides: Optional[bool] = Field(None, alias="Irish Oak Both Sides")
+    Smooth_Anthracite_Grey_White: Optional[bool] = Field(None, alias="Smooth Anthracite Grey/White")
+    Agate_Grey_White: Optional[bool] = Field(None, alias="Agate Grey/White")
+    Clear: Optional[bool] = Field(None, alias="Clear")
+    Obscure: Optional[bool] = Field(None, alias="Obscure")
+    Standard_A_Rated: Optional[bool] = Field(None, alias="Standard A Rated")
+    A_Plus_Rated_Energy_Upgrade: Optional[bool] = Field(None, alias="A+ Rated Energy Upgrade")
+    A_Plus_Plus_Triple_Glazed: Optional[bool] = Field(None, alias="A++ Triple Glazed")
+    Toughened_Glass: Optional[bool] = Field(None, alias="Toughened Glass")
+    Laminated_Glass: Optional[bool] = Field(None, alias="Laminated Glass")
+    Trickle_Vents: str = Field("", alias="Trickle Vents")
+    Fit_Pack: Optional[bool] = Field(None, alias="Fit Pack")
 
-    # -- Cill Options --
-    No: Optional[bool] = Field(default=None, alias="No")
-    mm_Stub: Optional[bool] = Field(default=None, alias="85mm Stub")
-    Standard_150mm: Optional[bool] = Field(default=None, alias="Standard 150mm")
-    mm80: Optional[bool] = Field(default=None, alias="180mm")
+    @field_validator("Trickle_Vents", mode="before")
+    def validate_trickle_vents(cls, v):
+        map_ = {
+            "Not Required": "Not Required",
+            "1": "1",
+            "2": "2"
+        }
+        return map_.get(str(v), str(v))
 
-    # -- Colour Options --
-    White: Optional[bool] = Field(default=None, alias="White")
-    Oak_Both_Sides: Optional[bool] = Field(default=None, alias="Oak Both Sides")
-    Oak_White: Optional[bool] = Field(default=None, alias="Oak/White")
-    Rosewood_Both_Sides: Optional[bool] = Field(default=None, alias="Rosewood Both Sides")
-    Rosewood_White: Optional[bool] = Field(default=None, alias="Rosewood/White")
-    Anthracite_Grey_Both_Sides: Optional[bool] = Field(default=None, alias="Anthracite Grey Both Sides")
-    Anthracite_Grey_White: Optional[bool] = Field(default=None, alias="Anthracite Grey/White")
-    Chartwell_White: Optional[bool] = Field(default=None, alias="Chartwell/White")
-    Cream_Both_Sides: Optional[bool] = Field(default=None, alias="Cream Both Sides")
-    Cream_White: Optional[bool] = Field(default=None, alias="Cream/White")
-    Black_Brown_Both_Sides: Optional[bool] = Field(default=None, alias="Black-Brown Both Sides")
-    Black_Brown_White: Optional[bool] = Field(default=None, alias="Black-Brown/White")
-    Whitegrain_Both_Sides: Optional[bool] = Field(default=None, alias="Whitegrain Both Sides")
-    Irish_Oak_Both_Sides: Optional[bool] = Field(default=None, alias="Irish Oak Both Sides")
-    Smooth_Anthracite_Grey_White: Optional[bool] = Field(default=None, alias="Smooth Anthracite Grey/White")
-    Agate_Grey_White: Optional[bool] = Field(default=None, alias="Agate Grey/White")
+    
 
-    # -- Glass Type --
-    Clear: Optional[bool] = Field(default=None, alias="Clear")
-    Obscure: Optional[bool] = Field(default=None, alias="Obscure")
+prompt = ChatPromptTemplate.from_messages([
+    ("system", SYSTEM_PROMPT),
+    ("human", "{comment}"),
+])
 
-    # -- Energy Rating --
-    Standard_A_Rated: Optional[bool] = Field(default=None, alias="Standard A Rated")
-    A_Plus_Rated_Energy_Upgrade: Optional[bool] = Field(default=None, alias="A+ Rated Energy Upgrade")
-    A_Plus_Plus_Triple_Glazed: Optional[bool] = Field(default=None, alias="A++ Triple Glazed")
 
-    # -- Glass Upgrades --
-    Toughened_Glass: Optional[bool] = Field(default=None, alias="Toughened Glass")
-    Laminated_Glass: Optional[bool] = Field(default=None, alias="Laminated Glass")
+# ── Fallback Parser ───────────────────────────────────────────────────────────
 
-    # -- Extras --
-    Trickle_Vents: str = Field(default="", alias="Trickle Vents")
-    Fit_Pack: Optional[bool] = Field(default=None, alias="Fit Pack")
+def parse_order_from_comment(comment: str) -> NagivationStepsModel:
+    """
+    Uses LangChain with OpenAI structured output.
+    Returns a fully validated NagivationStepsModel instance.
+    """
+    llm = ChatOpenAI(model="gpt-5.2", temperature=0)
+    structured_llm = llm.with_structured_output(NagivationStepsModel)
+    chain = prompt | structured_llm
+    return chain.invoke({"comment": comment})
+
 
 # =========================
 # COMMENT PARSER
 # =========================
-import re
 def parse_comment(comment: str) -> NagivationStepsModel:
     c = comment.lower()
-
     # --- Dimensions ---
-    dim = re.search(r'(\d+)\s*(?:mm)?\s*[x×]\s*(\d+)\s*(?:mm)?', c)
-    width, height = (dim.group(1), dim.group(2)) if dim else (None, None)
-
+    dim = re.search(r'(\d+)\s*[x×/-]\s*(\d+)', c)
+    if dim:
+        width, height = dim.group(1), dim.group(2)
+    else:
+        print("llm called 1")
+        return parse_order_from_comment(comment)
     # --- Cill Options ---
-    if '180mm' in c or '180 mm' in c:
-        selected_cill = 'mm80'
-    elif '150mm' in c or '150 mm' in c or 'standard cill' in c or 'standard 150' in c:
-        selected_cill = 'Standard_150mm'
-    elif '85mm' in c or 'stub' in c:
-        selected_cill = 'mm_Stub'
-    elif 'no cill' in c or 'without cill' in c:
-        selected_cill = 'No'
+    if '85mm stub' in c:
+        cill_option = '85mm Stub'
+    elif '150mm standard' in c or 'standard cill' in c:
+        cill_option = 'Standard 150mm'
+    elif '180mm' in c:
+        cill_option = '180mm'
     else:
-        selected_cill = 'Standard_150mm'
-
+        cill_option = 'No'
     # --- Colour Options ---
-    # match-order: most specific first
-    colour_match_order = [
-        ('smooth anthracite grey/white', 'Smooth_Anthracite_Grey_White'),
-        ('smooth anthracite grey / white', 'Smooth_Anthracite_Grey_White'),
-        ('agate grey/white', 'Agate_Grey_White'),
-        ('agate grey / white', 'Agate_Grey_White'),
-        ('anthracite grey both sides', 'Anthracite_Grey_Both_Sides'),
-        ('anthracite grey/white', 'Anthracite_Grey_White'),
-        ('anthracite grey / white', 'Anthracite_Grey_White'),
-        ('anthracite grey', 'Anthracite_Grey_White'),
-        ('chartwell/white', 'Chartwell_White'),
-        ('chartwell / white', 'Chartwell_White'),
-        ('chartwell', 'Chartwell_White'),
-        ('black-brown both sides', 'Black_Brown_Both_Sides'),
-        ('black-brown/white', 'Black_Brown_White'),
-        ('black-brown / white', 'Black_Brown_White'),
-        ('black brown both sides', 'Black_Brown_Both_Sides'),
-        ('black brown/white', 'Black_Brown_White'),
-        ('black-brown', 'Black_Brown_White'),
-        ('rosewood both sides', 'Rosewood_Both_Sides'),
-        ('rosewood/white', 'Rosewood_White'),
-        ('rosewood / white', 'Rosewood_White'),
-        ('rosewood', 'Rosewood_White'),
-        ('irish oak both sides', 'Irish_Oak_Both_Sides'),
-        ('irish oak', 'Irish_Oak_Both_Sides'),
-        ('oak both sides', 'Oak_Both_Sides'),
-        ('oak/white', 'Oak_White'),
-        ('oak / white', 'Oak_White'),
-        ('oak', 'Oak_White'),
-        ('cream both sides', 'Cream_Both_Sides'),
-        ('cream/white', 'Cream_White'),
-        ('cream / white', 'Cream_White'),
-        ('cream', 'Cream_White'),
-        ('whitegrain both sides', 'Whitegrain_Both_Sides'),
-        ('whitegrain', 'Whitegrain_Both_Sides'),
-        ('white upvc', None),
-        ('white', None),
-    ]
-    # field-name order (for output)
-    colour_field_order = [
-        'White', 'Oak_Both_Sides', 'Oak_White', 'Rosewood_Both_Sides', 'Rosewood_White',
-        'Anthracite_Grey_Both_Sides', 'Anthracite_Grey_White', 'Chartwell_White',
-        'Cream_Both_Sides', 'Cream_White', 'Black_Brown_Both_Sides', 'Black_Brown_White',
-        'Whitegrain_Both_Sides', 'Irish_Oak_Both_Sides',
-        'Smooth_Anthracite_Grey_White', 'Agate_Grey_White',
-    ]
-
-    selected_colour = None
-    base_white = False
-    for pattern, field in colour_match_order:
-        if pattern in c:
-            if field is None:
-                base_white = True
-            else:
-                selected_colour = field
-            break
-
-    # --- Glass Type ---
+    colours = ['oak both side', 'oak/white', 'rosewood both sides', 'rosewood/white',
+               'anthracite grey both sides', 'anthracite grey/white', 'chartwell/white',
+               'cream both sides', 'cream/white', 'black-brown both sides', 'black-brown/white',
+               'whitegrain both sides', 'irish oak both sides', 'smooth anthracite grey/white',
+               'agate grey/white']
+    colour_fields = ['Oak_Both_Side', 'Oak_White', 'Rosewood_Both_Sides', 'Rosewood_White',
+                     'Anthracite_Grey_Both_Sides', 'Anthracite_Grey_White', 'Chartwell_White',
+                     'Cream_Both_Sides', 'Cream_White', 'Black_Brown_Both_Sides', 'Black_Brown_White',
+                     'Whitegrain_Both_Sides', 'Irish_Oak_Both_Sides', 'Smooth_Anthracite_Grey_White',
+                     'Agate_Grey_White']
+    if 'white upvc' in c:
+        colour_selection = [None] * len(colour_fields)
+    else:
+        colour_selection = [True if colour in c else None for colour in colours]
+    # --- Glass Options ---
     if 'obscure' in c:
-        selected_glass = 'Obscure'
+        glass_type = 'Obscure'
     else:
-        selected_glass = 'Clear'
-
+        glass_type = 'Clear'
     # --- Energy Rating ---
-    if 'a++' in c or 'triple glazed' in c or 'triple-glazed' in c:
-        selected_rating = 'A_Plus_Plus_Triple_Glazed'
-    elif 'a+' in c:
-        selected_rating = 'A_Plus_Rated_Energy_Upgrade'
-    elif 'a rated' in c or 'a-rated' in c or 'a energy' in c:
-        selected_rating = 'Standard_A_Rated'
+    if 'a++ triple glazed' in c:
+        energy_rating = 'A++ Triple Glazed'
+    elif 'a+ rated energy upgrade' in c:
+        energy_rating = 'A+ Rated Energy Upgrade'
     else:
-        selected_rating = 'Standard_A_Rated'
-
-    # --- Glass Upgrades (checkboxes) ---
-    toughened = True if 'toughened' in c else None
-    laminated = True if 'laminated' in c else None
-
-    # --- Trickle Vents (select) ---
-    trickle_options = ['1', '2', '3', '4', '5', '6']
-    trickle_vents = ''
-    if 'trickle vent' in c or 'trickle vents' in c:
-        qty_match = re.search(r'trickle\s+vents?\s*[(\[]?\s*(\d+)\s*[)\]]?|[(\[x×]\s*(\d+)\s*[)\]]?\s*trickle|(\d+)\s*[x×]\s*trickle', c)
-        if not qty_match:
-            qty_match = re.search(r'vents?\s*[(\[]?\s*(\d+)', c)
-        if qty_match:
-            qty = next(g for g in qty_match.groups() if g is not None)
-            trickle_vents = qty if qty in trickle_options else '1'
-        else:
-            trickle_vents = '1'
-
-    # --- Fit Pack (checkbox) ---
+        energy_rating = 'Standard A Rated'
+    # --- Checkboxes ---
+    toughened_glass = True if 'toughened glass' in c else None
+    laminated_glass = True if 'laminated glass' in c else None
     fit_pack = True if 'fit pack' in c else None
-
+    # --- Trickle Vents ---
+    trickle_vents = 'Not Required'
+    trickle_match = re.search(r'(\d+)\s*trickle vents|trickle vents\s*(\d+)|x(\d+)|(\d+)x|[(\[](\d+)[)\]]', c)
+    if trickle_match:
+        qty = next(g for g in trickle_match.groups() if g is not None)
+        trickle_vents = qty if qty in ('1', '2') else 'Not Required'
+    elif 'trickle vent' in c:
+        print("llm called")
+        return parse_order_from_comment(comment)
     # --- Build and return model ---
     return NagivationStepsModel(
         Frame_Width_mm=width,
         Frame_Height_mm=height,
-        No=True if selected_cill == 'No' else None,
-        mm_Stub=True if selected_cill == 'mm_Stub' else None,
-        Standard_150mm=True if selected_cill == 'Standard_150mm' else None,
-        mm80=True if selected_cill == 'mm80' else None,
-        **{
-            field: (True if (not base_white and field == selected_colour) else None)
-            for field in colour_field_order
-        },
-        Clear=True if selected_glass == 'Clear' else None,
-        Obscure=True if selected_glass == 'Obscure' else None,
-        Standard_A_Rated=True if selected_rating == 'Standard_A_Rated' else None,
-        A_Plus_Rated_Energy_Upgrade=True if selected_rating == 'A_Plus_Rated_Energy_Upgrade' else None,
-        A_Plus_Plus_Triple_Glazed=True if selected_rating == 'A_Plus_Plus_Triple_Glazed' else None,
-        Toughened_Glass=toughened,
-        Laminated_Glass=laminated,
+        No=True if cill_option == 'No' else None,
+        mm85_Stub=True if cill_option == '85mm Stub' else None,
+        Standard_150mm=True if cill_option == 'Standard 150mm' else None,
+        mm180=True if cill_option == '180mm' else None,
+        White=None if 'white upvc' in c else None,
+        Oak_Both_Side=colour_selection[0],
+        Oak_White=colour_selection[1],
+        Rosewood_Both_Sides=colour_selection[2],
+        Rosewood_White=colour_selection[3],
+        Anthracite_Grey_Both_Sides=colour_selection[4],
+        Anthracite_Grey_White=colour_selection[5],
+        Chartwell_White=colour_selection[6],
+        Cream_Both_Sides=colour_selection[7],
+        Cream_White=colour_selection[8],
+        Black_Brown_Both_Sides=colour_selection[9],
+        Black_Brown_White=colour_selection[10],
+        Whitegrain_Both_Sides=colour_selection[11],
+        Irish_Oak_Both_Sides=colour_selection[12],
+        Smooth_Anthracite_Grey_White=colour_selection[13],
+        Agate_Grey_White=colour_selection[14],
+        Clear=True if glass_type == 'Clear' else None,
+        Obscure=True if glass_type == 'Obscure' else None,
+        Standard_A_Rated=True if energy_rating == 'Standard A Rated' else None,
+        A_Plus_Rated_Energy_Upgrade=True if energy_rating == 'A+ Rated Energy Upgrade' else None,
+        A_Plus_Plus_Triple_Glazed=True if energy_rating == 'A++ Triple Glazed' else None,
+        Toughened_Glass=toughened_glass,
+        Laminated_Glass=laminated_glass,
         Trickle_Vents=trickle_vents,
         Fit_Pack=fit_pack,
     )
+
 
 # =========================
 # SMART LOCATOR
 # =========================
 def _smart_locator(page, step, timeout=5000):
-    base = page.locator(f"xpath={step['xpath']}")
+    step_xpath = step["xpath"]
+    step_label = step["label"]
+
+    base = page.locator("xpath=" + step_xpath)
 
     try:
         base.wait_for(state="attached", timeout=2000)
@@ -249,17 +259,17 @@ def _smart_locator(page, step, timeout=5000):
 
     if element_id:
         icon_div = page.locator(
-            f"label[for='{element_id}'] div[class*='u-check-icon']"
+            "label[for='" + element_id + "'] div[class*='u-check-icon']"
         )
         if icon_div.count() > 0:
             return icon_div.first
 
-        label_for = page.locator(f"label[for='{element_id}']")
+        label_for = page.locator("label[for='" + element_id + "']")
         if label_for.count() > 0:
             return label_for.first
 
     ancestor_label = page.locator(
-        f"xpath={step['xpath']}/ancestor::label"
+        "xpath=" + step_xpath + "/ancestor::label"
     )
     if ancestor_label.count() > 0:
         ancestor_icon = ancestor_label.first.locator("div[class*='u-check-icon']")
@@ -267,14 +277,14 @@ def _smart_locator(page, step, timeout=5000):
             return ancestor_icon.first
         return ancestor_label.first
 
-    text = step["label"].lower()
+    text = step_label.lower()
     label_by_text = page.locator(
-        f"""//label[contains(
-                translate(normalize-space(.),
-                'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
-                'abcdefghijklmnopqrstuvwxyz'),
-                '{text}'
-        )]"""
+        "//label[contains("
+        "translate(normalize-space(.),"
+        "'ABCDEFGHIJKLMNOPQRSTUVWXYZ',"
+        "'abcdefghijklmnopqrstuvwxyz'),"
+        "'" + text + "'"
+        ")]"
     )
     if label_by_text.count() > 0:
         icon = label_by_text.first.locator("div[class*='u-check-icon']")
@@ -283,7 +293,7 @@ def _smart_locator(page, step, timeout=5000):
         return label_by_text.first
 
     wrapper = page.locator(
-        f"xpath={step['xpath']}/ancestor::*[self::div or self::span][1]"
+        "xpath=" + step_xpath + "/ancestor::*[self::div or self::span][1]"
     )
     if wrapper.count() > 0:
         return wrapper.first
@@ -296,7 +306,7 @@ def _smart_locator(page, step, timeout=5000):
 # =========================
 def _xpath_to_css_for_select(xpath: str) -> str:
     m = re.search(r"\[@id='([^']+)'\]", xpath)
-    return f"#{m.group(1)}" if m else xpath
+    return "#" + m.group(1) if m else xpath
 
 
 def _select_option_partial(page, xpath: str, target, step_index: int) -> bool:
@@ -310,10 +320,10 @@ def _select_option_partial(page, xpath: str, target, step_index: int) -> bool:
 
     for attempt in range(3):
         try:
-            options = page.query_selector_all(f"{css} option")
+            options = page.query_selector_all(css + " option")
             if not options:
                 raise RuntimeError(
-                    f"Step {step_index}: no <option> elements found in select {xpath}"
+                    "Step " + str(step_index) + ": no <option> elements found in select " + xpath
                 )
 
             for opt in options:
@@ -333,11 +343,11 @@ def _select_option_partial(page, xpath: str, target, step_index: int) -> bool:
                     page.select_option(css, value=raw_value)
                     return True
 
-            print(f"[DEBUG] Step {step_index}: no option matched '{target_stripped}'")
+            print("[DEBUG] Step " + str(step_index) + ": no option matched '" + target_stripped + "'")
             for opt in options:
-                print(f"  text={opt.inner_text()!r:40s}  value={opt.get_attribute('value')!r}")
+                print("  text=" + repr(opt.inner_text()) + "  value=" + repr(opt.get_attribute("value")))
             raise RuntimeError(
-                f"Step {step_index}: no option matching '{target_stripped}' found in {xpath}"
+                "Step " + str(step_index) + ": no option matching '" + target_stripped + "' found in " + xpath
             )
 
         except RuntimeError:
@@ -345,7 +355,7 @@ def _select_option_partial(page, xpath: str, target, step_index: int) -> bool:
         except Exception as exc:
             if attempt == 2:
                 raise RuntimeError(
-                    f"Step {step_index}: select failed after 3 attempts - {exc}"
+                    "Step " + str(step_index) + ": select failed after 3 attempts - " + str(exc)
                 ) from exc
             time.sleep(1)
 
@@ -370,7 +380,7 @@ def scrape_price(
 
     model = parse_comment(comment)
     values = model.model_dump(by_alias=True)
-    print("values : ",values)
+    print("values : ", values)
 
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(
@@ -405,7 +415,7 @@ def scrape_price(
             # Capture baseline price
             old_price: str | None = None
             try:
-                price_el = page.locator(f"xpath={price_xpath}")
+                price_el = page.locator("xpath=" + price_xpath)
                 price_el.wait_for(state="attached", timeout=3000)
                 old_price = price_el.inner_text().strip()
             except Exception:
@@ -415,8 +425,9 @@ def scrape_price(
             # EXECUTE STEPS
             # =========================
             for idx, step in enumerate(STEPS):
-                label = step["label"]
-                value = values.get(label)
+                label      = step["label"]
+                step_xpath = step["xpath"]
+                value      = values.get(label)
 
                 if value is None:
                     continue
@@ -425,17 +436,17 @@ def scrape_price(
                 itype = step.get("type", "")
 
                 if tag == "select":
-                    _select_option_partial(page, step["xpath"], value, idx)
+                    _select_option_partial(page, step_xpath, value, idx)
                     _random_delay()
                     continue
 
                 if itype == "text":
-                    locator = page.locator(f"xpath={step['xpath']}")
+                    locator = page.locator("xpath=" + step_xpath)
                     try:
                         locator.wait_for(state="visible", timeout=timeout)
                     except PlaywrightTimeoutError:
                         raise RuntimeError(
-                            f"Step {idx}: timeout waiting for text input - {step['xpath']}"
+                            "Step " + str(idx) + ": timeout waiting for text input - " + step_xpath
                         )
                     locator.scroll_into_view_if_needed()
                     locator.click()
@@ -443,12 +454,12 @@ def scrape_price(
                     _random_delay()
                     continue
 
-                if value != True:
+                if value is not True:
                     continue
 
                 smart = _smart_locator(page, step, timeout=timeout)
                 if smart is None:
-                    print(f"[WARN] Step {idx}: could not resolve locator for '{label}' - skipping")
+                    print("[WARN] Step " + str(idx) + ": could not resolve locator for '" + label + "' - skipping")
                     continue
 
                 try:
@@ -456,7 +467,7 @@ def scrape_price(
                     smart.click(timeout=timeout)
                 except PlaywrightTimeoutError as exc:
                     raise RuntimeError(
-                        f"Step {idx}: timeout clicking '{itype}' element - {step['xpath']}"
+                        "Step " + str(idx) + ": timeout clicking '" + itype + "' element - " + step_xpath
                     ) from exc
 
                 _random_delay()
@@ -483,25 +494,25 @@ def scrape_price(
             # =========================
             # EXTRACT PRICE
             # =========================
-            price_locator = page.locator(f"xpath={price_xpath}").first
+            price_locator = page.locator("xpath=" + price_xpath).first
             try:
                 price_locator.wait_for(state="attached", timeout=timeout)
             except PlaywrightTimeoutError:
-                raise TimeoutError(f"Price element not found: {price_xpath}")
+                raise TimeoutError("Price element not found: " + price_xpath)
 
             try:
                 expect(price_locator).not_to_be_empty(timeout=timeout)
             except (PlaywrightTimeoutError, AssertionError):
-                raise TimeoutError(f"Price element found but empty: {price_xpath}")
+                raise TimeoutError("Price element found but empty: " + price_xpath)
 
             raw_price = price_locator.inner_text().strip()
             cleaned   = re.sub(r"[€£¥₹,]", "", raw_price).strip()
 
-            print(f"Extracted price: {cleaned}")
+            print("Extracted price: " + cleaned)
 
             if screenshot_path:
                 page.screenshot(path=screenshot_path, full_page=True)
-                print(f"Screenshot saved: {screenshot_path}")
+                print("Screenshot saved: " + screenshot_path)
 
             return cleaned
 
@@ -524,4 +535,4 @@ if __name__ == "__main__":
         screenshot_path="price_screenshot.png",
         timeout=20_000,
     )
-    print(f"Final price: {price}")
+    print("Final price: " + price)
