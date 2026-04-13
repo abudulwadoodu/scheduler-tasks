@@ -1,0 +1,78 @@
+{
+  "price": {
+    "label": "£2.89",
+    "tag": "span",
+    "type": "",
+    "name": "",
+    "id": "product-price-1793",
+    "class_name": "price-wrapper text-base font-semibold leading-[22px]",
+    "bbox": {
+      "left": 906.890625,
+      "top": 660.75,
+      "right": 947.390625,
+      "bottom": 679.75
+    }
+  },
+  "all_prices": [
+    {
+      "label": "£2.89",
+      "tag": "div",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price-box price-final_price",
+      "bbox": {
+        "left": 906.890625,
+        "top": 642.75,
+        "right": 989.015625,
+        "bottom": 706.75
+      }
+    },
+    {
+      "label": "£2.41",
+      "tag": "div",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price-excl-taxinline-block",
+      "bbox": {
+        "left": 906.890625,
+        "top": 682.75,
+        "right": 989.015625,
+        "bottom": 706.75
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "label": "Insulation to Suit Pipe Size",
+      "group_label": "Options",
+      "tag": "select",
+      "type": "",
+      "name": "super_attribute[186]",
+      "id": "attribute186",
+      "bbox": {
+        "left": 1070.5625,
+        "top": 782.75,
+        "right": 1226.234375,
+        "bottom": 826.75
+      },
+      "is_price_relevant": true
+    },
+    {
+      "label": "Insulation Thickness",
+      "group_label": "Options",
+      "tag": "select",
+      "type": "",
+      "name": "super_attribute[185]",
+      "id": "attribute185",
+      "bbox": {
+        "left": 1070.5625,
+        "top": 849.75,
+        "right": 1226.234375,
+        "bottom": 893.75
+      },
+      "is_price_relevant": true
+    }
+  ]
+}

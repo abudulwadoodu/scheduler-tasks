@@ -5,6 +5,8 @@ import base64
 from io import BytesIO
 from datetime import datetime
 from dataclasses import dataclass
+from pathlib import Path
+from urllib.parse import urlparse
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple
 
 from playwright.sync_api import ElementHandle, sync_playwright
@@ -92,6 +94,18 @@ def _looks_like_noise(text: str) -> bool:
 def run_stamp(dt: Optional[datetime] = None) -> str:
     d = dt or datetime.now()
     return d.strftime("%Y%m%d_%H%M%S")
+
+
+def _manual_output_path(url: str, suffix: str) -> Path:
+    parsed = urlparse((url or "").strip())
+    host = re.sub(r"[^a-z0-9]+", "-", (parsed.netloc or "site").lower()).strip("-")
+    path_part = re.sub(r"[^a-z0-9]+", "-", (parsed.path or "/").lower()).strip("-")
+    slug = f"{host}-{path_part}" if path_part else host
+    slug = slug[:120] if len(slug) > 120 else slug
+    root = Path(__file__).resolve().parent
+    out_dir = root / "data" / "results" / "playwright_manual_outputs"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    return out_dir / f"{slug}{suffix}"
 
 
 def screenshot_page(page, path: str) -> Tuple[int, int]:
@@ -320,6 +334,127 @@ def get_price_element(page) -> Optional[Dict[str, Any]]:
           };
         }"""
     )
+
+
+def get_all_prices(page) -> List[Dict[str, Any]]:
+    """
+    Collect all visible money-like prices within the main product detail area.
+    Excludes related/recommended product sections.
+    """
+    data = page.evaluate(
+        """() => {
+          const clean = (t) => (t || '').replace(/\\s+/g,' ').trim();
+          const visible = (el) => {
+            if (!el || el.nodeType !== 1) return false;
+            const s = getComputedStyle(el);
+            if (s.display === 'none' || s.visibility === 'hidden') return false;
+            const r = el.getBoundingClientRect();
+            return r.width > 0 && r.height > 0;
+          };
+          const firstMoney = (t) => {
+            const m = clean(t).match(/[£$€]\\s*\\d[\\d,.]*/);
+            return m ? m[0] : '';
+          };
+          const inRecommendationContext = (el) => {
+            if (!el || !el.closest) return false;
+            const bad = [
+              '[class*="related"]',
+              '[class*="recommend"]',
+              '[class*="crosssell"]',
+              '[class*="upsell"]',
+              '[class*="carousel"]',
+              '[class*="slider"]',
+              '[class*="product-item"]',
+              '[class*="products-grid"]',
+              '[id*="related"]',
+              '[id*="recommend"]',
+              '[id*="upsell"]',
+              '[id*="crosssell"]',
+              '[id*="carousel"]'
+            ];
+            return bad.some((sel) => !!el.closest(sel));
+          };
+          const primaryProductRoot = () => {
+            const roots = [
+              '#maincontent .product-info-main',
+              '.product-info-main',
+              'main .product-info-main',
+              '[itemprop="offers"]',
+              '.product-info-price',
+              '#maincontent'
+            ];
+            for (const sel of roots) {
+              const node = document.querySelector(sel);
+              if (!node || !visible(node)) continue;
+              const r = node.getBoundingClientRect();
+              if (r.width <= 0 || r.height <= 0) continue;
+              return node;
+            }
+            return null;
+          };
+
+          const root = primaryProductRoot();
+          if (!root) return [];
+
+          const selectors = [
+            '[data-price-type="finalPrice"] .price-wrapper',
+            '[data-price-type="finalPrice"] .price',
+            '[id^="product-price-"]',
+            '.price-box.price-final_price .price-wrapper',
+            '.price-box.price-final_price .price',
+            '.product-info-price .price-wrapper',
+            '.product-info-price .price',
+            '.price',
+            '[class*="price"]',
+            '[id*="price"]',
+            '[data-price]',
+            '[itemprop="offers"] font'
+          ];
+
+          const seen = new Set();
+          const out = [];
+          for (const sel of selectors) {
+            for (const el of Array.from(root.querySelectorAll(sel))) {
+              if (!visible(el) || inRecommendationContext(el)) continue;
+              const raw = clean(el.innerText || el.textContent || '');
+              if (!raw || raw.length > 180) continue;
+              const money = firstMoney(raw);
+              if (!money) continue;
+              const r = el.getBoundingClientRect();
+              const key = [
+                clean(el.id || ''),
+                clean(el.getAttribute('name') || ''),
+                clean(el.className || ''),
+                money,
+                Math.round(r.left),
+                Math.round(r.top),
+                Math.round(r.width),
+                Math.round(r.height),
+              ].join('|');
+              if (seen.has(key)) continue;
+              seen.add(key);
+              out.push({
+                text: money,
+                tag: (el.tagName || '').toLowerCase(),
+                id: el.id || '',
+                name: el.getAttribute('name') || '',
+                class_name: el.className || '',
+                rect: { left: r.left, top: r.top, right: r.right, bottom: r.bottom },
+              });
+            }
+          }
+
+          out.sort((a, b) => {
+            const dy = a.rect.top - b.rect.top;
+            if (Math.abs(dy) > 2) return dy;
+            return a.rect.left - b.rect.left;
+          });
+          return out;
+        }"""
+    )
+    if not isinstance(data, list):
+        return []
+    return data
 
 
 def get_all_inputs(page) -> List[ElementHandle]:
@@ -1047,6 +1182,7 @@ def get_inputs(
             pass
 
         price = get_price_element(page)
+        all_prices_raw = get_all_prices(page)
 
         stamp = run_stamp()
         debug_dir = "debug"
@@ -1245,7 +1381,43 @@ def get_inputs(
                 },
             }
 
-        response = {"price": price_obj, "inputs": results}
+        all_prices: List[Dict[str, Any]] = []
+        seen_price_labels: Set[str] = set()
+        for p in all_prices_raw:
+            if not isinstance(p, dict):
+                continue
+            rect = p.get("rect") or {}
+            label = _clean_text(p.get("text"))
+            left = float(rect.get("left", 0.0))
+            top = float(rect.get("top", 0.0))
+            right = float(rect.get("right", 0.0))
+            bottom = float(rect.get("bottom", 0.0))
+            if not label or label in seen_price_labels:
+                continue
+            seen_price_labels.add(label)
+            all_prices.append(
+                {
+                    "label": label,
+                    "tag": _clean_text(p.get("tag")),
+                    "type": "",
+                    "name": _clean_text(p.get("name")),
+                    "id": _clean_text(p.get("id")),
+                    "class_name": _clean_text(p.get("class_name")),
+                    "bbox": {
+                        "left": left,
+                        "top": top,
+                        "right": right,
+                        "bottom": bottom,
+                    },
+                }
+            )
+
+        # Keep all_prices useful on single-price pages where the scoped collector
+        # returns no candidates but the primary price heuristic still succeeds.
+        if not all_prices and price_obj:
+            all_prices.append(dict(price_obj))
+
+        response = {"price": price_obj, "all_prices": all_prices, "inputs": results}
 
         # Write timestamped JSON output
         json_path = os.path.join(debug_dir, f"labels_{stamp}.json")
@@ -1281,6 +1453,10 @@ if __name__ == "__main__":
         print("Usage: python playwright_input_labels.py <url>")
         raise SystemExit(2)
 
-    data = get_inputs(sys.argv[1])
+    target_url = sys.argv[1]
+    data = get_inputs(target_url)
+    out_path = _manual_output_path(target_url, "_labels.json")
+    with open(out_path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
     print(json.dumps(data, indent=2, ensure_ascii=False))
 
