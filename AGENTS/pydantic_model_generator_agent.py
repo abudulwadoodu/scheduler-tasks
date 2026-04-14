@@ -100,7 +100,7 @@ from pydantic import BaseModel, Field, field_validator
 ---
 
 ## Output style <- IMPORTANT
-- model_config = {"populate_by_name": True} at beginning of the class
+- model_config = \'{{"populate_by_name"}}\ at beginning of the class
 - Return ONLY the raw Python class — no markdown, no code fences, no explanation
 - The class must be importable as-is
 

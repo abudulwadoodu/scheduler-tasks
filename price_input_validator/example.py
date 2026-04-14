@@ -6,7 +6,7 @@ This script demonstrates how to use the validator programmatically.
 import json
 from pathlib import Path
 from price_input_validator import PriceInputValidator, ValidationResult
-INPUT_DIR = Path(__file__).resolve().parent / "input_jsons"
+
 
 def main():
     """Example validation workflow."""
@@ -17,12 +17,11 @@ def main():
     print("=" * 80)
     
     validator = PriceInputValidator()
-    labels_json_path = INPUT_DIR / "pipelaggingcom_armaflex-pipe-insulation-lagging-black-nitrile-foam-class-o-2m.json"
-    print(f"Validating JSON: {labels_json_path}")
+    
     # Run validation
     result = validator.validate(
-        labels_json_path=labels_json_path,
-        web_url="https://www.pipelagging.com/armaflex-pipe-insulation-lagging-black-nitrile-foam-class-o-2m",
+        labels_json_path="path/to/your/labels.json",
+        web_url="https://example.com/product",
         output_path="validation_results.json"
     )
     

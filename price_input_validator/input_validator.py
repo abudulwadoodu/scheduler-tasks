@@ -2,18 +2,11 @@
 Input validator using Playwright to verify JSON inputs against actual webpage.
 """
 import json
-import os
-import os
 from typing import List, Optional
 from playwright.sync_api import sync_playwright, Page, Locator
-from openai import AzureOpenAI, OpenAI
-from .models import InputElement, LabelsJSON, LabelData
-from langchain_openai import ChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate
-from pydantic import BaseModel, Field
-import dotenv
-
-dotenv.load_dotenv()
+from openai import OpenAI
+from .models import InputElement, LabelsJSON, LabelData, ElementDescription
+from .xpath_utils import build_xpath
 
 
 class InputValidator:
@@ -22,15 +15,20 @@ class InputValidator:
     def __init__(
         self,
         api_key: Optional[str] = None,
+        api_base: Optional[str] = None,
+        api_version: Optional[str] = None,
         model: Optional[str] = None
     ):
         """Initialize the input validator with optional LLM credentials."""
-        # self.llm_client = None
-        # self.model = model
+        self.llm_client = None
+        self.model = model
         
-       
-        self.llm_client = OpenAI(api_key=api_key or os.getenv("OPENAI_API_KEY"))
-        self.model = model or "gpt-4.1"
+        if api_key and api_base and api_version:
+            self.llm_client = OpenAI(
+                api_key=api_key,
+    
+            )
+            self.model = model or "gpt-4"
     
     def analyze_element_with_llm(self, outer_html: str, expected_label: str) -> str:
         """
@@ -67,18 +65,19 @@ Expected label from data: "{expected_label}"
 
 Provide a concise description of this element."""
             
-            response = self.llm_client.chat.completions.create(
+            response = self.llm_client.beta.chat.completions.parse(
                 model=self.model,
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt}
                 ],
+                response_format=ElementDescription,
                 max_tokens=200,
                 temperature=0.1
             )
             
-            description = response.choices[0].message.content.strip()
-            return description
+            parsed_response = response.choices[0].message.parsed
+            return parsed_response.description
             
         except Exception as e:
             # Fallback on error
@@ -94,24 +93,13 @@ Provide a concise description of this element."""
         Returns:
             XPath string
         """
-        tag = element.tag or "*"
-        
-        # Prefer ID (most specific)
-        if element.id:
-            return f'//*[@id="{element.id}"]'
-        
-        # Name + Type combination
-        if element.name and element.type:
-            return f'//{tag}[@name="{element.name}" and @type="{element.type}"]'
-        elif element.name:
-            return f'//{tag}[@name="{element.name}"]'
-        
-        # Class name
-        if element.class_name:
-            return f'//{tag}[contains(@class, "{element.class_name}")]'
-        
-        # Fallback to just tag
-        return f'//{tag}'
+        return build_xpath(
+            tag=element.tag,
+            id_=element.id,
+            name=element.name,
+            type_=element.type,
+            class_name=element.class_name,
+        )
     
     def validate_element(
         self,

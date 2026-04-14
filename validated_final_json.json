@@ -3,86 +3,110 @@
     {
       "label": "Frame Width (mm)",
       "type": "text",
-      "description": "Text input for entering the width of the window frame in millimeters",
-      "price_relevance_reason": "Larger frame width increases material usage and cost",
-      "group_context": "Window Details - Dimensions"
+      "description": "Input for the width of the window frame in millimeters.",
+      "price_relevance_reason": "The size of the window directly affects the material used and thus the price.",
+      "group_context": "Window Details",
+      "execution_order": 1,
+      "execution_order_reason": "Must be entered first as it determines the product size and may affect availability of other options."
     },
     {
       "label": "Frame Height (mm)",
       "type": "text",
-      "description": "Text input for entering the height of the window frame in millimeters",
-      "price_relevance_reason": "Larger frame height increases material usage and cost",
-      "group_context": "Window Details - Dimensions"
+      "description": "Input for the height of the window frame in millimeters.",
+      "price_relevance_reason": "The size of the window directly affects the material used and thus the price.",
+      "group_context": "Window Details",
+      "execution_order": 2,
+      "execution_order_reason": "Must be entered after width to fully define the product size, which may affect other options."
     },
     {
       "label": "External Cill",
       "type": "radio",
-      "description": "Radio buttons to select the size of the external cill (None, 85mm Stub, Standard 150mm, 180mm)",
-      "price_relevance_reason": "Different cill sizes or omitting the cill affects the total price due to material and labor differences",
-      "group_context": "Window Details"
+      "description": "Select the type/size of external cill for the window.",
+      "price_relevance_reason": "Different cill options may have different costs.",
+      "group_context": "Window Details",
+      "execution_order": 3,
+      "execution_order_reason": "Independent of previous fields but comes after size inputs as it is visually below them."
     },
     {
       "label": "Frame Extensions (add-ons)",
       "type": "button/link",
-      "description": "Button to add frame extensions as an optional extra",
-      "price_relevance_reason": "Adding frame extensions increases the total price",
-      "group_context": "Window Details"
+      "description": "Option to add frame extensions to the window.",
+      "price_relevance_reason": "Adding extensions increases the price.",
+      "group_context": "Window Details",
+      "execution_order": 4,
+      "execution_order_reason": "Appears after cill selection and is an optional add-on."
     },
     {
       "label": "Window Colour",
       "type": "radio",
-      "description": "Radio buttons to select the window frame color/finish (e.g., White, Oak, Rosewood, Anthracite Grey, etc.)",
-      "price_relevance_reason": "Different colors/finishes may have different costs due to materials or manufacturing complexity",
-      "group_context": "Window Colour"
+      "description": "Select the colour/finish for the window frame.",
+      "price_relevance_reason": "Different colours/finishes may have different prices.",
+      "group_context": "Window Colour",
+      "execution_order": 5,
+      "execution_order_reason": "Independent of previous fields and appears next in the visual order."
     },
     {
-      "label": "Glass Type",
+      "label": "Glass type",
       "type": "radio",
-      "description": "Radio buttons to choose between clear or obscure glass",
-      "price_relevance_reason": "Obscure glass may cost more than clear glass",
-      "group_context": "Glazing & Energy Rating"
+      "description": "Choose between clear or obscure glass.",
+      "price_relevance_reason": "Obscure glass may cost more than clear glass.",
+      "group_context": "Glazing & Energy Rating",
+      "execution_order": 6,
+      "execution_order_reason": "First input in the Glazing & Energy Rating section."
     },
     {
       "label": "Window Energy Rating (WER)",
       "type": "radio",
-      "description": "Radio buttons to select the energy rating of the window (Standard A Rated, A+ Rated Energy Upgrade, A++ Triple Glazed)",
-      "price_relevance_reason": "Higher energy ratings and triple glazing increase the price due to better materials and construction",
-      "group_context": "Glazing & Energy Rating"
+      "description": "Select the energy rating or glazing upgrade for the window.",
+      "price_relevance_reason": "Higher energy ratings or triple glazing increase the price.",
+      "group_context": "Glazing & Energy Rating",
+      "execution_order": 7,
+      "execution_order_reason": "Comes after glass type in the same section."
     },
     {
       "label": "Toughened Glass",
       "type": "checkbox",
-      "description": "Checkbox to select toughened glass as an additional option",
-      "price_relevance_reason": "Toughened glass is a premium option and increases the price",
-      "group_context": "Glazing & Energy Rating - Additional Glass Options"
+      "description": "Option to upgrade to toughened glass.",
+      "price_relevance_reason": "Toughened glass is an additional cost.",
+      "group_context": "Glazing & Energy Rating",
+      "execution_order": 8,
+      "execution_order_reason": "Appears after energy rating options."
     },
     {
       "label": "Laminated Glass",
       "type": "checkbox",
-      "description": "Checkbox to select laminated glass as an additional option",
-      "price_relevance_reason": "Laminated glass is a premium option and increases the price",
-      "group_context": "Glazing & Energy Rating - Additional Glass Options"
+      "description": "Option to upgrade to laminated glass.",
+      "price_relevance_reason": "Laminated glass is an additional cost.",
+      "group_context": "Glazing & Energy Rating",
+      "execution_order": 9,
+      "execution_order_reason": "Appears after toughened glass option."
     },
     {
       "label": "Georgian bars or Lead",
       "type": "button/link",
-      "description": "Button to add Georgian bars or lead as decorative glazing options",
-      "price_relevance_reason": "Adding decorative bars or lead increases the price",
-      "group_context": "Glazing & Energy Rating - Additional Glass Options"
+      "description": "Option to add Georgian bars or lead to the glass.",
+      "price_relevance_reason": "Adding decorative bars or lead increases the price.",
+      "group_context": "Glazing & Energy Rating",
+      "execution_order": 10,
+      "execution_order_reason": "Appears after glass upgrade options."
     },
     {
       "label": "Trickle Vents",
       "type": "select",
-      "description": "Dropdown to select if trickle vents are required or not",
-      "price_relevance_reason": "Adding trickle vents increases the price",
-      "group_context": "Hardware & Options"
+      "description": "Select whether trickle vents are required.",
+      "price_relevance_reason": "Adding trickle vents increases the price.",
+      "group_context": "Hardware & Options",
+      "execution_order": 11,
+      "execution_order_reason": "First input in the Hardware & Options section."
     },
     {
       "label": "Fire Pack",
       "type": "checkbox",
-      "description": "Checkbox to add a fire pack option",
-      "price_relevance_reason": "Adding a fire pack increases the price",
-      "group_context": "Hardware & Options"
+      "description": "Option to add a fire pack.",
+      "price_relevance_reason": "Adding a fire pack increases the price.",
+      "group_context": "Hardware & Options",
+      "execution_order": 12,
+      "execution_order_reason": "Appears after trickle vents option."
     }
   ],
   "validated_inputs": [
@@ -90,7 +114,7 @@
       "label": "Frame Width (mm)",
       "xpath": "//*[@id=\"framewidth\"]",
       "verified": true,
-      "identified_element": "This is a single-line text input field labeled \"Frame Width (mm)\" that allows the user to enter a width value between 300 and 1300 millimeters, with a placeholder guiding the valid range and validation messages for required, minimum, and maximum values. It is styled with form-control classes and is required for form submission.",
+      "identified_element": "This is a required text input field labeled 'Frame Width (mm)' that allows users to enter a frame width value between 300 and 1300 millimeters, with validation messages and a placeholder guiding the acceptable range.",
       "reason": "Successfully located and verified on page",
       "input_data": {
         "label": "Frame Width (mm)",
@@ -114,7 +138,7 @@
       "label": "Frame Height (mm)",
       "xpath": "//*[@id=\"frameheight\"]",
       "verified": true,
-      "identified_element": "This is a single-line text input field labeled \"Frame Height (mm)\" that allows the user to enter a frame height value between 300 and 2200 millimeters; it is required, displays a placeholder with entry guidance, and provides validation messages for out-of-range values.",
+      "identified_element": "This is a single-line text input field labeled 'Frame Height (mm)' that allows users to enter a frame height value between 300 and 2200 millimeters, with validation messages and a placeholder guiding the required input range.",
       "reason": "Successfully located and verified on page",
       "input_data": {
         "label": "Frame Height (mm)",
@@ -138,7 +162,7 @@
       "label": "No",
       "xpath": "//*[@id=\"cillno\"]",
       "verified": true,
-      "identified_element": "This is a radio button input labeled \"No\" that allows the user to select the \"No\" option for a field named \"cill\"; it is required for form submission and is visually hidden, likely controlled by custom styling or scripts.",
+      "identified_element": "This is a radio button input labeled 'No' that allows the user to select 'No' as an option for the 'cill' field; it is required and will display a validation message if not selected.",
       "reason": "Successfully located and verified on page",
       "input_data": {
         "label": "No",
@@ -162,7 +186,7 @@
       "label": "85mm Stub",
       "xpath": "//*[@id=\"cill85\"]",
       "verified": true,
-      "identified_element": "This is a radio button input labeled \"85mm Stub\" that allows the user to select the \"85mm\" option for a field named \"cill\"; it is visually hidden in the UI, likely used for custom styling or scripting purposes.",
+      "identified_element": "This is a radio button input with the value '85mm', intended for selecting the '85mm Stub' option. It is visually hidden (likely for custom styling or accessibility purposes) and is part of a group where users can choose between different cill options.",
       "reason": "Successfully located and verified on page",
       "input_data": {
         "label": "85mm Stub",
@@ -186,7 +210,7 @@
       "label": "Standard 150mm",
       "xpath": "//*[@id=\"cill150\"]",
       "verified": true,
-      "identified_element": "This is a radio button input labeled \"Standard 150mm\" that allows the user to select the \"150mm\" option for the \"cill\" field; it is visually hidden in the UI, likely controlled or displayed through custom styling or scripting.",
+      "identified_element": "This is a radio button input labeled 'Standard 150mm' that allows the user to select the '150mm' option for a field named 'cill'; it is visually hidden but may be styled or revealed by custom scripts or frameworks.",
       "reason": "Successfully located and verified on page",
       "input_data": {
         "label": "Standard 150mm",
@@ -210,7 +234,7 @@
       "label": "180mm",
       "xpath": "//*[@id=\"cill180\"]",
       "verified": true,
-      "identified_element": "This is a radio button input with the value \"180mm,\" intended for selecting the \"180mm\" option in a group of choices; it is likely visually hidden (using classes like \"g-hidden-xs-up\") and associated with a label displaying \"180mm\" elsewhere in the UI.",
+      "identified_element": "This is a radio button input labeled '180mm' that allows the user to select the '180mm' option, likely as part of a group of mutually exclusive choices in a form.",
       "reason": "Successfully located and verified on page",
       "input_data": {
         "label": "180mm",
@@ -234,7 +258,7 @@
       "label": "White",
       "xpath": "//*[@id=\"White\"]",
       "verified": true,
-      "identified_element": "This is a radio button input labeled \"White\" that allows the user to select \"White\" as a colour option; it is required for form submission and includes a custom validation message if not selected. The element is visually hidden (likely styled for custom UI), and it stores an associated price value of \"1.00\".",
+      "identified_element": "This is a radio button input labeled 'White' that allows the user to select 'White' as a colour option, and it is required for form submission. The element is visually hidden (likely styled for custom UI), and includes validation messaging if not selected.",
       "reason": "Successfully located and verified on page",
       "input_data": {
         "label": "White",
@@ -258,7 +282,7 @@
       "label": "Oak Both Sides",
       "xpath": "//*[@id=\"Oak Both Sides\"]",
       "verified": true,
-      "identified_element": "This is a radio button input labeled \"Oak Both Sides\" that allows the user to select this specific color option; it is required for form submission and includes validation messaging if not selected. The element is visually hidden (likely styled for custom UI), but still functions as a selectable option in a group of color choices.",
+      "identified_element": "This is a radio button input labeled 'Oak Both Sides' that allows the user to select this specific colour option, and it is required for form submission. The element is visually hidden (likely styled for custom UI), but still functions as a selectable option in a group of colour choices.",
       "reason": "Successfully located and verified on page",
       "input_data": {
         "label": "Oak Both Sides",
@@ -282,7 +306,7 @@
       "label": "Oak/White",
       "xpath": "//*[@id=\"Oak/White\"]",
       "verified": true,
-      "identified_element": "This is a radio button input labeled \"Oak/White\" that allows the user to select this specific colour option; it is required for form submission and includes a custom validation message if not selected. The element is visually hidden (likely styled for custom UI), and it carries an associated price value of 1.30.",
+      "identified_element": "This is a radio button input labeled 'Oak/White' that allows the user to select this specific colour option, and it is required for form submission. The element is visually hidden (likely styled for custom UI), and selecting it may also be associated with a price value of 1.30.",
       "reason": "Successfully located and verified on page",
       "input_data": {
         "label": "Oak/White",
@@ -306,7 +330,7 @@
       "label": "Rosewood Both Sides",
       "xpath": "//*[@id=\"Rosewood Both Sides\"]",
       "verified": true,
-      "identified_element": "This is a radio button input labeled \"Rosewood Both Sides\" that allows the user to select this specific colour option; it is required for form submission and includes a custom validation message if not selected. The element is visually hidden (likely styled for custom UI), and it carries an associated price value of 1.30.",
+      "identified_element": "This is a required radio button input labeled 'Rosewood Both Sides' that allows the user to select this specific colour option, with an associated price of 1.30, as part of a group of colour choices in a form.",
       "reason": "Successfully located and verified on page",
       "input_data": {
         "label": "Rosewood Both Sides",
@@ -330,7 +354,7 @@
       "label": "Rosewood/White",
       "xpath": "//*[@id=\"Rosewood/White\"]",
       "verified": true,
-      "identified_element": "This is a radio input element labeled \"Rosewood/White\" that allows the user to select this specific colour option; it is required for form submission and includes a custom validation message if not selected. The element is visually hidden (likely styled for custom UI controls) and has an associated price value of 1.30.",
+      "identified_element": "This is a radio button input labeled 'Rosewood/White' that allows the user to select this specific colour option, and it is required for form submission. The element is visually hidden but still accessible, likely styled for custom UI presentation, and includes a data attribute indicating its price.",
       "reason": "Successfully located and verified on page",
       "input_data": {
         "label": "Rosewood/White",
@@ -354,7 +378,7 @@
       "label": "Anthracite Grev Both Sides",
       "xpath": "//*[@id=\"Anthracite Grey Both Sides\"]",
       "verified": true,
-      "identified_element": "This is a radio button input labeled \"Anthracite Grey Both Sides\" that allows the user to select this specific colour option; it is required for form submission and includes a custom validation message if not selected. The element is visually hidden (likely styled for custom UI), and it carries an associated price value of 1.30.",
+      "identified_element": "This is a required radio button input labeled 'Anthracite Grey Both Sides' that allows the user to select this specific colour option, with an associated price of 1.30, as part of a group of colour choices in a form.",
       "reason": "Successfully located and verified on page",
       "input_data": {
         "label": "Anthracite Grev Both Sides",
@@ -378,7 +402,7 @@
       "label": "Anthracite Grev/White",
       "xpath": "//*[@id=\"Anthracite Grey/White\"]",
       "verified": true,
-      "identified_element": "This is a radio button input labeled \"Anthracite Grey/White\" that allows the user to select this specific colour option; it is required for form submission and includes a custom validation message if not selected. The element is visually hidden (likely styled for custom UI), and it carries an associated price value of 1.30.",
+      "identified_element": "This is a required radio button input labeled 'Anthracite Grey/White' that allows the user to select this specific colour option, with an associated price of 1.30, as part of a group of colour choices in a form.",
       "reason": "Successfully located and verified on page",
       "input_data": {
         "label": "Anthracite Grev/White",
@@ -402,7 +426,7 @@
       "label": "Chartwell/White",
       "xpath": "//*[@id=\"Chartwell/White\"]",
       "verified": true,
-      "identified_element": "This is a radio button input labeled \"Chartwell/White\" that allows the user to select this specific colour option; it is required for form submission and includes a custom validation message if not selected. The element is visually hidden (likely styled for custom UI), and it carries an associated price value of 1.50.",
+      "identified_element": "This is a radio input field labeled 'Chartwell/White' that allows the user to select this specific colour option, and it is required for form submission. The element is visually hidden (likely styled for custom UI), and selecting it may also be associated with a price of 1.50.",
       "reason": "Successfully located and verified on page",
       "input_data": {
         "label": "Chartwell/White",
@@ -426,7 +450,7 @@
       "label": "Cream Both Sides",
       "xpath": "//*[@id=\"Cream Both Sides\"]",
       "verified": true,
-      "identified_element": "This is a radio button input labeled \"Cream Both Sides\" that allows the user to select this specific color option; it is required for form submission and includes a custom validation message if not selected. The element is visually hidden (likely styled for custom UI rendering) and carries an associated price value of 1.30.",
+      "identified_element": "This is a radio button input labeled 'Cream Both Sides' that allows the user to select this specific color option, and it is required for form submission. The element is visually hidden (likely styled for custom UI), and displays a validation message 'Please select a colour' if not selected.",
       "reason": "Successfully located and verified on page",
       "input_data": {
         "label": "Cream Both Sides",
@@ -450,7 +474,7 @@
       "label": "Cream/White",
       "xpath": "//*[@id=\"Cream/White\"]",
       "verified": true,
-      "identified_element": "This is a radio input element labeled \"Cream/White\" that allows the user to select this color option; it is required for form submission and includes a custom validation message if not selected. The element is visually hidden (likely styled for custom UI), and it carries an associated price value of 1.30.",
+      "identified_element": "This is a radio button input labeled 'Cream/White' that allows the user to select this color option, and it is required for form submission. It is visually hidden (likely styled for custom UI) and includes validation messaging if not selected.",
       "reason": "Successfully located and verified on page",
       "input_data": {
         "label": "Cream/White",
@@ -474,7 +498,7 @@
       "label": "Black-Brown Both Sides",
       "xpath": "//*[@id=\"Black-Brown Both Sides\"]",
       "verified": true,
-      "identified_element": "This is a radio button input labeled \"Black-Brown Both Sides\" that allows the user to select this specific colour option; it is required for form submission and includes a custom validation message if not selected. The element is visually hidden (likely styled for custom UI), but still functions as a selectable option in a group of colour choices.",
+      "identified_element": "This is a required radio button input labeled 'Black-Brown Both Sides' that allows the user to select this specific colour option, with an associated price of 1.30, as part of a group of colour choices in a form.",
       "reason": "Successfully located and verified on page",
       "input_data": {
         "label": "Black-Brown Both Sides",
@@ -498,7 +522,7 @@
       "label": "Black-Brown/White",
       "xpath": "//*[@id=\"Black-Brown/White\"]",
       "verified": true,
-      "identified_element": "This is a radio button input labeled \"Black-Brown/White\" that allows the user to select this specific colour option; it is required for form submission and includes a custom validation message if not selected. The element is visually hidden (likely styled for custom UI), and it carries an associated price value of 1.30.",
+      "identified_element": "This is a required radio button input labeled 'Black-Brown/White' that allows the user to select this specific color option, with an associated price of 1.30, as part of a group of color choices in a form.",
       "reason": "Successfully located and verified on page",
       "input_data": {
         "label": "Black-Brown/White",
@@ -522,7 +546,7 @@
       "label": "Whitegrain Both Sides",
       "xpath": "//*[@id=\"Whitegrain Both Sides\"]",
       "verified": true,
-      "identified_element": "This is a radio button input labeled \"Whitegrain Both Sides\" that allows the user to select this specific colour option; it is required for form submission and includes a custom validation message if not selected. The element is visually hidden (likely styled for custom UI rendering) and stores an associated price value of 1.30.",
+      "identified_element": "This is a radio button input labeled 'Whitegrain Both Sides' that allows the user to select this specific colour option, and it is required for form submission. The element is visually hidden (likely styled for custom UI), but still functions as a selectable option in a group of colour choices.",
       "reason": "Successfully located and verified on page",
       "input_data": {
         "label": "Whitegrain Both Sides",
@@ -546,7 +570,7 @@
       "label": "Irish Oak Both Sides",
       "xpath": "//*[@id=\"Irish Oak Both Sides\"]",
       "verified": true,
-      "identified_element": "Element with expected label 'Irish Oak Both Sides' (LLM analysis failed: Error code: 400 - {'error': {'message': \"We could not parse the JSON body of your request. (HINT: This likely means you aren't using your HTTP library correctly. The OpenAI API expects a JSON payload, but what was sent was not valid JSON. If you have trouble figuring out how to fix this, please contact us through our help center at help.openai.com.)\", 'type': 'invalid_request_error', 'param': None, 'code': None}})",
+      "identified_element": "This is a required radio button input labeled 'Irish Oak Both Sides' that allows the user to select this specific colour option, with an associated price of 1.80, as part of a group of colour choices in a form.",
       "reason": "Successfully located and verified on page",
       "input_data": {
         "label": "Irish Oak Both Sides",
@@ -570,7 +594,7 @@
       "label": "Smooth Anthracite Grey/White",
       "xpath": "//*[@id=\"Smooth Anthracite Grey/White\"]",
       "verified": true,
-      "identified_element": "This is a radio button input labeled \"Smooth Anthracite Grey/White\" that allows the user to select this specific colour option; it is required for form submission and includes a custom validation message if not selected. The element is visually hidden (likely styled for custom UI) and carries an associated price value of 1.30.",
+      "identified_element": "This is a required radio button input labeled 'Smooth Anthracite Grey/White' that allows the user to select this specific colour option, with an associated price value of 1.30, as part of a group of colour choices in a form.",
       "reason": "Successfully located and verified on page",
       "input_data": {
         "label": "Smooth Anthracite Grey/White",
@@ -594,7 +618,7 @@
       "label": "Agate Grey/White",
       "xpath": "//*[@id=\"Agate Grey/White\"]",
       "verified": true,
-      "identified_element": "This is a radio input element labeled \"Agate Grey/White\" that allows the user to select this specific colour option; it is required for form submission and includes a custom validation message if not selected. The element is visually hidden (likely styled for custom UI), and it carries an associated price value of 1.30.",
+      "identified_element": "This is a required radio button input labeled 'Agate Grey/White' that allows the user to select this specific colour option, with an associated price value, as part of a group of colour choices in a form.",
       "reason": "Successfully located and verified on page",
       "input_data": {
         "label": "Agate Grey/White",
@@ -618,7 +642,7 @@
       "label": "Clear",
       "xpath": "//*[@id=\"clear\"]",
       "verified": true,
-      "identified_element": "This is a radio button input labeled \"Clear\" that allows the user to select \"Clear\" as a glass type option; it is required for form submission and is visually hidden, likely styled to be replaced by a custom UI element.",
+      "identified_element": "This is a radio button input labeled 'Clear' that allows the user to select 'Clear' as a glass type option; it is required for form submission and includes validation messaging if not selected.",
       "reason": "Successfully located and verified on page",
       "input_data": {
         "label": "Clear",
@@ -642,7 +666,7 @@
       "label": "Obscure",
       "xpath": "//*[@id=\"obscure\"]",
       "verified": true,
-      "identified_element": "This is a radio button input labeled \"Obscure\" that allows the user to select the \"Obscure\" option for the \"glass\" field; it is visually hidden in the UI, likely used for accessibility or programmatic selection rather than direct user interaction.",
+      "identified_element": "This is a radio button input labeled 'Obscure', allowing users to select the 'Obscure' option for a field named 'glass'; it is visually hidden in the UI, likely used for accessibility or programmatic selection.",
       "reason": "Successfully located and verified on page",
       "input_data": {
         "label": "Obscure",
@@ -666,7 +690,7 @@
       "label": "Standard A Rated",
       "xpath": "//*[@id=\"arated\"]",
       "verified": true,
-      "identified_element": "This is a radio button input labeled \"Standard A Rated\" that allows the user to select the \"A Rated\" energy rating option; it is required for form submission and is visually hidden, likely controlled or revealed by custom styling or scripting in the UI.",
+      "identified_element": "This is a radio button input labeled 'Standard A Rated' that allows the user to select the 'A Rated' energy rating option, and is required for form submission. It is visually hidden with CSS classes, likely to be styled or displayed via a custom UI component.",
       "reason": "Successfully located and verified on page",
       "input_data": {
         "label": "Standard A Rated",
@@ -690,7 +714,7 @@
       "label": "A+ Rated Energy Upgrade",
       "xpath": "//*[@id=\"aplusrated\"]",
       "verified": true,
-      "identified_element": "This is a radio button input labeled \"A+ Rated Energy Upgrade\" that allows the user to select the \"A+ Rated\" option, likely as part of an energy upgrade selection; it is visually hidden on extra-small screens and positioned absolutely within its container.",
+      "identified_element": "This is a radio button input for selecting the 'A+ Rated Energy Upgrade' option, likely part of a group of energy upgrade choices. The element is visually hidden (using CSS classes) and may be revealed or styled by JavaScript or a custom component.",
       "reason": "Successfully located and verified on page",
       "input_data": {
         "label": "A+ Rated Energy Upgrade",
@@ -714,7 +738,7 @@
       "label": "A++ Triple Glazed",
       "xpath": "//*[@id=\"tripleglazed\"]",
       "verified": true,
-      "identified_element": "This is a radio button input labeled \"A++ Triple Glazed\" that allows the user to select the \"A++ Triple Glazed\" option, likely as part of a group for choosing glass types; it is visually hidden on extra-small screens and positioned absolutely within its container.",
+      "identified_element": "This is a radio button input labeled 'A++ Triple Glazed' that allows users to select the 'A++ Triple Glazed' option, likely as part of a group for choosing glass types. The element is visually hidden on extra small screens and positioned absolutely, indicating it may be styled or revealed dynamically in the UI.",
       "reason": "Successfully located and verified on page",
       "input_data": {
         "label": "A++ Triple Glazed",
@@ -738,7 +762,7 @@
       "label": "Toughened Glass",
       "xpath": "//*[@id=\"toughened\"]",
       "verified": true,
-      "identified_element": "This is a custom checkbox input labeled \"Toughened Glass\" that allows the user to select or deselect the \"Toughened Glass\" option; it is visually hidden on extra-small screens and positioned absolutely within its container.",
+      "identified_element": "This is a custom checkbox input for selecting the 'Toughened Glass' option, likely used in a form where users can choose glass types; it is visually hidden on extra-small screens and positioned absolutely in the UI.",
       "reason": "Successfully located and verified on page",
       "input_data": {
         "label": "Toughened Glass",
@@ -762,7 +786,7 @@
       "label": "Laminated Glass",
       "xpath": "//*[@id=\"laminated\"]",
       "verified": true,
-      "identified_element": "This is a checkbox input for selecting \"Laminated Glass,\" likely used in a form where users can choose glass options; it is visually hidden on extra-small screens and positioned absolutely, indicating it may be paired with a custom label or UI element for user interaction.",
+      "identified_element": "This is a custom checkbox input for selecting 'Laminated Glass', likely hidden on extra-small screens and positioned absolutely; it allows users to indicate their choice of laminated glass in a form or selection interface.",
       "reason": "Successfully located and verified on page",
       "input_data": {
         "label": "Laminated Glass",
@@ -786,7 +810,7 @@
       "label": "Trickle Vents",
       "xpath": "//*[@id=\"tricklevents\"]",
       "verified": true,
-      "identified_element": "This is a dropdown (select) element labeled \"Trickle Vents\" that allows users to choose between \"Not Required,\" \"1,\" or \"2\" trickle vents, with each option carrying an associated data-price attribute. It enables users to specify the number of trickle vents needed for a product or configuration in the UI.",
+      "identified_element": "This is a dropdown select element labeled 'Trickle Vents' that allows users to choose between 'Not Required', '1', or '2', with each option potentially associated with a different price via the data-price attribute.",
       "reason": "Successfully located and verified on page",
       "input_data": {
         "label": "Trickle Vents",
@@ -810,7 +834,7 @@
       "label": "Fit Pack",
       "xpath": "//*[@id=\"fitpack\"]",
       "verified": true,
-      "identified_element": "This is a custom-styled checkbox input labeled \"Fit Pack\" that allows the user to select or deselect an optional feature, with an associated price of 15; it is visually hidden on extra-small screens and positioned absolutely within its container.",
+      "identified_element": "This is a hidden checkbox input labeled 'Fit Pack' that allows users to select or deselect an option, with an associated price of 15, likely used for adding an extra feature or service in a form or product configuration.",
       "reason": "Successfully located and verified on page",
       "input_data": {
         "label": "Fit Pack",
@@ -835,22 +859,52 @@
     {
       "label": "Frame Extensions (add-ons)",
       "type": "button/link",
-      "description": "Button to add frame extensions as an optional extra",
-      "reason_missing": "No matching component or similar label found in JSON; likely overlooked or not implemented in the configuration"
+      "description": "Option to add frame extensions to the window.",
+      "reason_missing": "No matching or semantically similar component found in JSON; likely overlooked or not implemented in the configuration."
     },
     {
       "label": "Georgian bars or Lead",
       "type": "button/link",
-      "description": "Button to add Georgian bars or lead as decorative glazing options",
-      "reason_missing": "No matching component or similar label found in JSON; likely overlooked or not implemented in the configuration"
+      "description": "Option to add Georgian bars or lead to the glass.",
+      "reason_missing": "No matching or semantically similar component found in JSON; likely overlooked or not implemented in the configuration."
     },
     {
       "label": "Fire Pack",
       "type": "checkbox",
-      "description": "Checkbox to add a fire pack option",
-      "reason_missing": "No matching component or similar label found in JSON; possibly omitted or not discovered during initial scraping"
+      "description": "Option to add a fire pack.",
+      "reason_missing": "No matching or semantically similar component found in JSON; possibly omitted or not discovered during initial scraping."
     }
   ],
+  "prices": {
+    "price_without_tax": "£65.00"
+  },
+  "price_xpaths": {
+    "price_with_tax": {
+      "xpath": "//div[contains(@class, \"card g-brd-primary rounded-0 g-mb-15 d-none d-sm-block\")]",
+      "verified": true,
+      "text_content": "Total Cost\nApril Offer Save £50 Was £115.00\nNow £65.00 inc. VAT",
+      "outer_html": "<div class=\"card g-brd-primary rounded-0 g-mb-15 d-none d-sm-block\">\n            <div class=\"card-header h5 text-white g-bg-primary g-brd-transparent rounded-0\"> <i class=\"fa fa-tasks g-font-size-default g-mr-10\"></i>Total Cost</div>\n            <div class=\"card-block text-center\">\n              <div class=\"h3\"><span class=\"g-color-red g-font-size-12 g-mb-0\">April Offer Save £50</span> <span class=\"g-color-gray-dark-v4 g-font-size-14 g-mb-0\"><s>Was £<span class=\"waspricevisible\">115.00</span></s></span><br>\n                Now £<span class=\"totalpricevisible\">65.00</span><span class=\"h6\"> inc. VAT</span></div>\n<hr class=\"g-my-10\">\n<div class=\"media-body\">\n                  <span class=\"d-block h6\"><!-- TrustBox widget - Micro TrustScore -->\n<div class=\"trustpilot-widget\" data-locale=\"en-GB\" data-template-id=\"5419b637fa0340045cd0c936\" data-businessunit-id=\"57e855230000ff0005952efd\" data-style-height=\"20px\" data-style-width=\"100%\" style=\"position: relative;\"><iframe title=\"Customer reviews powered by Trustpilot\" loading=\"auto\" src=\"https://widget.trustpilot.com/trustboxes/5419b637fa0340045cd0c936/index.html?templateId=5419b637fa0340045cd0c936&amp;businessunitId=57e855230000ff0005952efd#locale=en-GB&amp;styleHeight=20px&amp;styleWidth=100%25\" style=\"position: relative; height: 20px; width: 100%; border-style: none; display: block; overflow: hidden;\"></iframe></div>\n<!-- End TrustBox widget --></span>\n                </div>\n            </div>\n          </div>"
+    }
+  },
+  "price_analysis": {
+    "price_with_tax": {
+      "value": "£65.00",
+      "with_tax_indicator": "inc VAT",
+      "surrounding_text": "Now £65.00 inc VAT",
+      "visual_description": "Large bold price in the 'Total Cost' box, center left and bottom of the configuration section"
+    },
+    "base_price": {
+      "value": "£110.00",
+      "surrounding_text": "Was: £110.00",
+      "visual_description": "Struck-through price above the current price in the 'Total Cost' box"
+    }
+  },
+  "price_extractor": {
+    "with_tax_reasoning": "The price with tax is clearly indicated in the text_content as 'Now £65.00 inc. VAT'. The relevant price is the one following 'Now' and preceding 'inc. VAT'. The currency symbol is '£', and the price is formatted as a floating-point number with two decimal places. The context ('Now ... inc. VAT') makes it unambiguous that this is the price including tax. The function should use a regular expression to find the pattern 'Now £<amount> inc. VAT' (case-insensitive, allowing for optional periods and whitespace). If the pattern is not found, raise ValueError. The function should return ExtractedPrice(with_tax=True, price=..., currency_symbol='£').",
+    "without_tax_reasoning": "There is no price without tax identified in the screenshot or DOM. The instructions specify that the function must raise NotImplementedError in this case, as there is no verified DOM element or visual indicator for a price excluding tax.",
+    "python_code": "\"\"\"\nModule for extracting price information (with or without tax) from text content.\nOnly standard library is used. See demo at bottom.\n\"\"\"\nimport re\nfrom decimal import Decimal\nfrom dataclasses import dataclass\n\n@dataclass\nclass ExtractedPrice:\n    with_tax: bool\n    price: float\n    currency_symbol: str\n\ndef extract_price_with_tax(text_content: str) -> ExtractedPrice:\n    \"\"\"\n    Extracts the price including tax from the given text_content.\n    Looks for the pattern: 'Now £<amount> inc. VAT' (case-insensitive).\n    Raises ValueError if not found.\n    \"\"\"\n    # Regex: 'Now £65.00 inc. VAT' (allow optional period, case-insensitive, flexible whitespace)\n    pattern = re.compile(\n        r'Now\\s*([£$€])\\s*(\\d{1,3}(?:,\\d{3})*(?:\\.\\d{2})?)\\s*inc\\.?\\s*VAT',\n        re.IGNORECASE\n    )\n    match = pattern.search(text_content)\n    if not match:\n        raise ValueError(f\"Could not parse price with tax from: {text_content!r}\")\n    currency_symbol = match.group(1)\n    price_str = match.group(2).replace(',', '')\n    price = float(Decimal(price_str))\n    return ExtractedPrice(with_tax=True, price=price, currency_symbol=currency_symbol)\n\ndef extract_price_without_tax(text_content: str) -> ExtractedPrice:\n    \"\"\"\n    No price without tax identified for this page.\n    \"\"\"\n    raise NotImplementedError('Price without tax not identified for this page')\n\nif __name__ == '__main__':\n    # Demo with observed text_content\n    demo_text = 'Total Cost\\nApril Offer Save £50 Was £115.00\\nNow £65.00 inc. VAT'\n    try:\n        result = extract_price_with_tax(demo_text)\n        print('With tax:', result)\n    except Exception as e:\n        print('With tax extraction failed:', e)\n    try:\n        result = extract_price_without_tax(demo_text)\n        print('Without tax:', result)\n    except NotImplementedError as nie:\n        print('Without tax extraction:', nie)\n",
+    "output_file_path": "price_extractor_20260413_223631.py"
+  },
   "summary": {
     "total_vision_components": 12,
     "total_json_inputs": 31,

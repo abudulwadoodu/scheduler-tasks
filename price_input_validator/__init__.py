@@ -14,11 +14,19 @@ from .models import (
     LabelData,
     IdentifiedComponent,
     MissingComponent,
-    ValidationResult
+    ValidationResult,
+    PriceXPathEntry,
+    PriceXPaths,
+    VisualPriceClue,
+    ScreenshotPriceAnalysis,
+    ValidatedPriceCandidate,
+    ExtractedPrice,
+    PriceExtractorOutput,
 )
 from .screenshot_analyzer import ScreenshotAnalyzer
 from .input_validator import InputValidator
 from .gap_analyzer import GapAnalyzer
+from .price_extractor_agent import PriceExtractorAgent
 from .main import PriceInputValidator
 
 __version__ = "1.0.0"
@@ -28,6 +36,7 @@ __all__ = [
     "ScreenshotAnalyzer",
     "InputValidator",
     "GapAnalyzer",
+    "PriceExtractorAgent",
     "LabelsJSON",
     "InputElement",
     "PriceElement",
@@ -35,4 +44,11 @@ __all__ = [
     "IdentifiedComponent",
     "MissingComponent",
     "ValidationResult",
+    "PriceXPathEntry",
+    "PriceXPaths",
+    "VisualPriceClue",
+    "ScreenshotPriceAnalysis",
+    "ValidatedPriceCandidate",
+    "ExtractedPrice",
+    "PriceExtractorOutput",
 ]

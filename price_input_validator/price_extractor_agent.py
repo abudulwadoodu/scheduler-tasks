@@ -14,7 +14,6 @@ generated functions are tailored to the specific format seen on the target page.
 """
 from pathlib import Path
 from openai import OpenAI
-
 from .models import (
     PriceExtractorCodeResponse,
     PriceExtractorOutput,
@@ -29,7 +28,8 @@ class PriceExtractorAgent:
     def __init__(
         self,
         api_key: str,
-
+        api_base: str,
+        api_version: str,
         model: str = "gpt-4.1",
     ):
         self.client = OpenAI(
