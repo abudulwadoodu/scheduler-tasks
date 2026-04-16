@@ -5,7 +5,9 @@ and writes the final executable script.
 
 import ast
 import textwrap
-from templat2 import SCRAPER_TEMPLATE
+from template2 import SCRAPER_TEMPLATE_2
+from template1 import SCRAPER_TEMPLATE_1
+
 from string import Template
 
 def script_generator(
@@ -35,17 +37,25 @@ def script_generator(
         The generated script source code.
     """
 
-    # Dedent in case the caller passes indented source
-    parser_clean = textwrap.dedent(comment_parser_function).strip()
-    steps_clean  = textwrap.dedent(steps).strip()
-    pydantic_clean = textwrap.dedent(pydantic_model).strip()
+   
+    if steps != "[]":
+        
+         # Dedent in case the caller passes indented source
+        parser_clean = textwrap.dedent(comment_parser_function).strip()
+        steps_clean  = textwrap.dedent(steps).strip()
+        pydantic_clean = textwrap.dedent(pydantic_model).strip()
 
-    script = Template(SCRAPER_TEMPLATE).safe_substitute(
-        price_xpath=price_xpath,
-        steps=steps_clean,
-        comment_parser_function=parser_clean,
-        pydantic_model=pydantic_clean,
-    )
+        script = Template(SCRAPER_TEMPLATE_2).safe_substitute(
+            price_xpath=price_xpath,
+            steps=steps_clean,
+            comment_parser_function=parser_clean,
+            pydantic_model=pydantic_clean,
+        )
+    else:
+        print("temp 1") 
+        script = Template(SCRAPER_TEMPLATE_1).safe_substitute(
+            price_xpath=price_xpath,
+        )
 
     # -------------------------
     # Syntax validation
@@ -264,45 +274,14 @@ def parse_comment(comment: str) -> NagivationStepsModel:
 """
 
     # --- paste Agent 1 output here ---
-    STEPS = """[
-    {'label': 'Frame Width (mm)',  'xpath': "//input[@id='framewidth']",              'type': 'text',     'tag': 'input'},
-    {'label': 'Frame Height (mm)', 'xpath': "//input[@id='frameheight']",             'type': 'text',     'tag': 'input'},
-    {'label': 'No',                'xpath': "//input[@id='cillno']",                  'type': 'radio',    'tag': 'input'},
-    {'label': '85mm Stub',         'xpath': "//input[@id='cill85']",                  'type': 'radio',    'tag': 'input'},
-    {'label': 'Standard 150mm',    'xpath': "//input[@id='cill150']",                 'type': 'radio',    'tag': 'input'},
-    {'label': '180mm',             'xpath': "//input[@id='cill180']",                 'type': 'radio',    'tag': 'input'},
-    {'label': 'White',             'xpath': "//input[@id='White']",                   'type': 'radio',    'tag': 'input'},
-    {'label': 'Oak Both Sides',    'xpath': "//input[@id='Oak Both Sides']",           'type': 'radio',    'tag': 'input'},
-    {'label': 'Oak/White',         'xpath': "//input[@id='Oak/White']",               'type': 'radio',    'tag': 'input'},
-    {'label': 'Rosewood Both Sides',       'xpath': "//input[@id='Rosewood Both Sides']",       'type': 'radio', 'tag': 'input'},
-    {'label': 'Rosewood/White',            'xpath': "//input[@id='Rosewood/White']",            'type': 'radio', 'tag': 'input'},
-    {'label': 'Anthracite Grey Both Sides','xpath': "//input[@id='Anthracite Grey Both Sides']",'type': 'radio', 'tag': 'input'},
-    {'label': 'Anthracite Grey/White',     'xpath': "//input[@id='Anthracite Grey/White']",     'type': 'radio', 'tag': 'input'},
-    {'label': 'Chartwell/White',           'xpath': "//input[@id='Chartwell/White']",           'type': 'radio', 'tag': 'input'},
-    {'label': 'Cream Both Sides',          'xpath': "//input[@id='Cream Both Sides']",          'type': 'radio', 'tag': 'input'},
-    {'label': 'Cream/White',               'xpath': "//input[@id='Cream/White']",               'type': 'radio', 'tag': 'input'},
-    {'label': 'Black-Brown Both Sides',    'xpath': "//input[@id='Black-Brown Both Sides']",    'type': 'radio', 'tag': 'input'},
-    {'label': 'Black-Brown/White',         'xpath': "//input[@id='Black-Brown/White']",         'type': 'radio', 'tag': 'input'},
-    {'label': 'Whitegrain Both Sides',     'xpath': "//input[@id='Whitegrain Both Sides']",     'type': 'radio', 'tag': 'input'},
-    {'label': 'Irish Oak Both Sides',      'xpath': "//input[@id='Irish Oak Both Sides']",      'type': 'radio', 'tag': 'input'},
-    {'label': 'Smooth Anthracite Grey/White', 'xpath': "//input[@id='Smooth Anthracite Grey/White']", 'type': 'radio', 'tag': 'input'},
-    {'label': 'Agate Grey/White',          'xpath': "//input[@id='Agate Grey/White']",          'type': 'radio', 'tag': 'input'},
-    {'label': 'Clear',             'xpath': "//input[@id='clear']",                   'type': 'radio',    'tag': 'input'},
-    {'label': 'Obscure',           'xpath': "//input[@id='obscure']",                 'type': 'radio',    'tag': 'input'},
-    {'label': 'Standard A Rated',  'xpath': "//input[@id='arated']",                  'type': 'radio',    'tag': 'input'},
-    {'label': 'A++ Triple Glazed', 'xpath': "//input[@id='tripleglazed']",            'type': 'radio',    'tag': 'input'},
-    {'label': 'Toughened Glass',   'xpath': "//input[@id='toughened']",               'type': 'checkbox', 'tag': 'input'},
-    {'label': 'Laminated Glass',   'xpath': "//input[@id='laminated']",               'type': 'checkbox', 'tag': 'input'},
-    {'label': 'Trickle Vents',     'xpath': "//select[@id='tricklevents']",           'type': '',         'tag': 'select'},
-    {'label': 'Fit Pack',          'xpath': "//input[@id='fitpack']",                 'type': 'checkbox', 'tag': 'input'},
-]"""
+    STEPS = """[]"""
 
-    PRICE_XPATH = '//span[contains(@class, "totalpricevisible")]'
+    PRICE_XPATH = "//span[contains(@class, 'totalpricevisible')]"
 
     script_generator(
         comment_parser_function=PARSER,
         steps=STEPS,
         price_xpath=PRICE_XPATH,
         pydantic_model = PYDANTIC_MODEL,
-        output_path="scraper_output2.py",
+        output_path="scraper_output5.py",
     )

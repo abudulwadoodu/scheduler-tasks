@@ -1,4 +1,4 @@
-SCRAPER_TEMPLATE = '''\
+SCRAPER_TEMPLATE_2 = '''\
 import re
 import time
 import random
@@ -38,7 +38,7 @@ Rules:
 # =========================
 # CONSTANTS
 # =========================
-PRICE_XPATH = '$price_xpath'
+PRICE_XPATH = "$price_xpath"
 
 STEPS = $steps
 

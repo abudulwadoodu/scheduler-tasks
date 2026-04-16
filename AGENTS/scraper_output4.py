@@ -37,91 +37,12 @@ Rules:
 # =========================
 # CONSTANTS
 # =========================
-PRICE_XPATH = '//span[contains(@class, "totalpricevisible")]'
+PRICE_XPATH = "//div[contains(@class, 'price-box price-final_price')]"
 
-STEPS = [
-    {'label': 'Frame Width (mm)',  'xpath': "//input[@id='framewidth']",              'type': 'text',     'tag': 'input'},
-    {'label': 'Frame Height (mm)', 'xpath': "//input[@id='frameheight']",             'type': 'text',     'tag': 'input'},
-    {'label': 'No',                'xpath': "//input[@id='cillno']",                  'type': 'radio',    'tag': 'input'},
-    {'label': '85mm Stub',         'xpath': "//input[@id='cill85']",                  'type': 'radio',    'tag': 'input'},
-    {'label': 'Standard 150mm',    'xpath': "//input[@id='cill150']",                 'type': 'radio',    'tag': 'input'},
-    {'label': '180mm',             'xpath': "//input[@id='cill180']",                 'type': 'radio',    'tag': 'input'},
-    {'label': 'White',             'xpath': "//input[@id='White']",                   'type': 'radio',    'tag': 'input'},
-    {'label': 'Oak Both Sides',    'xpath': "//input[@id='Oak Both Sides']",           'type': 'radio',    'tag': 'input'},
-    {'label': 'Oak/White',         'xpath': "//input[@id='Oak/White']",               'type': 'radio',    'tag': 'input'},
-    {'label': 'Rosewood Both Sides',       'xpath': "//input[@id='Rosewood Both Sides']",       'type': 'radio', 'tag': 'input'},
-    {'label': 'Rosewood/White',            'xpath': "//input[@id='Rosewood/White']",            'type': 'radio', 'tag': 'input'},
-    {'label': 'Anthracite Grey Both Sides','xpath': "//input[@id='Anthracite Grey Both Sides']",'type': 'radio', 'tag': 'input'},
-    {'label': 'Anthracite Grey/White',     'xpath': "//input[@id='Anthracite Grey/White']",     'type': 'radio', 'tag': 'input'},
-    {'label': 'Chartwell/White',           'xpath': "//input[@id='Chartwell/White']",           'type': 'radio', 'tag': 'input'},
-    {'label': 'Cream Both Sides',          'xpath': "//input[@id='Cream Both Sides']",          'type': 'radio', 'tag': 'input'},
-    {'label': 'Cream/White',               'xpath': "//input[@id='Cream/White']",               'type': 'radio', 'tag': 'input'},
-    {'label': 'Black-Brown Both Sides',    'xpath': "//input[@id='Black-Brown Both Sides']",    'type': 'radio', 'tag': 'input'},
-    {'label': 'Black-Brown/White',         'xpath': "//input[@id='Black-Brown/White']",         'type': 'radio', 'tag': 'input'},
-    {'label': 'Whitegrain Both Sides',     'xpath': "//input[@id='Whitegrain Both Sides']",     'type': 'radio', 'tag': 'input'},
-    {'label': 'Irish Oak Both Sides',      'xpath': "//input[@id='Irish Oak Both Sides']",      'type': 'radio', 'tag': 'input'},
-    {'label': 'Smooth Anthracite Grey/White', 'xpath': "//input[@id='Smooth Anthracite Grey/White']", 'type': 'radio', 'tag': 'input'},
-    {'label': 'Agate Grey/White',          'xpath': "//input[@id='Agate Grey/White']",          'type': 'radio', 'tag': 'input'},
-    {'label': 'Clear',             'xpath': "//input[@id='clear']",                   'type': 'radio',    'tag': 'input'},
-    {'label': 'Obscure',           'xpath': "//input[@id='obscure']",                 'type': 'radio',    'tag': 'input'},
-    {'label': 'Standard A Rated',  'xpath': "//input[@id='arated']",                  'type': 'radio',    'tag': 'input'},
-    {'label': 'A++ Triple Glazed', 'xpath': "//input[@id='tripleglazed']",            'type': 'radio',    'tag': 'input'},
-    {'label': 'Toughened Glass',   'xpath': "//input[@id='toughened']",               'type': 'checkbox', 'tag': 'input'},
-    {'label': 'Laminated Glass',   'xpath': "//input[@id='laminated']",               'type': 'checkbox', 'tag': 'input'},
-    {'label': 'Trickle Vents',     'xpath': "//select[@id='tricklevents']",           'type': '',         'tag': 'select'},
-    {'label': 'Fit Pack',          'xpath': "//input[@id='fitpack']",                 'type': 'checkbox', 'tag': 'input'},
-]
+STEPS = []
 
 # Pydantic model
 
-from typing import Literal, Optional
-from pydantic import BaseModel, Field, field_validator
-
-class NagivationStepsModel(BaseModel):
-
-    model_config = {"populate_by_name": True}
-    Frame_Width_mm: Optional[str] = Field(None, alias="Frame Width (mm)")
-    Frame_Height_mm: Optional[str] = Field(None, alias="Frame Height (mm)")
-    No: Optional[bool] = Field(None, alias="No")
-    mm85_Stub: Optional[bool] = Field(None, alias="85mm Stub")
-    Standard_150mm: Optional[bool] = Field(None, alias="Standard 150mm")
-    mm180: Optional[bool] = Field(None, alias="180mm")
-    White: Optional[bool] = Field(None, alias="White")
-    Oak_Both_Side: Optional[bool] = Field(None, alias="Oak Both Side")
-    Oak_White: Optional[bool] = Field(None, alias="Oak/White")
-    Rosewood_Both_Sides: Optional[bool] = Field(None, alias="Rosewood Both Sides")
-    Rosewood_White: Optional[bool] = Field(None, alias="Rosewood/White")
-    Anthracite_Grey_Both_Sides: Optional[bool] = Field(None, alias="Anthracite Grev Both Sides")
-    Anthracite_Grey_White: Optional[bool] = Field(None, alias="Anthracite Grev/White")
-    Chartwell_White: Optional[bool] = Field(None, alias="Chartwell/White")
-    Cream_Both_Sides: Optional[bool] = Field(None, alias="Cream Both Sides")
-    Cream_White: Optional[bool] = Field(None, alias="Cream/White")
-    Black_Brown_Both_Sides: Optional[bool] = Field(None, alias="Black-Brown Both Sides")
-    Black_Brown_White: Optional[bool] = Field(None, alias="Black-Brown/White")
-    Whitegrain_Both_Sides: Optional[bool] = Field(None, alias="Whitegrain Both Sides")
-    Irish_Oak_Both_Sides: Optional[bool] = Field(None, alias="Irish Oak Both Sides")
-    Smooth_Anthracite_Grey_White: Optional[bool] = Field(None, alias="Smooth Anthracite Grey/White")
-    Agate_Grey_White: Optional[bool] = Field(None, alias="Agate Grey/White")
-    Clear: Optional[bool] = Field(None, alias="Clear")
-    Obscure: Optional[bool] = Field(None, alias="Obscure")
-    Standard_A_Rated: Optional[bool] = Field(None, alias="Standard A Rated")
-    A_Plus_Rated_Energy_Upgrade: Optional[bool] = Field(None, alias="A+ Rated Energy Upgrade")
-    A_Plus_Plus_Triple_Glazed: Optional[bool] = Field(None, alias="A++ Triple Glazed")
-    Toughened_Glass: Optional[bool] = Field(None, alias="Toughened Glass")
-    Laminated_Glass: Optional[bool] = Field(None, alias="Laminated Glass")
-    Trickle_Vents: str = Field("", alias="Trickle Vents")
-    Fit_Pack: Optional[bool] = Field(None, alias="Fit Pack")
-
-    @field_validator("Trickle_Vents", mode="before")
-    def validate_trickle_vents(cls, v):
-        map_ = {
-            "Not Required": "Not Required",
-            "1": "1",
-            "2": "2"
-        }
-        return map_.get(str(v), str(v))
-
-    
 
 prompt = ChatPromptTemplate.from_messages([
     ("system", SYSTEM_PROMPT),
@@ -131,112 +52,13 @@ prompt = ChatPromptTemplate.from_messages([
 
 # ── Fallback Parser ───────────────────────────────────────────────────────────
 
-def parse_order_from_comment(comment: str) -> NagivationStepsModel:
-    """
-    Uses LangChain with OpenAI structured output.
-    Returns a fully validated NagivationStepsModel instance.
-    """
-    llm = ChatOpenAI(model="gpt-5.2", temperature=0)
-    structured_llm = llm.with_structured_output(NagivationStepsModel)
-    chain = prompt | structured_llm
-    return chain.invoke({"comment": comment})
+
 
 
 # =========================
 # COMMENT PARSER
 # =========================
-def parse_comment(comment: str) -> NagivationStepsModel:
-    c = comment.lower()
-    # --- Dimensions ---
-    dim = re.search(r'(\d+)\s*[x×/-]\s*(\d+)', c)
-    if dim:
-        width, height = dim.group(1), dim.group(2)
-    else:
-        print("llm called 1")
-        return parse_order_from_comment(comment)
-    # --- Cill Options ---
-    if '85mm stub' in c:
-        cill_option = '85mm Stub'
-    elif '150mm standard' in c or 'standard cill' in c:
-        cill_option = 'Standard 150mm'
-    elif '180mm' in c:
-        cill_option = '180mm'
-    else:
-        cill_option = 'No'
-    # --- Colour Options ---
-    colours = ['oak both side', 'oak/white', 'rosewood both sides', 'rosewood/white',
-               'anthracite grey both sides', 'anthracite grey/white', 'chartwell/white',
-               'cream both sides', 'cream/white', 'black-brown both sides', 'black-brown/white',
-               'whitegrain both sides', 'irish oak both sides', 'smooth anthracite grey/white',
-               'agate grey/white']
-    colour_fields = ['Oak_Both_Side', 'Oak_White', 'Rosewood_Both_Sides', 'Rosewood_White',
-                     'Anthracite_Grey_Both_Sides', 'Anthracite_Grey_White', 'Chartwell_White',
-                     'Cream_Both_Sides', 'Cream_White', 'Black_Brown_Both_Sides', 'Black_Brown_White',
-                     'Whitegrain_Both_Sides', 'Irish_Oak_Both_Sides', 'Smooth_Anthracite_Grey_White',
-                     'Agate_Grey_White']
-    if 'white upvc' in c:
-        colour_selection = [None] * len(colour_fields)
-    else:
-        colour_selection = [True if colour in c else None for colour in colours]
-    # --- Glass Options ---
-    if 'obscure' in c:
-        glass_type = 'Obscure'
-    else:
-        glass_type = 'Clear'
-    # --- Energy Rating ---
-    if 'a++ triple glazed' in c:
-        energy_rating = 'A++ Triple Glazed'
-    elif 'a+ rated energy upgrade' in c:
-        energy_rating = 'A+ Rated Energy Upgrade'
-    else:
-        energy_rating = 'Standard A Rated'
-    # --- Checkboxes ---
-    toughened_glass = True if 'toughened glass' in c else None
-    laminated_glass = True if 'laminated glass' in c else None
-    fit_pack = True if 'fit pack' in c else None
-    # --- Trickle Vents ---
-    trickle_vents = 'Not Required'
-    trickle_match = re.search(r'(\d+)\s*trickle vents|trickle vents\s*(\d+)|x(\d+)|(\d+)x|[(\[](\d+)[)\]]', c)
-    if trickle_match:
-        qty = next(g for g in trickle_match.groups() if g is not None)
-        trickle_vents = qty if qty in ('1', '2') else 'Not Required'
-    elif 'trickle vent' in c:
-        print("llm called")
-        return parse_order_from_comment(comment)
-    # --- Build and return model ---
-    return NagivationStepsModel(
-        Frame_Width_mm=width,
-        Frame_Height_mm=height,
-        No=True if cill_option == 'No' else None,
-        mm85_Stub=True if cill_option == '85mm Stub' else None,
-        Standard_150mm=True if cill_option == 'Standard 150mm' else None,
-        mm180=True if cill_option == '180mm' else None,
-        White=None if 'white upvc' in c else None,
-        Oak_Both_Side=colour_selection[0],
-        Oak_White=colour_selection[1],
-        Rosewood_Both_Sides=colour_selection[2],
-        Rosewood_White=colour_selection[3],
-        Anthracite_Grey_Both_Sides=colour_selection[4],
-        Anthracite_Grey_White=colour_selection[5],
-        Chartwell_White=colour_selection[6],
-        Cream_Both_Sides=colour_selection[7],
-        Cream_White=colour_selection[8],
-        Black_Brown_Both_Sides=colour_selection[9],
-        Black_Brown_White=colour_selection[10],
-        Whitegrain_Both_Sides=colour_selection[11],
-        Irish_Oak_Both_Sides=colour_selection[12],
-        Smooth_Anthracite_Grey_White=colour_selection[13],
-        Agate_Grey_White=colour_selection[14],
-        Clear=True if glass_type == 'Clear' else None,
-        Obscure=True if glass_type == 'Obscure' else None,
-        Standard_A_Rated=True if energy_rating == 'Standard A Rated' else None,
-        A_Plus_Rated_Energy_Upgrade=True if energy_rating == 'A+ Rated Energy Upgrade' else None,
-        A_Plus_Plus_Triple_Glazed=True if energy_rating == 'A++ Triple Glazed' else None,
-        Toughened_Glass=toughened_glass,
-        Laminated_Glass=laminated_glass,
-        Trickle_Vents=trickle_vents,
-        Fit_Pack=fit_pack,
-    )
+
 
 
 # =========================
@@ -379,8 +201,9 @@ def scrape_price(
     timeout: int = 30_000,
 ) -> str:
 
-    model = parse_comment(comment)
-    values = model.model_dump(by_alias=True)
+    
+   
+    values = {}
     print("values : ", values)
 
     with sync_playwright() as playwright:

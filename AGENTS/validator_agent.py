@@ -1,5 +1,6 @@
 # validator_agent.py
-
+import sys
+sys.path.append('/Users/yaseen/Desktop/scheduler-tasks/')
 from concurrent.futures import ThreadPoolExecutor
 from price_input_validator import PriceInputValidator
 
