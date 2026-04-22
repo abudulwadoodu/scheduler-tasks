@@ -30,7 +30,7 @@ class PriceExtractorAgent:
         api_key: str,
         api_base: str,
         api_version: str,
-        model: str = "gpt-4.1",
+        model: str = "gpt-4",
     ):
         self.client = OpenAI(
             api_key=api_key,

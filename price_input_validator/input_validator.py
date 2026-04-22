@@ -26,7 +26,6 @@ class InputValidator:
         if api_key and api_base and api_version:
             self.llm_client = OpenAI(
                 api_key=api_key,
-    
             )
             self.model = model or "gpt-4"
     

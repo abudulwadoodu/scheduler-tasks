@@ -234,6 +234,62 @@ def parse_comment(comment: str) -> NagivationStepsModel:
 # =========================
 # SMART LOCATOR
 # =========================
+# def _smart_locator(page, step, timeout=5000):
+#     base = page.locator(f"xpath={step['xpath']}")
+
+#     try:
+#         base.wait_for(state="attached", timeout=2000)
+#     except Exception:
+#         return None
+
+#     if base.is_visible():
+#         return base
+
+#     element_id = base.get_attribute("id")
+
+#     if element_id:
+#         icon_div = page.locator(
+#             f"label[for='{element_id}'] div[class*='u-check-icon']"
+#         )
+#         if icon_div.count() > 0:
+#             return icon_div.first
+
+#         label_for = page.locator(f"label[for='{element_id}']")
+#         if label_for.count() > 0:
+#             return label_for.first
+
+#     ancestor_label = page.locator(
+#         f"xpath={step['xpath']}/ancestor::label"
+#     )
+#     if ancestor_label.count() > 0:
+#         ancestor_icon = ancestor_label.first.locator("div[class*='u-check-icon']")
+#         if ancestor_icon.count() > 0:
+#             return ancestor_icon.first
+#         return ancestor_label.first
+
+#     text = step["label"].lower()
+#     label_by_text = page.locator(
+#         f"""//label[contains(
+#                 translate(normalize-space(.),
+#                 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+#                 'abcdefghijklmnopqrstuvwxyz'),
+#                 '{text}'
+#         )]"""
+#     )
+#     if label_by_text.count() > 0:
+#         icon = label_by_text.first.locator("div[class*='u-check-icon']")
+#         if icon.count() > 0:
+#             return icon.first
+#         return label_by_text.first
+
+#     wrapper = page.locator(
+#         f"xpath={step['xpath']}/ancestor::*[self::div or self::span][1]"
+#     )
+#     if wrapper.count() > 0:
+#         return wrapper.first
+
+#     return base
+
 def _smart_locator(page, step, timeout=5000):
     base = page.locator(f"xpath={step['xpath']}")
 
@@ -242,11 +298,13 @@ def _smart_locator(page, step, timeout=5000):
     except Exception:
         return None
 
+    # Step 1 — direct visibility
     if base.is_visible():
         return base
 
     element_id = base.get_attribute("id")
 
+    # Step 2 — label[for=id] icon
     if element_id:
         icon_div = page.locator(
             f"label[for='{element_id}'] div[class*='u-check-icon']"
@@ -254,10 +312,12 @@ def _smart_locator(page, step, timeout=5000):
         if icon_div.count() > 0:
             return icon_div.first
 
+        # Step 3 — label[for=id] itself
         label_for = page.locator(f"label[for='{element_id}']")
         if label_for.count() > 0:
             return label_for.first
 
+    # Step 4 — ancestor label icon
     ancestor_label = page.locator(
         f"xpath={step['xpath']}/ancestor::label"
     )
@@ -267,7 +327,32 @@ def _smart_locator(page, step, timeout=5000):
             return ancestor_icon.first
         return ancestor_label.first
 
+    # -------------------------------------------------------
+    # Step 4.5 — sibling traversal (up to parent, down to interactive sibling)
+    # used when visible text is in a sibling element, not in a label
+    # -------------------------------------------------------
     text = step["label"].lower()
+    parent = page.locator(f"xpath={step['xpath']}/..")
+
+    if parent.count() > 0:
+        # check if the parent contains the label text somewhere in its children
+        parent_text = parent.first.inner_text().strip().lower()
+        if text in parent_text:
+            # go back down — try common interactive sibling selectors in priority order
+            for selector in [
+                "div[class*='u-check-icon']",
+                "div[class*='swatch']",
+                "div[class*='option']",
+                "label",
+                "button",
+                "input",
+            ]:
+                sibling = parent.first.locator(selector)
+                if sibling.count() > 0 and sibling.first.is_visible():
+                    return sibling.first
+    # -------------------------------------------------------
+
+    # Step 5 — label by text (full page search)
     label_by_text = page.locator(
         f"""//label[contains(
                 translate(normalize-space(.),
@@ -282,6 +367,7 @@ def _smart_locator(page, step, timeout=5000):
             return icon.first
         return label_by_text.first
 
+    # Step 6 — nearest wrapper
     wrapper = page.locator(
         f"xpath={step['xpath']}/ancestor::*[self::div or self::span][1]"
     )
@@ -289,8 +375,6 @@ def _smart_locator(page, step, timeout=5000):
         return wrapper.first
 
     return base
-
-
 # =========================
 # DROPDOWN SELECT
 # =========================
@@ -298,6 +382,58 @@ def _xpath_to_css_for_select(xpath: str) -> str:
     m = re.search(r"\[@id='([^']+)'\]", xpath)
     return f"#{m.group(1)}" if m else xpath
 
+
+# def _select_option_partial(page, xpath: str, target, step_index: int) -> bool:
+#     css = _xpath_to_css_for_select(xpath)
+#     target_stripped = str(target).strip()
+
+#     boundary_pattern = re.compile(
+#         r"(?<!\d)" + re.escape(target_stripped) + r"(?!\d)",
+#         re.IGNORECASE,
+#     )
+
+#     for attempt in range(3):
+#         try:
+#             options = page.query_selector_all(f"{css} option")
+#             if not options:
+#                 raise RuntimeError(
+#                     f"Step {step_index}: no <option> elements found in select {xpath}"
+#                 )
+
+#             for opt in options:
+#                 raw_value    = (opt.get_attribute("value") or "").strip()
+#                 visible_text = (opt.inner_text() or "").strip()
+
+#                 leading = re.match(r"^(\d+(?:\.\d+)?)", raw_value)
+#                 if leading and leading.group(1) == target_stripped:
+#                     page.select_option(css, value=raw_value)
+#                     return True
+
+#                 if boundary_pattern.search(visible_text):
+#                     page.select_option(css, value=raw_value)
+#                     return True
+
+#                 if boundary_pattern.search(raw_value):
+#                     page.select_option(css, value=raw_value)
+#                     return True
+
+#             print(f"[DEBUG] Step {step_index}: no option matched '{target_stripped}'")
+#             for opt in options:
+#                 print(f"  text={opt.inner_text()!r:40s}  value={opt.get_attribute('value')!r}")
+#             raise RuntimeError(
+#                 f"Step {step_index}: no option matching '{target_stripped}' found in {xpath}"
+#             )
+
+#         except RuntimeError:
+#             raise
+#         except Exception as exc:
+#             if attempt == 2:
+#                 raise RuntimeError(
+#                     f"Step {step_index}: select failed after 3 attempts - {exc}"
+#                 ) from exc
+#             time.sleep(1)
+
+#     return False
 
 def _select_option_partial(page, xpath: str, target, step_index: int) -> bool:
     css = _xpath_to_css_for_select(xpath)
@@ -320,18 +456,57 @@ def _select_option_partial(page, xpath: str, target, step_index: int) -> bool:
                 raw_value    = (opt.get_attribute("value") or "").strip()
                 visible_text = (opt.inner_text() or "").strip()
 
+                # Priority 1 — value-based numeric match
                 leading = re.match(r"^(\d+(?:\.\d+)?)", raw_value)
                 if leading and leading.group(1) == target_stripped:
                     page.select_option(css, value=raw_value)
                     return True
 
+                # Priority 2 — visible text match
                 if boundary_pattern.search(visible_text):
                     page.select_option(css, value=raw_value)
                     return True
 
+                # Priority 3 — raw value match
                 if boundary_pattern.search(raw_value):
                     page.select_option(css, value=raw_value)
                     return True
+
+            # -------------------------------------------------------
+            # Priority 4 — sibling text match
+            # when visible text lives outside <option>, in a sibling element
+            # go up to parent of <select>, find sibling containing the text,
+            # then map its position index back to the corresponding <option>
+            # -------------------------------------------------------
+            matched_index = page.evaluate(
+                """([css, target]) => {
+                    const select = document.querySelector(css);
+                    if (!select) return -1;
+
+                    const parent = select.parentElement;
+                    if (!parent) return -1;
+
+                    // find all sibling elements that are NOT the select itself
+                    const siblings = Array.from(parent.children).filter(
+                        el => el !== select && el.textContent.trim() !== ''
+                    );
+
+                    const t = target.toLowerCase();
+                    const idx = siblings.findIndex(
+                        el => el.textContent.trim().toLowerCase().includes(t)
+                    );
+
+                    return idx;
+                }""",
+                [css, target_stripped]
+            )
+
+            if matched_index >= 0 and matched_index < len(options):
+                raw_value = options[matched_index].get_attribute("value") or ""
+                if raw_value:
+                    page.select_option(css, value=raw_value)
+                    return True
+            # -------------------------------------------------------
 
             print(f"[DEBUG] Step {step_index}: no option matched '{target_stripped}'")
             for opt in options:
@@ -350,7 +525,6 @@ def _select_option_partial(page, xpath: str, target, step_index: int) -> bool:
             time.sleep(1)
 
     return False
-
 
 def _random_delay():
     time.sleep(random.uniform(0.5, 1.5))

@@ -14,6 +14,20 @@ from .screenshot_analyzer import ScreenshotAnalyzer
 from .input_validator import InputValidator
 from .gap_analyzer import GapAnalyzer
 
+def load_json_safe(path: str) -> dict:
+    """Load JSON file trying multiple encodings."""
+    encodings = ['utf-8-sig', 'utf-8', 'windows-1252', 'latin-1']
+    
+    for encoding in encodings:
+        try:
+            with open(path, 'r', encoding=encoding) as f:
+                data = json.load(f)
+            print(f"✅ Loaded JSON with encoding: {encoding}")
+            return data
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            continue
+    
+    raise ValueError(f"Could not decode {path} with any of: {encodings}")
 
 class PriceInputValidator:
     """Main orchestrator for validating price-relevant inputs."""
@@ -89,25 +103,14 @@ class PriceInputValidator:
         print("=" * 80)
         
         # Step 1: Load JSON
-        print("\n[1/4] 📥 Loading JSON configuration...")
-
-        for enc in ["utf-8", "cp1252", "latin-1"]:
-            try:
-               with open(labels_json_path, "r", encoding=enc) as f:
-                    json_data = json.load(f)
-            except UnicodeDecodeError:
-                continue
-            else:
-                print(f"✅ Successfully loaded JSON with encoding: {enc}")
-            
-                break
+        print("\n[1/6] 📥 Loading JSON configuration...")
+        json_data = load_json_safe(labels_json_path)
         # with open(labels_json_path, 'r', encoding='utf-8') as f:
         #     json_data = json.load(f)
-        print("json_data:", json_data)
         labels_json = LabelsJSON(**json_data)
+        print(f"✅ Loaded {len(labels_json.inputs)} input definitions, "
+              f"{len(labels_json.all_prices)} price candidates")
       
-        print(f"✅ Loaded {len(labels_json.inputs)} input definitions")
-        
         # Step 2: Vision analysis
         print("\n[2/4] 👁️ Performing vision analysis...")
         vision_components = self.screenshot_analyzer.analyze_url(web_url)

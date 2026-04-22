@@ -28,7 +28,7 @@ class ScreenshotAnalyzer:
         api_key: str,
         api_base: str,
         api_version: str,
-        model: str = "gpt-4.1-vision-preview"
+        model: str = "gpt-4-vision-preview"
     ):
         """Initialize the screenshot analyzer with Azure OpenAI credentials."""
         self.client = OpenAI(
@@ -64,54 +64,57 @@ class ScreenshotAnalyzer:
             finally:
                 browser.close()
 
-    def analyze_screenshot(self, screenshot_bytes: bytes) -> ComponentsAnalysisResponse:
+    def analyze_screenshot(self, screenshot_bytes: bytes, ui_flow_hint: str = None) -> ComponentsAnalysisResponse:
         """
         Analyze screenshot using GPT-4 Vision to identify price-relevant inputs.
 
         Args:
             screenshot_bytes: Screenshot image as bytes
+            ui_flow_hint: Optional hint string to guide UI flow ordering
 
         Returns:
             ComponentsAnalysisResponse with identified components and extracted prices
         """
         base64_image = base64.b64encode(screenshot_bytes).decode('utf-8')
 
-        system_prompt = """You are an expert web scraping analyst. Your task is to identify ALL interactive input components on a webpage that could affect the final price of a product or service, AND determine the correct order in which those components must be interacted with.
+        system_prompt = (
+            "You are an expert web scraping analyst. Your task is to identify ALL interactive input components on a webpage that could affect the final price of a product or service, AND determine the correct order in which those components must be interacted with.\n"
+            "\nLook for:\n"
+            "- Text input fields (dimensions, quantities, custom text)\n"
+            "- Dropdown/select menus (options, materials, colors)\n"
+            "- Radio buttons (choices that may change price)\n"
+            "- Checkboxes (add-ons, extras, features)\n"
+            "- Sliders or number spinners\n"
+            "- Date pickers\n"
+            "- Any other interactive element that affects pricing\n"
+            "\nFor EACH component, provide:\n"
+            "1. label: The visible label or text associated with it\n"
+            "2. type: The input type (text, select, radio, checkbox, slider, etc.)\n"
+            "3. description: Clear description of what it controls\n"
+            "4. price_relevance_reason: Why this affects the final price\n"
+            "5. group_context: The section/group it belongs to (if visible)\n"
+            "6. execution_order: A 1-based integer indicating the strict sequential step at which this component should be interacted with. Every component MUST have a unique execution_order — no two components may share the same number. Number them 1, 2, 3, 4... with no gaps and no ties. Order them by dependency: components whose value gates or reveals other components come first; among independent components, order them top-to-bottom as they appear on the page.\n"
+            "7. execution_order_reason: A brief explanation of why the component has that execution_order — what it unlocks, what it depends on, or where it sits relative to its neighbours.\n"
+            "\nWhen determining execution_order, think through the dependency chain:\n"
+            "- Which selections gate or reveal other options? → lowest numbers\n"
+            "- Which fields only make sense after a prior choice is made? → after their dependency\n"
+            "- Which fields are completely independent? → order them by visual position (top to bottom, left to right)\n"
+            "\nBe thorough - identify ALL inputs, even if they seem minor.\n"
+            "\nAlso extract any currently displayed price for the product:\n"
+            "- price_without_tax: the price shown excluding tax (e.g. '£12.99'), or null if not visible\n"
+            "- price_with_tax: the price shown including tax (e.g. '£15.59'), or null if not visible\n"
+        )
 
-Look for:
-- Text input fields (dimensions, quantities, custom text)
-- Dropdown/select menus (options, materials, colors)
-- Radio buttons (choices that may change price)
-- Checkboxes (add-ons, extras, features)
-- Sliders or number spinners
-- Date pickers
-- Any other interactive element that affects pricing
+        if ui_flow_hint:
+            system_prompt += ("\n\n---\n\nADDITIONAL UI FLOW HINT:\n"
+                              f"{ui_flow_hint}\n"
+                              "If this hint describes a specific order (e.g., 'Select Width dropdown before Height'), use it to guide execution_order and execution_order_reason, but only if it is consistent with visible UI dependencies. If the hint conflicts with clear UI logic, explain why in execution_order_reason.")
 
-For EACH component, provide:
-1. label: The visible label or text associated with it
-2. type: The input type (text, select, radio, checkbox, slider, etc.)
-3. description: Clear description of what it controls
-4. price_relevance_reason: Why this affects the final price
-5. group_context: The section/group it belongs to (if visible)
-6. execution_order: A 1-based integer indicating the strict sequential step at which this component should be interacted with. Every component MUST have a unique execution_order — no two components may share the same number. Number them 1, 2, 3, 4... with no gaps and no ties. Order them by dependency: components whose value gates or reveals other components come first; among independent components, order them top-to-bottom as they appear on the page.
-7. execution_order_reason: A brief explanation of why the component has that execution_order — what it unlocks, what it depends on, or where it sits relative to its neighbours.
-
-When determining execution_order, think through the dependency chain:
-- Which selections gate or reveal other options? → lowest numbers
-- Which fields only make sense after a prior choice is made? → after their dependency
-- Which fields are completely independent? → order them by visual position (top to bottom, left to right)
-
-Be thorough - identify ALL inputs, even if they seem minor.
-
-Also extract any currently displayed price for the product:
-- price_without_tax: the price shown excluding tax (e.g. "£12.99"), or null if not visible
-- price_with_tax: the price shown including tax (e.g. "£15.59"), or null if not visible"""
-
-        user_prompt = """Analyze this webpage screenshot and identify ALL input components that could affect the final price.
-
-For each component assign a strictly sequential, unique execution_order (1, 2, 3, 4...) — no two components may share the same number. Order by dependency first (components that gate/reveal others come earliest), then by visual position top-to-bottom for independent ones. Provide an execution_order_reason explaining your decision.
-
-Be comprehensive and identify every single price-relevant input on this page."""
+        user_prompt = (
+            "Analyze this webpage screenshot and identify ALL input components that could affect the final price.\n\n"
+            "For each component assign a strictly sequential, unique execution_order (1, 2, 3, 4...) — no two components may share the same number. Order by dependency first (components that gate/reveal others come earliest), then by visual position top-to-bottom for independent ones. Provide an execution_order_reason explaining your decision.\n\n"
+            "Be comprehensive and identify every single price-relevant input on this page."
+        )
 
         try:
             response = self.client.beta.chat.completions.parse(

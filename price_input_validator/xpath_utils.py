@@ -35,6 +35,7 @@ def build_xpath(
 
     if name and type_:
         return f"//{tag}[@name='{name}' and @type='{type_}']"
+
     if name:
         return f"//{tag}[@name='{name}']"
 
