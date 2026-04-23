@@ -5,13 +5,17 @@ Requires: OPENAI_API_KEY in .env, langchain-openai, langchain-core.
 import json
 import os
 import base64
+import re
 from io import BytesIO
+from pathlib import Path
+from urllib.parse import urlparse
 from typing import Any, Dict, List, Tuple
 
 from dotenv import load_dotenv
 load_dotenv()
 
 from PIL import Image
+from playwright.sync_api import sync_playwright
 
 try:
     from langchain_openai import ChatOpenAI
@@ -26,8 +30,21 @@ from playwright_input_labels import (
     _rect_from_dict,
     _distance_score,
     _hard_exclude_result,
+    get_price_element,
     get_inputs as get_inputs_base,
 )
+
+
+def _manual_output_path(url: str, suffix: str) -> Path:
+    parsed = urlparse((url or "").strip())
+    host = re.sub(r"[^a-z0-9]+", "-", (parsed.netloc or "site").lower()).strip("-")
+    path_part = re.sub(r"[^a-z0-9]+", "-", (parsed.path or "/").lower()).strip("-")
+    slug = f"{host}-{path_part}" if path_part else host
+    slug = slug[:120] if len(slug) > 120 else slug
+    root = Path(__file__).resolve().parent
+    out_dir = root / "data" / "results" / "playwright_manual_outputs"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    return out_dir / f"{slug}{suffix}"
 
 
 def _crop_to_base64(image_path: str, bbox: Dict[str, float], pad: int = 120) -> str:
@@ -149,9 +166,73 @@ Rules:
 def get_inputs(url: str) -> Dict[str, Any]:
     """Same as base get_inputs but uses LLM vision for final filtering.
 
-    Returns: {"price": {...price element metadata...}, "inputs": [...]}
+    Returns: {"price": ..., "main_block_prices": [...], "page_prices": [...], "inputs": [...]}
     """
-    return get_inputs_base(url, final_filter=filter_price_inputs_with_llm)
+    data = get_inputs_base(url, final_filter=filter_price_inputs_with_llm)
+
+    # If base extraction returns null price (intermittent on some sites), re-run
+    # the exact base price detector in a lightweight recovery pass.
+    if not isinstance(data.get("price"), dict):
+        try:
+            with sync_playwright() as p:
+                browser = p.chromium.launch(
+                    headless=True,
+                    args=["--disable-blink-features=AutomationControlled"],
+                )
+                context = browser.new_context(
+                    viewport={"width": 1280, "height": 720},
+                    device_scale_factor=1,
+                    user_agent=(
+                        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                        "AppleWebKit/537.36 (KHTML, like Gecko) "
+                        "Chrome/122.0.0.0 Safari/537.36"
+                    ),
+                )
+                page = context.new_page()
+                page.set_default_navigation_timeout(120_000)
+                page.set_default_timeout(60_000)
+                page.goto(url, wait_until="load", timeout=120_000)
+                try:
+                    page.wait_for_load_state("networkidle", timeout=30_000)
+                except Exception:
+                    pass
+
+                recovered = get_price_element(page)
+                if recovered:
+                    price_rect = recovered.get("rect") or {}
+                    data["price"] = {
+                        "label": _clean_text(recovered.get("text")),
+                        "tag": _clean_text(recovered.get("tag")),
+                        "type": "",
+                        "name": _clean_text(recovered.get("name")),
+                        "id": _clean_text(recovered.get("id")),
+                        "class_name": _clean_text(recovered.get("class_name")),
+                        "bbox": {
+                            "left": float(price_rect.get("left", 0.0)),
+                            "top": float(price_rect.get("top", 0.0)),
+                            "right": float(price_rect.get("right", 0.0)),
+                            "bottom": float(price_rect.get("bottom", 0.0)),
+                        },
+                    }
+                browser.close()
+        except Exception:
+            pass
+
+    # Defensive normalization: keep current/final displayed price if promo text leaks in.
+    price = data.get("price")
+    if isinstance(price, dict):
+        label = _clean_text(price.get("label"))
+        if label:
+            now_match = re.search(r"\bnow\b[^£$€\d]{0,20}([£$€]\s*\d[\d,.]*)", label, flags=re.I)
+            if now_match:
+                price["label"] = _clean_text(now_match.group(1))
+            elif re.search(r"\b(was|rrp|save|saving)\b", label, flags=re.I):
+                money = re.search(r"[£$€]\s*\d[\d,.]*", label)
+                if money:
+                    price["label"] = _clean_text(money.group(0))
+        data["price"] = price
+
+    return data
 
 
 if __name__ == "__main__":
@@ -161,5 +242,18 @@ if __name__ == "__main__":
         print("Usage: python playwright_input_labels_langchain.py <url>")
         raise SystemExit(2)
 
-    data = get_inputs(sys.argv[1])
+    target_url = sys.argv[1]
+    data = get_inputs(target_url)
+    out_path = _manual_output_path(target_url, "_labels_langchain.json")
+    with open(out_path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
     print(json.dumps(data, indent=2, ensure_ascii=False))
+
+    url = sys.argv[1]
+    print("url:", url)
+    domain = re.findall(r"https?://([^/]+)", url)
+    domain_str = domain[0] if domain else "output"
+    filename =''.join(url.split('.')[1:]).replace('/', '_')
+
+    with open(f"./price_input_validator/input_jsons/data.json", "w") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)

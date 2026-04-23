@@ -1,0 +1,1270 @@
+{
+  "price": {
+    "label": "£2.84",
+    "tag": "span",
+    "type": "",
+    "name": "",
+    "id": "product-price-1793",
+    "class_name": "price-wrapper title-font font-regular",
+    "bbox": {
+      "left": 1010.765625,
+      "top": 674.75,
+      "right": 1041.140625,
+      "bottom": 698.75
+    }
+  },
+  "main_block_prices": [
+    {
+      "label": "£2.37",
+      "tag": "div",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price-box price-final_price",
+      "bbox": {
+        "left": 906.890625,
+        "top": 642.75,
+        "right": 1089.640625,
+        "bottom": 698.75
+      }
+    },
+    {
+      "label": "£2.84",
+      "tag": "div",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "final-price flex flex-col pl-3 border-l-[#5C6166] border-l",
+      "bbox": {
+        "left": 997.765625,
+        "top": 642.75,
+        "right": 1089.640625,
+        "bottom": 698.75
+      }
+    },
+    {
+      "label": "£1.94",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price text-base font-semibold leading-[22px] text-special-sale",
+      "bbox": {
+        "left": 945.265625,
+        "top": 658.75,
+        "right": 985.765625,
+        "bottom": 682.75
+      }
+    },
+    {
+      "label": "£2.33",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "product-price-1793",
+      "class_name": "price-wrapper",
+      "bbox": {
+        "left": 1049.140625,
+        "top": 674.75,
+        "right": 1089.640625,
+        "bottom": 698.75
+      }
+    }
+  ],
+  "page_prices": [
+    {
+      "label": "£2.37",
+      "tag": "div",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price-box price-final_price",
+      "bbox": {
+        "left": 906.890625,
+        "top": 642.75,
+        "right": 1089.640625,
+        "bottom": 698.75
+      }
+    },
+    {
+      "label": "£2.84",
+      "tag": "div",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "final-price flex flex-col pl-3 border-l-[#5C6166] border-l",
+      "bbox": {
+        "left": 997.765625,
+        "top": 642.75,
+        "right": 1089.640625,
+        "bottom": 698.75
+      }
+    },
+    {
+      "label": "£2.37",
+      "tag": "div",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "old-price-excl-tax",
+      "bbox": {
+        "left": 906.890625,
+        "top": 658.75,
+        "right": 945.265625,
+        "bottom": 682.75
+      }
+    },
+    {
+      "label": "£1.94",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price text-base font-semibold leading-[22px] text-special-sale",
+      "bbox": {
+        "left": 945.265625,
+        "top": 658.75,
+        "right": 985.765625,
+        "bottom": 682.75
+      }
+    },
+    {
+      "label": "£2.37",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price line-through text-xs",
+      "bbox": {
+        "left": 906.890625,
+        "top": 664.75,
+        "right": 937.265625,
+        "bottom": 678.75
+      }
+    },
+    {
+      "label": "£2.84",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "product-price-1793",
+      "class_name": "price-wrapper title-font font-regular",
+      "bbox": {
+        "left": 1010.765625,
+        "top": 674.75,
+        "right": 1041.140625,
+        "bottom": 698.75
+      }
+    },
+    {
+      "label": "£2.33",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "product-price-1793",
+      "class_name": "price-wrapper",
+      "bbox": {
+        "left": 1049.140625,
+        "top": 674.75,
+        "right": 1089.640625,
+        "bottom": 698.75
+      }
+    },
+    {
+      "label": "£2.33",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price text-base font-semibold leading-[22px] text-special-sale",
+      "bbox": {
+        "left": 1049.140625,
+        "top": 676.75,
+        "right": 1089.640625,
+        "bottom": 695.75
+      }
+    },
+    {
+      "label": "£2.84",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price text-xs font-semibold line-through",
+      "bbox": {
+        "left": 1010.765625,
+        "top": 680.75,
+        "right": 1041.140625,
+        "bottom": 694.75
+      }
+    },
+    {
+      "label": "£1,408.91",
+      "tag": "div",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price-box price-final_price",
+      "bbox": {
+        "left": 14.0,
+        "top": 2973.5,
+        "right": 311.25,
+        "bottom": 3017.5
+      }
+    },
+    {
+      "label": "£15.29",
+      "tag": "div",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price-box price-final_price",
+      "bbox": {
+        "left": 327.25,
+        "top": 2973.5,
+        "right": 624.5,
+        "bottom": 3017.5
+      }
+    },
+    {
+      "label": "£0.77",
+      "tag": "div",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price-box price-final_price",
+      "bbox": {
+        "left": 640.5,
+        "top": 2973.5,
+        "right": 937.75,
+        "bottom": 3017.5
+      }
+    },
+    {
+      "label": "£1.20",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "old-price",
+      "bbox": {
+        "left": 640.5,
+        "top": 2973.5,
+        "right": 730.1875,
+        "bottom": 3017.5
+      }
+    },
+    {
+      "label": "£0.77",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "special-price",
+      "bbox": {
+        "left": 730.1875,
+        "top": 2973.5,
+        "right": 770.625,
+        "bottom": 3017.5
+      }
+    },
+    {
+      "label": "£1,408.91",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "price-including-tax-product-price-1718",
+      "class_name": "price-wrapper price-including-tax showboth",
+      "bbox": {
+        "left": 14.0,
+        "top": 2977.5,
+        "right": 130.046875,
+        "bottom": 2994.5
+      }
+    },
+    {
+      "label": "£1,408.91",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price",
+      "bbox": {
+        "left": 68.25,
+        "top": 2977.5,
+        "right": 130.046875,
+        "bottom": 2994.5
+      }
+    },
+    {
+      "label": "£15.29",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "price-including-tax-product-price-4747",
+      "class_name": "price-wrapper price-including-tax showboth",
+      "bbox": {
+        "left": 327.25,
+        "top": 2977.5,
+        "right": 424.8125,
+        "bottom": 2994.5
+      }
+    },
+    {
+      "label": "£15.29",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price",
+      "bbox": {
+        "left": 381.5,
+        "top": 2977.5,
+        "right": 424.8125,
+        "bottom": 2994.5
+      }
+    },
+    {
+      "label": "£1.20",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "price-including-tax-old-price-3811",
+      "class_name": "price-wrapper price-including-tax showboth",
+      "bbox": {
+        "left": 640.5,
+        "top": 2977.5,
+        "right": 730.1875,
+        "bottom": 2994.5
+      }
+    },
+    {
+      "label": "£1.20",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price",
+      "bbox": {
+        "left": 694.75,
+        "top": 2977.5,
+        "right": 730.1875,
+        "bottom": 2994.5
+      }
+    },
+    {
+      "label": "£0.77",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price",
+      "bbox": {
+        "left": 730.1875,
+        "top": 2977.5,
+        "right": 770.625,
+        "bottom": 2994.5
+      }
+    },
+    {
+      "label": "£1,174.09",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "price-excluding-tax-product-price-1718",
+      "class_name": "price-wrapper price-excluding-tax",
+      "bbox": {
+        "left": 14.0,
+        "top": 2997.5,
+        "right": 130.046875,
+        "bottom": 3017.5
+      }
+    },
+    {
+      "label": "£1,174.09",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price",
+      "bbox": {
+        "left": 64.28125,
+        "top": 2998.5,
+        "right": 126.078125,
+        "bottom": 3015.5
+      }
+    },
+    {
+      "label": "£12.74",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "price-excluding-tax-product-price-4747",
+      "class_name": "price-wrapper price-excluding-tax",
+      "bbox": {
+        "left": 327.25,
+        "top": 2997.5,
+        "right": 424.8125,
+        "bottom": 3017.5
+      }
+    },
+    {
+      "label": "£12.74",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price",
+      "bbox": {
+        "left": 377.53125,
+        "top": 2998.5,
+        "right": 420.84375,
+        "bottom": 3015.5
+      }
+    },
+    {
+      "label": "£1.00",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "price-excluding-tax-old-price-3811",
+      "class_name": "price-wrapper price-excluding-tax",
+      "bbox": {
+        "left": 640.5,
+        "top": 2997.5,
+        "right": 730.1875,
+        "bottom": 3017.5
+      }
+    },
+    {
+      "label": "£1.00",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price",
+      "bbox": {
+        "left": 690.78125,
+        "top": 2998.5,
+        "right": 726.21875,
+        "bottom": 3015.5
+      }
+    },
+    {
+      "label": "£0.64",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "price-excluding-tax-product-price-3811",
+      "class_name": "price-wrapper price-excluding-tax",
+      "bbox": {
+        "left": 730.1875,
+        "top": 2997.5,
+        "right": 770.625,
+        "bottom": 3017.5
+      }
+    },
+    {
+      "label": "£52.85",
+      "tag": "div",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price-box price-final_price",
+      "bbox": {
+        "left": 953.75,
+        "top": 3001.5,
+        "right": 1251.0,
+        "bottom": 3045.5
+      }
+    },
+    {
+      "label": "£52.85",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "price-including-tax-product-price-2518",
+      "class_name": "price-wrapper price-including-tax showboth",
+      "bbox": {
+        "left": 953.75,
+        "top": 3005.5,
+        "right": 1051.3125,
+        "bottom": 3022.5
+      }
+    },
+    {
+      "label": "£52.85",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price",
+      "bbox": {
+        "left": 1008.0,
+        "top": 3005.5,
+        "right": 1051.3125,
+        "bottom": 3022.5
+      }
+    },
+    {
+      "label": "£44.04",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "price-excluding-tax-product-price-2518",
+      "class_name": "price-wrapper price-excluding-tax",
+      "bbox": {
+        "left": 953.75,
+        "top": 3025.5,
+        "right": 1051.3125,
+        "bottom": 3045.5
+      }
+    },
+    {
+      "label": "£44.04",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price",
+      "bbox": {
+        "left": 1004.03125,
+        "top": 3026.5,
+        "right": 1047.34375,
+        "bottom": 3043.5
+      }
+    },
+    {
+      "label": "£8.00",
+      "tag": "div",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price-box price-final_price",
+      "bbox": {
+        "left": 327.25,
+        "top": 3503.5,
+        "right": 624.5,
+        "bottom": 3547.5
+      }
+    },
+    {
+      "label": "£12.35",
+      "tag": "div",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price-box price-final_price",
+      "bbox": {
+        "left": 953.75,
+        "top": 3503.5,
+        "right": 1251.0,
+        "bottom": 3547.5
+      }
+    },
+    {
+      "label": "£8.00",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "price-including-tax-product-price-6133",
+      "class_name": "price-wrapper price-including-tax showboth",
+      "bbox": {
+        "left": 327.25,
+        "top": 3507.5,
+        "right": 416.9375,
+        "bottom": 3524.5
+      }
+    },
+    {
+      "label": "£8.00",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price",
+      "bbox": {
+        "left": 381.5,
+        "top": 3507.5,
+        "right": 416.9375,
+        "bottom": 3524.5
+      }
+    },
+    {
+      "label": "£12.35",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "price-including-tax-product-price-4602",
+      "class_name": "price-wrapper price-including-tax showboth",
+      "bbox": {
+        "left": 953.75,
+        "top": 3507.5,
+        "right": 1051.3125,
+        "bottom": 3524.5
+      }
+    },
+    {
+      "label": "£12.35",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price",
+      "bbox": {
+        "left": 1008.0,
+        "top": 3507.5,
+        "right": 1051.3125,
+        "bottom": 3524.5
+      }
+    },
+    {
+      "label": "£6.67",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "price-excluding-tax-product-price-6133",
+      "class_name": "price-wrapper price-excluding-tax",
+      "bbox": {
+        "left": 327.25,
+        "top": 3527.5,
+        "right": 416.9375,
+        "bottom": 3547.5
+      }
+    },
+    {
+      "label": "£6.67",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price",
+      "bbox": {
+        "left": 377.53125,
+        "top": 3528.5,
+        "right": 412.96875,
+        "bottom": 3545.5
+      }
+    },
+    {
+      "label": "£10.29",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "price-excluding-tax-product-price-4602",
+      "class_name": "price-wrapper price-excluding-tax",
+      "bbox": {
+        "left": 953.75,
+        "top": 3527.5,
+        "right": 1051.3125,
+        "bottom": 3547.5
+      }
+    },
+    {
+      "label": "£10.29",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price",
+      "bbox": {
+        "left": 1004.03125,
+        "top": 3528.5,
+        "right": 1047.34375,
+        "bottom": 3545.5
+      }
+    },
+    {
+      "label": "£12.54",
+      "tag": "div",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price-box price-final_price",
+      "bbox": {
+        "left": 14.0,
+        "top": 3531.5,
+        "right": 311.25,
+        "bottom": 3575.5
+      }
+    },
+    {
+      "label": "£80.21",
+      "tag": "div",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price-box price-final_price",
+      "bbox": {
+        "left": 640.5,
+        "top": 3531.5,
+        "right": 937.75,
+        "bottom": 3575.5
+      }
+    },
+    {
+      "label": "£12.54",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "price-including-tax-product-price-2373",
+      "class_name": "price-wrapper price-including-tax showboth",
+      "bbox": {
+        "left": 14.0,
+        "top": 3535.5,
+        "right": 111.5625,
+        "bottom": 3552.5
+      }
+    },
+    {
+      "label": "£12.54",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price",
+      "bbox": {
+        "left": 68.25,
+        "top": 3535.5,
+        "right": 111.5625,
+        "bottom": 3552.5
+      }
+    },
+    {
+      "label": "£80.21",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "price-including-tax-product-price-4293",
+      "class_name": "price-wrapper price-including-tax showboth",
+      "bbox": {
+        "left": 640.5,
+        "top": 3535.5,
+        "right": 738.0625,
+        "bottom": 3552.5
+      }
+    },
+    {
+      "label": "£80.21",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price",
+      "bbox": {
+        "left": 694.75,
+        "top": 3535.5,
+        "right": 738.0625,
+        "bottom": 3552.5
+      }
+    },
+    {
+      "label": "£10.45",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "price-excluding-tax-product-price-2373",
+      "class_name": "price-wrapper price-excluding-tax",
+      "bbox": {
+        "left": 14.0,
+        "top": 3555.5,
+        "right": 111.5625,
+        "bottom": 3575.5
+      }
+    },
+    {
+      "label": "£10.45",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price",
+      "bbox": {
+        "left": 64.28125,
+        "top": 3556.5,
+        "right": 107.59375,
+        "bottom": 3573.5
+      }
+    },
+    {
+      "label": "£66.84",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "price-excluding-tax-product-price-4293",
+      "class_name": "price-wrapper price-excluding-tax",
+      "bbox": {
+        "left": 640.5,
+        "top": 3555.5,
+        "right": 738.0625,
+        "bottom": 3575.5
+      }
+    },
+    {
+      "label": "£66.84",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price",
+      "bbox": {
+        "left": 690.78125,
+        "top": 3556.5,
+        "right": 734.09375,
+        "bottom": 3573.5
+      }
+    },
+    {
+      "label": "£16.90",
+      "tag": "div",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price-box price-final_price",
+      "bbox": {
+        "left": 14.0,
+        "top": 4033.5,
+        "right": 311.25,
+        "bottom": 4077.5
+      }
+    },
+    {
+      "label": "£35.39",
+      "tag": "div",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price-box price-final_price",
+      "bbox": {
+        "left": 327.25,
+        "top": 4033.5,
+        "right": 624.5,
+        "bottom": 4077.5
+      }
+    },
+    {
+      "label": "£16.90",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "price-including-tax-product-price-4951",
+      "class_name": "price-wrapper price-including-tax showboth",
+      "bbox": {
+        "left": 14.0,
+        "top": 4037.5,
+        "right": 111.5625,
+        "bottom": 4054.5
+      }
+    },
+    {
+      "label": "£16.90",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price",
+      "bbox": {
+        "left": 68.25,
+        "top": 4037.5,
+        "right": 111.5625,
+        "bottom": 4054.5
+      }
+    },
+    {
+      "label": "£35.39",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "price-including-tax-product-price-4763",
+      "class_name": "price-wrapper price-including-tax showboth",
+      "bbox": {
+        "left": 327.25,
+        "top": 4037.5,
+        "right": 424.8125,
+        "bottom": 4054.5
+      }
+    },
+    {
+      "label": "£35.39",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price",
+      "bbox": {
+        "left": 381.5,
+        "top": 4037.5,
+        "right": 424.8125,
+        "bottom": 4054.5
+      }
+    },
+    {
+      "label": "£14.08",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "price-excluding-tax-product-price-4951",
+      "class_name": "price-wrapper price-excluding-tax",
+      "bbox": {
+        "left": 14.0,
+        "top": 4057.5,
+        "right": 111.5625,
+        "bottom": 4077.5
+      }
+    },
+    {
+      "label": "£14.08",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price",
+      "bbox": {
+        "left": 64.28125,
+        "top": 4058.5,
+        "right": 107.59375,
+        "bottom": 4075.5
+      }
+    },
+    {
+      "label": "£29.49",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "price-excluding-tax-product-price-4763",
+      "class_name": "price-wrapper price-excluding-tax",
+      "bbox": {
+        "left": 327.25,
+        "top": 4057.5,
+        "right": 424.8125,
+        "bottom": 4077.5
+      }
+    },
+    {
+      "label": "£29.49",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price",
+      "bbox": {
+        "left": 377.53125,
+        "top": 4058.5,
+        "right": 420.84375,
+        "bottom": 4075.5
+      }
+    },
+    {
+      "label": "£15.67",
+      "tag": "div",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price-box price-final_price",
+      "bbox": {
+        "left": 14.0,
+        "top": 4710.25,
+        "right": 317.25,
+        "bottom": 4754.25
+      }
+    },
+    {
+      "label": "£15.67",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "price-including-tax-product-price-1225",
+      "class_name": "price-wrapper price-including-tax showboth",
+      "bbox": {
+        "left": 14.0,
+        "top": 4714.25,
+        "right": 111.5625,
+        "bottom": 4731.25
+      }
+    },
+    {
+      "label": "£15.67",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price",
+      "bbox": {
+        "left": 68.25,
+        "top": 4714.25,
+        "right": 111.5625,
+        "bottom": 4731.25
+      }
+    },
+    {
+      "label": "£13.06",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "price-excluding-tax-product-price-1225",
+      "class_name": "price-wrapper price-excluding-tax",
+      "bbox": {
+        "left": 14.0,
+        "top": 4734.25,
+        "right": 111.5625,
+        "bottom": 4754.25
+      }
+    },
+    {
+      "label": "£13.06",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price",
+      "bbox": {
+        "left": 64.28125,
+        "top": 4735.25,
+        "right": 107.59375,
+        "bottom": 4752.25
+      }
+    },
+    {
+      "label": "£32.04",
+      "tag": "div",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price-box price-final_price",
+      "bbox": {
+        "left": 14.0,
+        "top": 5350.5,
+        "right": 311.25,
+        "bottom": 5394.5
+      }
+    },
+    {
+      "label": "£9.53",
+      "tag": "div",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price-box price-final_price",
+      "bbox": {
+        "left": 327.25,
+        "top": 5350.5,
+        "right": 624.5,
+        "bottom": 5394.5
+      }
+    },
+    {
+      "label": "£28.33",
+      "tag": "div",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price-box price-final_price",
+      "bbox": {
+        "left": 640.5,
+        "top": 5350.5,
+        "right": 937.75,
+        "bottom": 5394.5
+      }
+    },
+    {
+      "label": "£32.04",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "price-including-tax-product-price-4755",
+      "class_name": "price-wrapper price-including-tax showboth",
+      "bbox": {
+        "left": 14.0,
+        "top": 5354.5,
+        "right": 111.5625,
+        "bottom": 5371.5
+      }
+    },
+    {
+      "label": "£32.04",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price",
+      "bbox": {
+        "left": 68.25,
+        "top": 5354.5,
+        "right": 111.5625,
+        "bottom": 5371.5
+      }
+    },
+    {
+      "label": "£9.53",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "price-including-tax-product-price-3860",
+      "class_name": "price-wrapper price-including-tax showboth",
+      "bbox": {
+        "left": 327.25,
+        "top": 5354.5,
+        "right": 416.9375,
+        "bottom": 5371.5
+      }
+    },
+    {
+      "label": "£9.53",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price",
+      "bbox": {
+        "left": 381.5,
+        "top": 5354.5,
+        "right": 416.9375,
+        "bottom": 5371.5
+      }
+    },
+    {
+      "label": "£28.33",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "price-including-tax-product-price-4940",
+      "class_name": "price-wrapper price-including-tax showboth",
+      "bbox": {
+        "left": 640.5,
+        "top": 5354.5,
+        "right": 738.0625,
+        "bottom": 5371.5
+      }
+    },
+    {
+      "label": "£28.33",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price",
+      "bbox": {
+        "left": 694.75,
+        "top": 5354.5,
+        "right": 738.0625,
+        "bottom": 5371.5
+      }
+    },
+    {
+      "label": "£26.70",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "price-excluding-tax-product-price-4755",
+      "class_name": "price-wrapper price-excluding-tax",
+      "bbox": {
+        "left": 14.0,
+        "top": 5374.5,
+        "right": 111.5625,
+        "bottom": 5394.5
+      }
+    },
+    {
+      "label": "£26.70",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price",
+      "bbox": {
+        "left": 64.28125,
+        "top": 5375.5,
+        "right": 107.59375,
+        "bottom": 5392.5
+      }
+    },
+    {
+      "label": "£7.94",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "price-excluding-tax-product-price-3860",
+      "class_name": "price-wrapper price-excluding-tax",
+      "bbox": {
+        "left": 327.25,
+        "top": 5374.5,
+        "right": 416.9375,
+        "bottom": 5394.5
+      }
+    },
+    {
+      "label": "£7.94",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price",
+      "bbox": {
+        "left": 377.53125,
+        "top": 5375.5,
+        "right": 412.96875,
+        "bottom": 5392.5
+      }
+    },
+    {
+      "label": "£23.61",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "price-excluding-tax-product-price-4940",
+      "class_name": "price-wrapper price-excluding-tax",
+      "bbox": {
+        "left": 640.5,
+        "top": 5374.5,
+        "right": 738.0625,
+        "bottom": 5394.5
+      }
+    },
+    {
+      "label": "£23.61",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price",
+      "bbox": {
+        "left": 690.78125,
+        "top": 5375.5,
+        "right": 734.09375,
+        "bottom": 5392.5
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "label": "Insulation to Suit Pipe Size",
+      "group_label": "Options",
+      "tag": "select",
+      "type": "",
+      "name": "super_attribute[186]",
+      "id": "attribute186",
+      "bbox": {
+        "left": 1070.578125,
+        "top": 774.75,
+        "right": 1226.25,
+        "bottom": 818.75
+      },
+      "is_price_relevant": true
+    },
+    {
+      "label": "Insulation Thickness",
+      "group_label": "Options",
+      "tag": "select",
+      "type": "",
+      "name": "super_attribute[185]",
+      "id": "attribute185",
+      "bbox": {
+        "left": 1070.578125,
+        "top": 841.75,
+        "right": 1226.25,
+        "bottom": 885.75
+      },
+      "is_price_relevant": true
+    }
+  ]
+}

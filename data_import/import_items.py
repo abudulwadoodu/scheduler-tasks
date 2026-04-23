@@ -4,7 +4,7 @@ from pathlib import Path
 from datetime import datetime, timezone
 from typing import Optional
 from urllib.parse import urlparse
-
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import pandas as pd
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 
@@ -267,6 +267,7 @@ def import_items_from_excel(file_path: str) -> None:
 
     try:
         df = pd.read_excel(path)
+        df.rename(columns={'Rate £': 'Rate'}, inplace=True)
     except Exception as exc:  # pragma: no cover - defensive
         logger.error("Failed to read Excel file %s: %s", file_path, exc)
         raise

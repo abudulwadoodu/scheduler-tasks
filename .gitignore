@@ -10,6 +10,7 @@ venv/
 .coverage
 htmlcov/
 .DS_Store
+debug
 
 # Logs and data
 *.log
@@ -20,3 +21,4 @@ html_archive/
 
 # Excel results (optional, but often ignored)
 # output_prices.xlsx
+data/results

@@ -1,0 +1,176 @@
+$(document).ready(function(){	
+
+$("#clear").click(function(){
+$("#glasspatterns").hide();
+});
+	
+$("#obscure").click(function(){
+$("#glasspatterns").show();
+});
+	
+$("#clear").click(function(){
+$(".glasspattern").prop("checked", false);
+});
+	
+$("#aplusrated").click(function(){
+$(".laminated").prop("checked", false);
+});
+
+$("#tripleglazed").click(function(){
+$(".laminated").prop("checked", false);
+});
+	
+$("#laminated").click(function(){
+$(".tripleglazed").prop("checked", false);
+});
+	
+$("#laminated").click(function(){
+$(".aplusrated").prop("checked", false);
+});
+	
+function updateTotals(){
+	
+    var sum = 0;
+	var height = $('#frameheight').val();
+    var width = $('#framewidth').val();
+	var sqm = width * height / 1000000;
+	var glasspattern = 17 * 1.2;
+	var satinglass = 37 * 1.2;
+	var geobar = 50 * 1.2;
+	var astragalbar = 130 * 1.2;
+	var shgeobar = 25 * 1.2;
+	var shastragalbar = 65 * 1.2;
+	var widthextender = width / 1000;
+	var heightextender = height / 1000;
+	var frameextender10 = 10;
+	var frameextender50 = 15;
+	var discount = $('#discount').val() / 1;
+	var price = $('#hprice').val() / 1;
+	var flushprice = $('#flushprice').val() / 1;
+	var colour = $('.colour:checked').data('price');
+	if (colour == null) {
+    var coloursurcharge = 1;
+}
+else
+{
+  var coloursurcharge = $('.colour:checked').data('price');
+}
+	if (colour > 1) {var tricklevents = $('#tricklevents option:selected').data('price') * 1;
+	}
+else
+{
+	var tricklevents = $('#tricklevents option:selected').data('price');
+}
+	var tricklevents = $('#tricklevents option:selected').data('price');
+	var lead = 48 * 1.2;
+	var toughenedglass = 21 * 1.2;
+	var aplusglass = 15 * 1.2;
+	var aplusplusglass = 120 * 1.2;
+	var laminatedglass = 45 * 1.2;
+	var handlecolour = $('#handlecolour option:selected').data('price');	
+	var hinges = $('#windowhinges option:selected').data('price');
+	
+$('#hprice').each(function() {
+        sum += price;
+}); 
+	
+$('#topextension_10:checked,#topextension_20:checked').each(function() {
+        sum += widthextender * frameextender10 * coloursurcharge;
+});	
+	
+$('#topextension_50:checked').each(function() {
+        sum += widthextender * frameextender50 * coloursurcharge;
+});	
+	
+$('#leftextension_10:checked,#leftextension_20:checked,#rightextension_10:checked,#rightextension_20:checked').each(function() {
+        sum += heightextender * frameextender10 * coloursurcharge;
+});	
+	
+$('#leftextension_50:checked,#rightextension_50:checked').each(function() {
+        sum += heightextender * frameextender50 * coloursurcharge;
+});	
+		
+$('#flushprice').each(function() {
+        sum += flushprice;
+}); 
+
+$('.colour:checked').each(function() {
+        sum *= colour;
+});
+
+$('#aplusrated:checked').each(function() {
+		sum += sqm * aplusglass;
+});	
+	
+$('#tripleglazed:checked').each(function() {
+		sum += sqm * aplusplusglass;
+});	
+	
+$('#toughened:checked').each(function() {
+		sum += sqm * toughenedglass;
+});
+
+$('#laminated:checked').each(function() {
+		sum += sqm * laminatedglass;
+});	
+
+$('#obscure:checked').each(function() {
+		sum += sqm * glasspattern;
+});
+
+$('#Satin:checked').each(function() {
+		sum += sqm * satinglass;
+});
+
+$('#tricklevents option:selected').each(function() {
+		sum += tricklevents;
+});
+	
+$('#handlecolour option:selected').each(function() {
+        sum += handlecolour;
+});
+	
+$('#windowhinges option:selected').each(function() {
+        sum += hinges;
+});
+
+$('#intgeobar:checked').each(function() {
+		sum += sqm * geobar * coloursurcharge;
+});	
+	
+$('#shintgeobar:checked').each(function() {
+		sum += sqm * shgeobar * coloursurcharge;
+});		
+	
+$('#astragalbar:checked').each(function() {
+		sum += sqm * astragalbar * coloursurcharge;
+});	
+	
+$('#shastragalbar:checked').each(function() {
+		sum += sqm * shastragalbar * coloursurcharge;
+});		
+
+$('#squarelead:checked,#diamondlead:checked').each(function() {
+		sum += sqm * lead;
+});	
+
+$('#fitpack:checked,#locks option:checked').each(function() {
+        sum += Number($(this).data('price'));
+});	
+	
+    $('#totalprice').val(Math.ceil(sum).toFixed(2));	
+	$('.totalpricevisible').html(Math.ceil($('#totalprice').val()).toFixed(2));
+	
+$('#totalprice').each(function() {
+        sum += discount;
+}); 	
+	$('#wasprice').val(Math.ceil(sum).toFixed(2));
+	$('.waspricevisible').html(Math.ceil($('#wasprice').val()).toFixed(2));
+	
+	}
+	
+setInterval(function(){
+	updateTotals(); 
+}, 100);	
+
+});

@@ -13,5 +13,5 @@ database:
   # Examples:
   # sqlite:///scheduler.db
   # mssql+pyodbc:///?odbc_connect=Server%3D[server]%5C[instance]%3BDatabase%3D[database]%3BTrusted_Connection%3DYes%3Bdriver%3DODBC+Driver+18+for+SQL+Server%3BEncrypt%3Dyes%3BTrustServerCertificate%3Dyes
-  url: "mssql+pyodbc:///?odbc_connect=Server=localhost\\MSSQLSERVER02;Database=gor_data_extraction;Trusted_Connection=Yes;driver=ODBC+Driver+18+for+SQL+Server;Encrypt=yes;TrustServerCertificate=yes"
+  url: "mssql+pyodbc:///?odbc_connect=Server=LPT1423;Database=gor_data_extraction;Trusted_Connection=Yes;driver=ODBC+Driver+18+for+SQL+Server;Encrypt=yes;TrustServerCertificate=yes"
 

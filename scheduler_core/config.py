@@ -22,7 +22,7 @@ class Config:
     YML = load_yml_config()
     
     # Database
-    DB_URL = os.getenv("DB_URL") or YML.get("database", {}).get("url") or "sqlite:///scheduler.db"
+    DB_URL = YML.get("database", {}).get("url") 
     
     # Redis
     REDIS_HOST = os.getenv("REDIS_HOST") or YML.get("redis", {}).get("host") or "localhost"

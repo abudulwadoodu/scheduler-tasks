@@ -1,0 +1,94 @@
+{
+  "required_components": [
+    {
+      "label": "Insulation Size (ID x Wall)",
+      "type": "select",
+      "description": "Dropdown menu for selecting the internal diameter and wall thickness of the insulation",
+      "price_relevance_reason": "Different sizes use different amounts of material and may have different prices",
+      "group_context": "Product options section"
+    },
+    {
+      "label": "Insulation Thickness (mm)",
+      "type": "select",
+      "description": "Dropdown menu for selecting the thickness of the insulation in millimeters",
+      "price_relevance_reason": "Thicker insulation uses more material and is typically more expensive",
+      "group_context": "Product options section"
+    },
+    {
+      "label": "Quantity",
+      "type": "number",
+      "description": "Number input for specifying how many units of the product to purchase",
+      "price_relevance_reason": "The total price is directly proportional to the quantity ordered",
+      "group_context": "Product options section"
+    }
+  ],
+  "validated_inputs": [
+    {
+      "label": "Insulation to Suit Pipe Size",
+      "xpath": "//*[@id=\"attribute186\"]",
+      "verified": true,
+      "identified_element": "This is a dropdown (select) element labeled \"Insulation to Suit Pipe Size\" that allows users to choose from multiple insulation options (e.g., \"6\", \"10 + £0.72\", \"12 - £0.23\", \"15 + £0.80\") for a product attribute; it displays a placeholder \"Choose an Option...\" and updates the selection dynamically when changed.",
+      "reason": "Successfully located and verified on page",
+      "input_data": {
+        "label": "Insulation to Suit Pipe Size",
+        "group_label": "Options",
+        "tag": "select",
+        "type": "",
+        "name": "super_attribute[186]",
+        "id": "attribute186",
+        "class_name": "",
+        "bbox": {
+          "left": 1070.5625,
+          "top": 782.75,
+          "right": 1226.234375,
+          "bottom": 826.75
+        },
+        "is_price_relevant": true
+      },
+      "outer_html": "<select name=\"super_attribute[186]\" id=\"attribute186\" class=\"form-select super-attribute-select max-w-full\" x-on:change=\"changeOption(186, event.target.value)\" required=\"\">\n                    <option value=\"\">\n                        Choose an Option...                    </option>\n                    <template x-for=\"(item, index) in getAllowedAttributeOptions(186)\" :key=\"item.id\">\n                        <option :value=\"item.id\" x-html=\"getAttributeOptionLabel(item)\" :selected=\"selectedValues[186] ===\n                                item.id\">\n                        </option>\n                    </template><option :value=\"item.id\" x-html=\"getAttributeOptionLabel(item)\" :selected=\"selectedValues[186] ===\n                                item.id\" value=\"122\">6</option><option :value=\"item.id\" x-html=\"getAttributeOptionLabel(item)\" :selected=\"selectedValues[186] ===\n                                item.id\" value=\"123\">10 + £0.72</option><option :value=\"item.id\" x-html=\"getAttributeOptionLabel(item)\" :selected=\"selectedValues[186] ===\n                                item.id\" value=\"124\">12 - £0.23</option><option :value=\"item.id\" x-html=\"getAttributeOptionLabel(item)\" :selected=\"selectedValues[186] ===\n                                item.id\" value=\"125\">15 + £0.80</option>\n                </select>"
+    },
+    {
+      "label": "Insulation Thickness",
+      "xpath": "//*[@id=\"attribute185\"]",
+      "verified": true,
+      "identified_element": "This is a dropdown (select) element labeled \"Insulation Thickness\" that allows users to choose from various insulation thickness options, each displaying a value and associated price (e.g., \"6 - £0.23\"). It is a required field in the UI, enabling users to select the desired insulation thickness for a product configuration.",
+      "reason": "Successfully located and verified on page",
+      "input_data": {
+        "label": "Insulation Thickness",
+        "group_label": "Options",
+        "tag": "select",
+        "type": "",
+        "name": "super_attribute[185]",
+        "id": "attribute185",
+        "class_name": "",
+        "bbox": {
+          "left": 1070.5625,
+          "top": 849.75,
+          "right": 1226.234375,
+          "bottom": 893.75
+        },
+        "is_price_relevant": true
+      },
+      "outer_html": "<select name=\"super_attribute[185]\" id=\"attribute185\" class=\"form-select super-attribute-select max-w-full\" x-on:change=\"changeOption(185, event.target.value)\" required=\"\">\n                    <option value=\"\">\n                        Choose an Option...                    </option>\n                    <template x-for=\"(item, index) in getAllowedAttributeOptions(185)\" :key=\"item.id\">\n                        <option :value=\"item.id\" x-html=\"getAttributeOptionLabel(item)\" :selected=\"selectedValues[185] ===\n                                item.id\">\n                        </option>\n                    </template><option :value=\"item.id\" x-html=\"getAttributeOptionLabel(item)\" :selected=\"selectedValues[185] ===\n                                item.id\" value=\"116\" selected=\"selected\">6 - £0.23</option><option :value=\"item.id\" x-html=\"getAttributeOptionLabel(item)\" :selected=\"selectedValues[185] ===\n                                item.id\" value=\"165\">9 - £0.56</option><option :value=\"item.id\" x-html=\"getAttributeOptionLabel(item)\" :selected=\"selectedValues[185] ===\n                                item.id\" value=\"118\">13 + £0.64</option><option :value=\"item.id\" x-html=\"getAttributeOptionLabel(item)\" :selected=\"selectedValues[185] ===\n                                item.id\" value=\"119\">19 + £3.22</option><option :value=\"item.id\" x-html=\"getAttributeOptionLabel(item)\" :selected=\"selectedValues[185] ===\n                                item.id\" value=\"120\">25 + £8.53</option><option :value=\"item.id\" x-html=\"getAttributeOptionLabel(item)\" :selected=\"selectedValues[185] ===\n                                item.id\" value=\"121\">32 + £13.07</option>\n                </select>"
+    }
+  ],
+  "missing_components": [
+    {
+      "label": "Quantity",
+      "type": "number",
+      "description": "Number input for specifying how many units of the product to purchase",
+      "reason_missing": "Likely overlooked during initial form analysis or considered a standard cart input not specific to product configuration"
+    }
+  ],
+  "summary": {
+    "total_vision_components": 3,
+    "total_json_inputs": 2,
+    "verified_inputs": 2,
+    "failed_validations": 0,
+    "missing_components": 1,
+    "completeness_percentage": 66.67,
+    "warnings": [
+      "1 component(s) found on page but missing from JSON"
+    ]
+  }
+}
