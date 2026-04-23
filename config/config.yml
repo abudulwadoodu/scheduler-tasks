@@ -1,6 +1,6 @@
 pipeline:
   extractor:
-    replicas: 3
+    replicas: 1
     stream_prefix: urls
     group: extractors
 

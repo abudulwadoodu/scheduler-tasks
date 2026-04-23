@@ -1,7 +1,7 @@
 import pandas as pd
 import asyncio
 
-from utils.dataset import capture_screenshots_async
+from utils.take_screenshot import capture_screenshots_async
 
 data = pd.read_excel("./data/Price_Normalization_Dataset.xlsx")
 

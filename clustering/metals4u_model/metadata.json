@@ -1,0 +1,12 @@
+{
+  "params": {
+    "min_cluster_size": 5,
+    "min_samples": 7,
+    "n_clusters": 2,
+    "outlier_rate": 0.05
+  },
+  "n_clusters": 2,
+  "outlier_rate": 0.05,
+  "min_cluster_size": 5,
+  "min_samples": 7
+}

@@ -1,0 +1,62 @@
+[
+  {
+    "label": "Ex VAT",
+    "group_label": "",
+    "tag": "input",
+    "type": "checkbox",
+    "name": "",
+    "id": "customSwitch1",
+    "bbox": {
+      "left": 983.671875,
+      "top": 10.0,
+      "right": 1021.484375,
+      "bottom": 26.0
+    },
+    "is_price_relevant": true
+  },
+  {
+    "label": "Add to basket",
+    "group_label": "",
+    "tag": "input",
+    "type": "button",
+    "name": "",
+    "id": "",
+    "bbox": {
+      "left": 872.65625,
+      "top": 466.171875,
+      "right": 914.65625,
+      "bottom": 526.171875
+    },
+    "is_price_relevant": true
+  },
+  {
+    "label": "Add to basket",
+    "group_label": "",
+    "tag": "input",
+    "type": "button",
+    "name": "",
+    "id": "",
+    "bbox": {
+      "left": 973.09375,
+      "top": 466.171875,
+      "right": 1015.09375,
+      "bottom": 526.171875
+    },
+    "is_price_relevant": true
+  },
+  {
+    "label": "Earn 3 points",
+    "group_label": "",
+    "tag": "input",
+    "type": "button",
+    "name": "",
+    "id": "",
+    "bbox": {
+      "left": 1033.984375,
+      "top": 465.171875,
+      "right": 1213.984375,
+      "bottom": 525.171875
+    },
+    "is_price_relevant": true
+  }
+]

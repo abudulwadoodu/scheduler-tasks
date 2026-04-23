@@ -1,0 +1,32 @@
+[
+  {
+    "label": "Pipe Outside Diameter mm",
+    "group_label": "Options",
+    "tag": "select",
+    "type": "",
+    "name": "super_attribute[188]",
+    "id": "attribute188",
+    "bbox": {
+      "left": 1070.5625,
+      "top": 834.75,
+      "right": 1226.234375,
+      "bottom": 878.75
+    },
+    "is_price_relevant": true
+  },
+  {
+    "label": "Insulation Thickness mm",
+    "group_label": "Options",
+    "tag": "select",
+    "type": "",
+    "name": "super_attribute[187]",
+    "id": "attribute187",
+    "bbox": {
+      "left": 1070.5625,
+      "top": 907.75,
+      "right": 1226.234375,
+      "bottom": 951.75
+    },
+    "is_price_relevant": true
+  }
+]
