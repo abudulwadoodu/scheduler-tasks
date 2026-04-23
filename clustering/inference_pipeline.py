@@ -213,7 +213,7 @@ def get_cluster_statistics(loaded_models):
     Args:
         loaded_models: dict from load_clustering_model()
         
-    Returns:
+    Returns: 
         pandas DataFrame with cluster statistics
     """
     cluster_profiles = loaded_models['cluster_profiles']
