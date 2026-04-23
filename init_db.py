@@ -46,7 +46,7 @@ def ensure_database_exists():
     """
     if "mssql" not in Config.DB_URL:
         return  # SQLite / other — DB file is created automatically
-
+    print("url : ",Config.DB_URL )
     odbc_str = _extract_odbc_conn_str(Config.DB_URL)
     if odbc_str is None:
         print("Could not parse ODBC connection string; skipping DB creation check.")
@@ -342,7 +342,9 @@ def _run_sources_migration_if_needed():
 
 
 def init_db():
+    print("start")
     ensure_database_exists()
+    print("Ensured database exists.")
     _run_units_migration_if_needed()
     _run_sources_migration_if_needed()
 
