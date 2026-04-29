@@ -49,7 +49,10 @@ AZURE_API_MODEL=gpt-4
 python -m price_input_validator.main labels.json https://example.com/product
 
 # With custom output file
-python -m price_input_validator.main labels.json https://example.com/product results.json
+python -m price_input_validator.main labels.json https://example.com/product --output results.json
+
+# With UI flow hint (optional)
+python -m price_input_validator.main labels.json https://example.com/product --output results.json --ui-flow-hint "Select Width dropdown before Height"
 ```
 
 ### Python API
@@ -60,11 +63,12 @@ from price_input_validator import PriceInputValidator
 # Initialize validator
 validator = PriceInputValidator()
 
-# Run validation
+# Run validation (with optional UI flow hint)
 result = validator.validate(
-    labels_json_path="labels.json",
-    web_url="https://example.com/product",
-    output_path="results.json"
+  labels_json_path="labels.json",
+  web_url="https://example.com/product",
+  output_path="results.json",
+  ui_flow_hint="Select Width dropdown before Height"  # Optional
 )
 
 # Access results

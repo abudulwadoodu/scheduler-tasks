@@ -3,7 +3,7 @@ Gap analyzer to compare vision-identified components with JSON inputs.
 """
 import json
 from typing import List, Dict, Any
-from openai import AzureOpenAI, OpenAI
+from openai import OpenAI
 from .models import IdentifiedComponent, LabelData, MissingComponent
 
 
@@ -13,10 +13,14 @@ class GapAnalyzer:
     def __init__(
         self,
         api_key: str,
+        api_base: str,
+        api_version: str,
         model: str = "gpt-4"
     ):
         """Initialize the gap analyzer with Azure OpenAI credentials."""
-        self.client = OpenAI(api_key=api_key)  # Use OpenAI client for GPT-4
+        self.client = OpenAI(
+            api_key=api_key,
+        )
         self.model = model
     
     def find_missing_components(
