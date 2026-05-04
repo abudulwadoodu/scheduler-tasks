@@ -12,6 +12,26 @@ import dotenv
 dotenv.load_dotenv()
 
 
+SYSTEM_PROMPT = """
+You are a form-filling assistant.
+
+You will be given:
+1. A Pydantic model definition representing a web form
+2. A customer comment describing what they want
+
+Your job is to extract values from the comment and return ONLY a filled Pydantic object constructor call — nothing else. No explanation, no code block, no markdown.
+
+Rules:
+- Return only the Pydantic constructor call e.g. ModelName(field=value, ...)
+- Only include fields that have a value extracted from the comment
+- For numerical values take numerical values from the comment and convert to string (e.g. "630mm" -> "630")
+- For radio button fields (Optional[bool]): set True for the matched option, or set to default value if not specified
+- For radio groups: only ONE field in the group can be True
+- For checkbox fields (Optional[bool]): set True if mentioned, or set to default value if not specified
+- For text fields (Optional[str]): extract the value as a string
+- For select/dropdown fields (Literal[...]): pick the closest matching allowed value
+- If the item is mentioned but no quantity found, default to the minimum non-zero option value
+- Use Python field names (not aliases) in the constructor"""
 
 
 # =========================
@@ -19,6 +39,101 @@ dotenv.load_dotenv()
 # =========================
 PRICE_XPATH = "None"
 
+STEPS = [{'label': 'Pipe Outside Diameter mm', 'xpath': '//*[@id="attribute188"]', 'type': '', 'tag': 'select'}, {'label': 'Insulation Thickness mm', 'xpath': '//*[@id="attribute187"]', 'type': '', 'tag': 'select'}]
+
+# Pydantic model
+from typing import Literal, Optional
+from pydantic import BaseModel, Field, field_validator
+
+class NagivationStepsModel(BaseModel):
+    model_config = {"populate_by_name": True}
+
+    Pipe_Outside_Diameter_mm: str = Field("", alias="Pipe Outside Diameter mm")
+    Insulation_Thickness_mm: str = Field("", alias="Insulation Thickness mm")
+    Comment: Optional[str] = Field(None, alias="15 x 25mm H&V Lag Foil Covered")
+
+    @field_validator("Pipe_Outside_Diameter_mm", mode="before")
+    def validate_Pipe_Outside_Diameter_mm(cls, v):
+        map_ = {
+            "15mm": "148",
+            "22mm": "149",
+            "28mm": "150",
+            "35mm": "151",
+            "42mm": "152",
+            "48mm": "153",
+            "54mm": "171",
+            "60mm": "154"
+        }
+        return map_.get(str(v), str(v))
+
+    @field_validator("Insulation_Thickness_mm", mode="before")
+    def validate_Insulation_Thickness_mm(cls, v):
+        map_ = {
+            "20": "180",
+            "25": "183",
+            "30": "181",
+            "40": "182",
+            "50": "184",
+            "60": "185",
+            "70": "186"
+        }
+        return map_.get(str(v), str(v))
+
+prompt = ChatPromptTemplate.from_messages([
+    ("system", SYSTEM_PROMPT),
+    ("human", "{comment}"),
+])
+
+
+# ── Fallback Parser ───────────────────────────────────────────────────────────
+
+def parse_order_from_comment(comment: str) -> NagivationStepsModel:
+    """
+    Uses LangChain with OpenAI structured output.
+    Returns a fully validated NagivationStepsModel instance.
+    """
+    llm = ChatOpenAI(model="gpt-4o", temperature=0)
+    structured_llm = llm.with_structured_output(NagivationStepsModel)
+    chain = prompt | structured_llm
+    return chain.invoke({"comment": comment})
+
+
+# =========================
+# COMMENT PARSER
+# =========================
+def parse_comment(comment: str) -> NagivationStepsModel:
+    c = comment.lower()
+    # --- Dimensions ---
+    dim = re.search(r'(\d+)\s*[x×/-]\s*(\d+)', c)
+    if dim:
+        width, height = dim.group(1), dim.group(2)
+    else:
+        return parse_order_from_comment(comment)
+    # --- Radio group ---
+    if 'white upvc' in c:
+        selected_colour = None
+    elif 'clear' in c:
+        selected_colour = 'Clear'
+    elif 'standard a rated' in c:
+        selected_colour = 'Standard_A_Rated'
+    else:
+        selected_colour = 'Clear'
+    # --- Checkboxes ---
+    toughened_glass = True if 'toughened glass' in c else None
+    # --- Select (quantity) ---
+    qty_field = 'Not Required'
+    qty_match = re.search(r'(\d+)\s*trickle vents|trickle vents\s*(\d+)|x(\d+)|(\d+)x|\((\d+)\)|\[(\d+)\]', c)
+    if qty_match:
+        qty = next(g for g in qty_match.groups() if g is not None)
+        qty_field = qty if qty in ('1', '2') else 'Not Required'
+    elif 'trickle vents' in c:
+        return parse_order_from_comment(comment)
+    # --- Build and return model ---
+    return NagivationStepsModel(
+        Pipe_Outside_Diameter_mm=width,
+        Insulation_Thickness_mm=height,
+        Comment=comment,
+    )
 
 
 # =========================
@@ -161,7 +276,8 @@ def scrape_price(
     timeout: int = 30_000,
 ) -> str:
 
-    values = {}
+    model = parse_comment(comment)
+    values = model.model_dump(by_alias=True)
     print("values : ", values)
 
     with sync_playwright() as playwright:
@@ -202,11 +318,10 @@ def scrape_price(
                 old_price = price_el.inner_text().strip()
             except Exception:
                 pass
-                
+
             # =========================
             # EXECUTE STEPS
             # =========================
-            STEPS=[]
             for idx, step in enumerate(STEPS):
                 label      = step["label"]
                 step_xpath = step["xpath"]

@@ -27,21 +27,6 @@ else:
     from .price_extractor_agent import PriceExtractorAgent
 
 
-def load_json_safe(path: str) -> dict:
-    """Load JSON file trying multiple encodings."""
-    encodings = ['utf-8-sig', 'utf-8', 'windows-1252', 'latin-1']
-    
-    for encoding in encodings:
-        try:
-            with open(path, 'r', encoding=encoding) as f:
-                data = json.load(f)
-            print(f"✅ Loaded JSON with encoding: {encoding}")
-            return data
-        except (UnicodeDecodeError, json.JSONDecodeError):
-            continue
-    
-    raise ValueError(f"Could not decode {path} with any of: {encodings}")
-
 class PriceInputValidator:
     @staticmethod
     def _sort_validated_inputs_by_execution_order(validated_inputs, required_components):
@@ -186,12 +171,12 @@ class PriceInputValidator:
 
         # Step 1: Load JSON
         print("\n[1/6] 📥 Loading JSON configuration...")
-        json_data = load_json_safe(labels_json_path)
-        # with open(labels_json_path, 'r', encoding='utf-8') as f:
-        #     json_data = json.load(f)
+        with open(labels_json_path, 'r', encoding='utf-8') as f:
+            json_data = json.load(f)
         labels_json = LabelsJSON(**json_data)
         print(f"✅ Loaded {len(labels_json.inputs)} input definitions, "
               f"{len(labels_json.all_prices)} price candidates")
+
         # Step 2: Capture screenshot + analyse input components
         print("\n[2/6] 👁️ Capturing screenshot and analysing input components...")
         screenshot_bytes = self.screenshot_analyzer.capture_screenshot(web_url)

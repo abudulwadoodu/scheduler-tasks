@@ -1,8 +1,10 @@
 """
-Module for extracting price information (with and without tax) from product page text content.
-Implements ExtractedPrice dataclass and extraction functions.
+Module for extracting price with and without tax from text content.
+Implements NotImplementedError for this page as no verified DOM element was found.
 """
+
 from dataclasses import dataclass
+from decimal import Decimal
 
 @dataclass
 class ExtractedPrice:
@@ -13,24 +15,24 @@ class ExtractedPrice:
 def extract_price_with_tax(text_content: str) -> ExtractedPrice:
     """
     Extracts the price including tax from the given text_content.
-    Raises NotImplementedError if this price type is not identified for the page.
+    Not implemented for this page as no verified DOM element was found.
     """
-    raise NotImplementedError('Price with tax not identified for this page')
+    raise NotImplementedError('price_with_tax not identified for this page')
 
 def extract_price_without_tax(text_content: str) -> ExtractedPrice:
     """
     Extracts the price excluding tax from the given text_content.
-    Raises NotImplementedError if this price type is not identified for the page.
+    Not implemented for this page as no verified DOM element was found.
     """
-    raise NotImplementedError('Price without tax not identified for this page')
+    raise NotImplementedError('price_without_tax not identified for this page')
 
 if __name__ == '__main__':
     # Demo: Both functions will raise NotImplementedError
     try:
-        print(extract_price_with_tax('Inc. VAT: £13.09'))
+        print(extract_price_with_tax('inc VAT: £8.85'))
     except NotImplementedError as e:
         print(f'With tax: {e}')
     try:
-        print(extract_price_without_tax('Ex. VAT: £10.91'))
+        print(extract_price_without_tax('ex VAT: £7.38'))
     except NotImplementedError as e:
         print(f'Without tax: {e}')

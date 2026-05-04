@@ -28,7 +28,7 @@ class ScreenshotAnalyzer:
         api_key: str,
         api_base: str,
         api_version: str,
-        model: str = "gpt-4-vision-preview"
+        model: str = "gpt-4.1-vision-preview"
     ):
         """Initialize the screenshot analyzer with Azure OpenAI credentials."""
         self.client = OpenAI(

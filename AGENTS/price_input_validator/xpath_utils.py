@@ -31,15 +31,15 @@ def build_xpath(
     tag = tag or "*"
 
     if id_:
-        return f"//*[@id='{id_}']"
+        return f'//*[@id="{id_}"]'
 
     if name and type_:
-        return f"//{tag}[@name='{name}' and @type='{type_}']"
+        return f'//{tag}[@name="{name}" and @type="{type_}"]'
 
     if name:
-        return f"//{tag}[@name='{name}']"
+        return f'//{tag}[@name="{name}"]'
 
     if class_name:
-        return f"//{tag}[contains(@class, '{class_name}')]"
+        return f'//{tag}[contains(@class, "{class_name}")]'
 
     return f"//{tag}"

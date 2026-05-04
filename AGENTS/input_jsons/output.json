@@ -1,21 +1,21 @@
 {
   "price": {
-    "label": "Ex. VAT \u00a314.20",
+    "label": "\u00a314.69",
     "tag": "div",
     "type": "",
     "name": "",
     "id": "",
-    "class_name": "final-price-excl-tax pr-3",
+    "class_name": "pt-1 text-gray-900",
     "bbox": {
-      "left": 906.890625,
-      "top": 662.75,
-      "right": 968.390625,
-      "bottom": 702.75
+      "left": 14.0,
+      "top": 2791.5,
+      "right": 311.25,
+      "bottom": 2839.5
     }
   },
   "all_prices": [
     {
-      "label": "\u00a314.20",
+      "label": "\u00a34.85",
       "tag": "div",
       "type": "",
       "name": "",
@@ -23,25 +23,56 @@
       "class_name": "price-box price-final_price",
       "bbox": {
         "left": 906.890625,
-        "top": 662.75,
-        "right": 1030.890625,
-        "bottom": 702.75
+        "top": 702.75,
+        "right": 1019.71875,
+        "bottom": 758.75
       }
     },
     {
-      "label": "\u00a317.04",
+      "label": "\u00a35.82",
       "tag": "div",
       "type": "",
       "name": "",
       "id": "",
       "class_name": "final-price flex flex-col pl-3 border-l-[#5C6166] border-l",
       "bbox": {
-        "left": 968.390625,
-        "top": 662.75,
-        "right": 1030.890625,
-        "bottom": 702.75
+        "left": 959.390625,
+        "top": 702.75,
+        "right": 1019.71875,
+        "bottom": 758.75
       }
     }
   ],
-  "inputs": []
+  "inputs": [
+    {
+      "label": "Pipe Outside Diameter mm",
+      "group_label": "Options",
+      "tag": "select",
+      "type": "",
+      "name": "super_attribute[188]",
+      "id": "attribute188",
+      "bbox": {
+        "left": 1070.5625,
+        "top": 834.75,
+        "right": 1226.234375,
+        "bottom": 878.75
+      },
+      "is_price_relevant": true
+    },
+    {
+      "label": "Insulation Thickness mm",
+      "group_label": "Options",
+      "tag": "select",
+      "type": "",
+      "name": "super_attribute[187]",
+      "id": "attribute187",
+      "bbox": {
+        "left": 1070.5625,
+        "top": 907.75,
+        "right": 1226.234375,
+        "bottom": 951.75
+      },
+      "is_price_relevant": true
+    }
+  ]
 }
