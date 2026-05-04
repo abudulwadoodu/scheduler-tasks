@@ -1,0 +1,47 @@
+{
+  "price": {
+    "label": "Ex. VAT \u00a314.20",
+    "tag": "div",
+    "type": "",
+    "name": "",
+    "id": "",
+    "class_name": "final-price-excl-tax pr-3",
+    "bbox": {
+      "left": 906.890625,
+      "top": 662.75,
+      "right": 968.390625,
+      "bottom": 702.75
+    }
+  },
+  "all_prices": [
+    {
+      "label": "\u00a314.20",
+      "tag": "div",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price-box price-final_price",
+      "bbox": {
+        "left": 906.890625,
+        "top": 662.75,
+        "right": 1030.890625,
+        "bottom": 702.75
+      }
+    },
+    {
+      "label": "\u00a317.04",
+      "tag": "div",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "final-price flex flex-col pl-3 border-l-[#5C6166] border-l",
+      "bbox": {
+        "left": 968.390625,
+        "top": 662.75,
+        "right": 1030.890625,
+        "bottom": 702.75
+      }
+    }
+  ],
+  "inputs": []
+}

@@ -1,0 +1,106 @@
+{
+  "price": {
+    "label": "£2.84",
+    "tag": "span",
+    "type": "",
+    "name": "",
+    "id": "product-price-1793",
+    "class_name": "price-wrapper title-font font-regular",
+    "bbox": {
+      "left": 1010.765625,
+      "top": 674.75,
+      "right": 1041.140625,
+      "bottom": 698.75
+    }
+  },
+  "all_prices": [
+    {
+      "label": "£2.37",
+      "tag": "div",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price-box price-final_price",
+      "bbox": {
+        "left": 906.890625,
+        "top": 642.75,
+        "right": 1089.640625,
+        "bottom": 698.75
+      }
+    },
+    {
+      "label": "£2.84",
+      "tag": "div",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "final-price flex flex-col pl-3 border-l-[#5C6166] border-l",
+      "bbox": {
+        "left": 997.765625,
+        "top": 642.75,
+        "right": 1089.640625,
+        "bottom": 698.75
+      }
+    },
+    {
+      "label": "£1.94",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "",
+      "class_name": "price text-base font-semibold leading-[22px] text-special-sale",
+      "bbox": {
+        "left": 945.265625,
+        "top": 658.75,
+        "right": 985.765625,
+        "bottom": 682.75
+      }
+    },
+    {
+      "label": "£2.33",
+      "tag": "span",
+      "type": "",
+      "name": "",
+      "id": "product-price-1793",
+      "class_name": "price-wrapper",
+      "bbox": {
+        "left": 1049.140625,
+        "top": 674.75,
+        "right": 1089.640625,
+        "bottom": 698.75
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "label": "Insulation to Suit Pipe Size",
+      "group_label": "Options",
+      "tag": "select",
+      "type": "",
+      "name": "super_attribute[186]",
+      "id": "attribute186",
+      "bbox": {
+        "left": 1070.5625,
+        "top": 774.75,
+        "right": 1226.234375,
+        "bottom": 818.75
+      },
+      "is_price_relevant": true
+    },
+    {
+      "label": "Insulation Thickness",
+      "group_label": "Options",
+      "tag": "select",
+      "type": "",
+      "name": "super_attribute[185]",
+      "id": "attribute185",
+      "bbox": {
+        "left": 1070.5625,
+        "top": 841.75,
+        "right": 1226.234375,
+        "bottom": 885.75
+      },
+      "is_price_relevant": true
+    }
+  ]
+}
