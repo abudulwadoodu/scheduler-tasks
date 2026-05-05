@@ -39,7 +39,7 @@ Rules:
 # =========================
 PRICE_XPATH = "None"
 
-STEPS = [{'label': 'Pipe Outside Diameter mm', 'xpath': '//*[@id="attribute188"]', 'type': '', 'tag': 'select'}, {'label': 'Insulation Thickness mm', 'xpath': '//*[@id="attribute187"]', 'type': '', 'tag': 'select'}]
+STEPS = [{'label': 'Pipe Outside Diameter mm', 'xpath': "//*[@id='attribute188']", 'type': '', 'tag': 'select'}, {'label': 'Insulation Thickness mm', 'xpath': "//*[@id='attribute187']", 'type': '', 'tag': 'select'}]
 
 # Pydantic model
 from typing import Literal, Optional
@@ -50,7 +50,7 @@ class NagivationStepsModel(BaseModel):
 
     Pipe_Outside_Diameter_mm: str = Field("", alias="Pipe Outside Diameter mm")
     Insulation_Thickness_mm: str = Field("", alias="Insulation Thickness mm")
-    Comment: Optional[str] = Field(None, alias="15 x 25mm H&V Lag Foil Covered")
+    Comment: Optional[str] = Field(None, alias="22 x 25mm H&V Lag Foil Covered")
 
     @field_validator("Pipe_Outside_Diameter_mm", mode="before")
     def validate_Pipe_Outside_Diameter_mm(cls, v):
@@ -111,13 +111,14 @@ def parse_comment(comment: str) -> NagivationStepsModel:
         return parse_order_from_comment(comment)
     # --- Radio group ---
     if 'white upvc' in c:
-        selected_colour = None
-    elif 'clear' in c:
-        selected_colour = 'Clear'
-    elif 'standard a rated' in c:
-        selected_colour = 'Standard_A_Rated'
+        colour_white_upvc = None
+        colour_wood = None
+    elif 'wood' in c:
+        colour_white_upvc = None
+        colour_wood = True
     else:
-        selected_colour = 'Clear'
+        colour_white_upvc = True
+        colour_wood = None
     # --- Checkboxes ---
     toughened_glass = True if 'toughened glass' in c else None
     # --- Select (quantity) ---
@@ -132,7 +133,7 @@ def parse_comment(comment: str) -> NagivationStepsModel:
     return NagivationStepsModel(
         Pipe_Outside_Diameter_mm=width,
         Insulation_Thickness_mm=height,
-        Comment=comment,
+        Comment=comment if '22 x 25mm h&v lag foil covered' in c else None,
     )
 
 

@@ -18,12 +18,11 @@ def main():
     
     validator = PriceInputValidator()
     
-    # Run validation (with optional UI flow hint)
+    # Run validation
     result = validator.validate(
         labels_json_path="path/to/your/labels.json",
         web_url="https://example.com/product",
-        output_path="validation_results.json",
-        ui_flow_hint="Select Width dropdown before Height"  # Optional
+        output_path="validation_results.json"
     )
     
     # Access results

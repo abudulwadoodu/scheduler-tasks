@@ -1,16 +1,16 @@
 {
   "price": {
-    "label": "\u00a314.69",
+    "label": "Ex. VAT \u00a34.85",
     "tag": "div",
     "type": "",
     "name": "",
     "id": "",
-    "class_name": "pt-1 text-gray-900",
+    "class_name": "final-price-excl-tax pr-3",
     "bbox": {
-      "left": 14.0,
-      "top": 2791.5,
-      "right": 311.25,
-      "bottom": 2839.5
+      "left": 906.890625,
+      "top": 702.75,
+      "right": 959.390625,
+      "bottom": 758.75
     }
   },
   "all_prices": [

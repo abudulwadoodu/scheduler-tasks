@@ -9,81 +9,16 @@ from typing import Optional
 from datetime import datetime
 from dotenv import load_dotenv
 
-if __package__ in (None, ""):
-    workspace_root = Path(__file__).resolve().parent.parent
-    if str(workspace_root) not in sys.path:
-        sys.path.insert(0, str(workspace_root))
-
-    from price_input_validator.models import LabelsJSON, ValidationResult
-    from price_input_validator.screenshot_analyzer import ScreenshotAnalyzer
-    from price_input_validator.input_validator import InputValidator
-    from price_input_validator.gap_analyzer import GapAnalyzer
-    from price_input_validator.price_extractor_agent import PriceExtractorAgent
-else:
-    from .models import LabelsJSON, ValidationResult
-    from .screenshot_analyzer import ScreenshotAnalyzer
-    from .input_validator import InputValidator
-    from .gap_analyzer import GapAnalyzer
-    from .price_extractor_agent import PriceExtractorAgent
+from .models import LabelsJSON, ValidationResult
+from .screenshot_analyzer import ScreenshotAnalyzer
+from .input_validator import InputValidator
+from .gap_analyzer import GapAnalyzer
+from .price_extractor_agent import PriceExtractorAgent
 
 
 class PriceInputValidator:
-    @staticmethod
-    def _sort_validated_inputs_by_execution_order(validated_inputs, required_components):
-        """
-        Sort validated_inputs to match required_components.execution_order using staged matching.
-        Unmatched inputs are appended at the end in original order.
-        """
-        import re
-        def normalize(text):
-            return re.sub(r'[^a-z0-9]+', ' ', text.lower()).strip() if text else ''
-
-        # Build index for required_components: (group, type, normalized label) -> (execution_order, component)
-        rc_tuples = []
-        for rc in required_components:
-            group = normalize(rc.group_context)
-            typ = normalize(rc.type)
-            label = normalize(rc.label)
-            rc_tuples.append((rc.execution_order, group, typ, label, rc))
-
-        matched = []
-        unmatched = []
-        used_rc_orders = set()
-        for vi in validated_inputs:
-            vi_group = normalize(vi.input_data.get('group_label') if vi.input_data else None)
-            vi_typ = normalize(vi.input_data.get('type') or vi.input_data.get('tag') if vi.input_data else None)
-            vi_label = normalize(vi.label)
-
-            # Stage 1: group and type match
-            candidates = [t for t in rc_tuples if t[1] == vi_group and t[2] == vi_typ]
-            # Stage 2: exact normalized label match
-            label_matched = [t for t in candidates if t[3] == vi_label]
-            if label_matched:
-                chosen = min(label_matched, key=lambda t: t[0])
-            elif candidates:
-                # Stage 3: token overlap
-                def token_overlap(a, b):
-                    return len(set(a.split()) & set(b.split()))
-                best = max(candidates, key=lambda t: token_overlap(t[3], vi_label))
-                if token_overlap(best[3], vi_label) > 0:
-                    chosen = best
-                else:
-                    chosen = None
-            else:
-                chosen = None
-
-            if chosen and chosen[0] not in used_rc_orders:
-                matched.append((chosen[0], vi))
-                used_rc_orders.add(chosen[0])
-            else:
-                unmatched.append(vi)
-
-        # Sort matched by execution_order, then append unmatched in original order
-        matched_sorted = [vi for _, vi in sorted(matched, key=lambda x: x[0])]
-        return matched_sorted + unmatched
-
     """Main orchestrator for validating price-relevant inputs."""
-
+    
     def __init__(
         self,
         api_key: Optional[str] = None,
@@ -147,8 +82,7 @@ class PriceInputValidator:
         self,
         labels_json_path: str,
         web_url: str,
-        output_path: Optional[str] = None,
-        ui_flow_hint: Optional[str] = None
+        output_path: Optional[str] = None
     ) -> ValidationResult:
         """
         Complete validation workflow.
@@ -157,7 +91,6 @@ class PriceInputValidator:
             labels_json_path: Path to JSON file with price and inputs
             web_url: URL of the webpage to analyze
             output_path: Optional path to save results JSON
-            ui_flow_hint: Optional hint string to guide UI flow ordering (e.g., "Select Width dropdown before Height")
 
         Returns:
             ValidationResult with all findings
@@ -180,7 +113,7 @@ class PriceInputValidator:
         # Step 2: Capture screenshot + analyse input components
         print("\n[2/6] 👁️ Capturing screenshot and analysing input components...")
         screenshot_bytes = self.screenshot_analyzer.capture_screenshot(web_url)
-        vision_result = self.screenshot_analyzer.analyze_screenshot(screenshot_bytes, ui_flow_hint=ui_flow_hint)
+        vision_result = self.screenshot_analyzer.analyze_screenshot(screenshot_bytes)
         vision_components = vision_result.components
         vision_prices = vision_result.prices
         print(f"✅ Identified {len(vision_components)} price-relevant components")
@@ -233,8 +166,6 @@ class PriceInputValidator:
         # Step 4: Validate JSON inputs against live page
         print("\n[4/6] ✔️ Validating JSON inputs against webpage...")
         validated_inputs = self.input_validator.validate_inputs(web_url, labels_json)
-        # Sort validated_inputs by required_components execution_order
-        validated_inputs = self._sort_validated_inputs_by_execution_order(validated_inputs, vision_components)
 
         # Step 5: Gap analysis
         print("\n[5/6] 🔍 Analysing gaps...")
@@ -337,53 +268,26 @@ class PriceInputValidator:
 
 def main():
     """CLI entry point."""
-    import argparse
+    if len(sys.argv) < 3:
+        print("Usage: python -m price_input_validator.main <labels_json> <web_url> [output_json]")
+        print("\nExample:")
+        print("  python -m price_input_validator.main labels.json https://example.com/product")
+        print("  python -m price_input_validator.main labels.json https://example.com/product results.json")
+        sys.exit(1)
     
-    parser = argparse.ArgumentParser(
-        description="Price Input Validator - Validate web form inputs using vision AI and Playwright.",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""Examples:
-  python -m price_input_validator.main labels.json https://example.com/product
-  python -m price_input_validator.main labels.json https://example.com/product --output results.json
-  python -m price_input_validator.main labels.json https://example.com/product --output results.json --ui-flow-hint "Select Width dropdown before Height"
-        """
-    )
-    
-    parser.add_argument(
-        "labels_json",
-        help="Path to JSON file with price and input definitions"
-    )
-    parser.add_argument(
-        "web_url",
-        help="URL of the webpage to analyze"
-    )
-    parser.add_argument(
-        "--output", "-o",
-        dest="output_path",
-        help="Path to save validation results JSON (auto-generated if not specified)"
-    )
-    parser.add_argument(
-        "--ui-flow-hint",
-        dest="ui_flow_hint",
-        help="Optional hint to guide UI flow ordering (e.g., 'Select Width dropdown before Height')"
-    )
-    
-    args = parser.parse_args()
+    labels_json_path = sys.argv[1]
+    web_url = sys.argv[2]
+    output_path = sys.argv[3] if len(sys.argv) > 3 else None
     
     # Auto-generate output path if not provided
-    output_path = args.output_path
     if not output_path:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         output_path = f"validation_results_{timestamp}.json"
     
     try:
         validator = PriceInputValidator()
-        validator.validate(
-            labels_json_path=args.labels_json,
-            web_url=args.web_url,
-            output_path=output_path,
-            ui_flow_hint=args.ui_flow_hint
-        )
+        validator.validate(labels_json_path, web_url, output_path)
+        
     except Exception as e:
         print(f"\n❌ ERROR: {e}")
         sys.exit(1)
