@@ -320,7 +320,7 @@ def train_clustering_pipeline(df, preference='conservative'):
         distances_to_medoid = np.linalg.norm(cluster_points - medoid, axis=1)
         
         # 90th percentile as threshold
-        threshold = np.percentile(distances_to_medoid, 100)
+        threshold = np.percentile(distances_to_medoid, 90)
         
         cluster_profiles[cluster_id] = {
             'medoid': medoid,

@@ -68,7 +68,7 @@ warnings.filterwarnings('ignore')
 #         'all_distances': distances_to_clusters,
 #         'all_confidences': confidences
 #     }
-def predict_single_item(new_item_umap, cluster_profiles, confidence_threshold=-999):
+def predict_single_item(new_item_umap, cluster_profiles, confidence_threshold=0.5):
     
     distances_to_clusters = {}
     confidences = {}
@@ -105,7 +105,7 @@ def predict_single_item(new_item_umap, cluster_profiles, confidence_threshold=-9
         'all_confidences': confidences
     }
 
-def predict_batch(df, loaded_models, confidence_threshold=-999, return_details=False):
+def predict_batch(df, loaded_models, confidence_threshold=0.5, return_details=False):
     """
     Predict cluster assignments for a batch of new items
     
